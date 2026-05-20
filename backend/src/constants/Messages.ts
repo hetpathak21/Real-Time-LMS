@@ -13,6 +13,8 @@ export const AUTH_MESSAGES = {
 
   FORBIDDEN: "Access denied",
 
+  LOGOUT_SUCCESS: "Logout Successfully",
+
   TOKEN_MISSING: "Authentication token missing",
 
   INVALID_TOKEN: "Invalid or expired token",
