@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import { AuthRoutes } from "./modules/Auth/AuthRoutes";
 
 const app = express();
 
@@ -20,5 +21,7 @@ app.get("/", (_req, res) => {
     message: "LMS API Running",
   });
 });
+
+app.use("/api/v1/auth/",AuthRoutes);
 
 export default app;
