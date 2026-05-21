@@ -2,8 +2,7 @@ import Course from "../../models/CourseModel";
 import Lesson from "../../models/LessonModel";
 import { AppError } from "../../utils/appError";
 import { dbCall } from "../../utils/dbCall";
-import { CreateLessonPayload , UpdateLessonPayload } from "./lessionTypes";
-
+import { CreateLessonPayload, UpdateLessonPayload } from "./lessionTypes";
 
 const checkTeacherCourseAccess = async (
   courseId: string,

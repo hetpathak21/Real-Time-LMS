@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-/* ---------------- PASSWORD VALIDATION ---------------- */
+/* ---------------- PASSWORD ---------------- */
 export const passwordSchema = z
   .string()
   .min(6, "Password must be at least 6 characters")
@@ -11,34 +11,55 @@ export const passwordSchema = z
     message: "Must include uppercase letter",
   })
   .refine((val) => /\d/.test(val), {
-    message: "Must include a number",
+    message: "Must include number",
   })
   .refine((val) => /[@$!%*?&]/.test(val), {
-    message: "Must include special character (@$!%*?&)",
+    message: "Must include special character",
   });
 
-/* ---------------- REGISTER ---------------- */
-export const registerSchema = z.object({
-  first_name: z.string().trim().min(2, "First name required"),
-  last_name: z.string().trim().min(2, "Last name required"),
-  email: z.string().trim().toLowerCase().email("Invalid email"),
+/* ---------------- SIGNUP ---------------- */
+export const signupSchema = z.object({
+  name: z.string().trim().min(2, "Name required"),
+
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .email("Invalid email"),
+
   password: passwordSchema,
-  phone_number: z.string().trim().optional(),
+
+  role: z
+    .enum(["student", "teacher", "admin"])
+    .optional(),
 });
 
 /* ---------------- LOGIN ---------------- */
 export const loginSchema = z.object({
-  email: z.string().trim().toLowerCase().email("Invalid email"),
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .email("Invalid email"),
+
   password: z.string().min(6, "Password required"),
 });
 
-/* ---------------- FORGOT PASSWORD ---------------- */
-export const forgotPasswordSchema = z.object({
-  email: z.string().trim().toLowerCase().email("Invalid email"),
+/* ---------------- REFRESH TOKEN ---------------- */
+export const refreshTokenSchema = z.object({
+  refreshToken: z.string().min(1),
 });
 
-/* ---------------- RESET PASSWORD ---------------- */
-export const resetPasswordSchema = z.object({
-  email: z.string().trim().toLowerCase().email("Invalid email"),
+/* ---------------- UPDATE PROFILE ---------------- */
+export const updateProfileSchema = z.object({
+  name: z.string().trim().optional(),
+
+  avatar: z.string().optional(),
+});
+
+/* ---------------- CHANGE PASSWORD ---------------- */
+export const changePasswordSchema = z.object({
+  oldPassword: z.string(),
+
   newPassword: passwordSchema,
 });

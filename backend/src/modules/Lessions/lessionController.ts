@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
+import { AuthRequest } from "../../middleware/AuthMiddleware";
 import { asyncHandler } from "../../utils/asyncHandler";
 import { sendResponse } from "../../utils/sendResponse";
+import { STATUS_CODES } from "../../constants/StatusCodes";
 import {
   createLessonService,
   deleteLessonService,
@@ -9,26 +11,16 @@ import {
   updateLessonService,
 } from "./lessionService";
 
-interface AuthRequest extends Request {
-  user?: {
-    userId: string;
-    role: string;
-  };
-}
-
 export const createLesson = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const teacherId = req.user?.userId;
+    const { courseId } = req.params as { courseId: string };
 
-    const lesson = await createLessonService(
-      req.params.courseId,
-      teacherId!,
-      req.body
-    );
+    const lesson = await createLessonService(courseId, teacherId!, req.body);
 
     return sendResponse(
       res,
-      201,
+      STATUS_CODES.CREATED,
       true,
       "Lesson created successfully",
       lesson
@@ -38,13 +30,12 @@ export const createLesson = asyncHandler(
 
 export const getCourseLessons = asyncHandler(
   async (req: Request, res: Response) => {
-    const lessons = await getCourseLessonsService(
-      req.params.courseId
-    );
+    const { courseId } = req.params as { courseId: string };
+    const lessons = await getCourseLessonsService(courseId);
 
     return sendResponse(
       res,
-      200,
+      STATUS_CODES.SUCCESS,
       true,
       "Lessons fetched successfully",
       lessons
@@ -54,13 +45,12 @@ export const getCourseLessons = asyncHandler(
 
 export const getLessonById = asyncHandler(
   async (req: Request, res: Response) => {
-    const lesson = await getLessonByIdService(
-      req.params.lessonId
-    );
+    const { lessonId } = req.params as { lessonId: string };
+    const lesson = await getLessonByIdService(lessonId);
 
     return sendResponse(
       res,
-      200,
+      STATUS_CODES.SUCCESS,
       true,
       "Lesson fetched successfully",
       lesson
@@ -71,16 +61,13 @@ export const getLessonById = asyncHandler(
 export const updateLesson = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const teacherId = req.user?.userId;
+    const { lessonId } = req.params as { lessonId: string };
 
-    const lesson = await updateLessonService(
-      req.params.lessonId,
-      teacherId!,
-      req.body
-    );
+    const lesson = await updateLessonService(lessonId, teacherId!, req.body);
 
     return sendResponse(
       res,
-      200,
+      STATUS_CODES.SUCCESS,
       true,
       "Lesson updated successfully",
       lesson
@@ -91,15 +78,13 @@ export const updateLesson = asyncHandler(
 export const deleteLesson = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const teacherId = req.user?.userId;
+    const { lessonId } = req.params as { lessonId: string };
 
-    await deleteLessonService(
-      req.params.lessonId,
-      teacherId!
-    );
+    await deleteLessonService(lessonId, teacherId!);
 
     return sendResponse(
       res,
-      200,
+      STATUS_CODES.SUCCESS,
       true,
       "Lesson deleted successfully"
     );

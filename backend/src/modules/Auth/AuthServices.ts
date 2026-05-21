@@ -3,19 +3,23 @@ import {
   hashPassword,
   comparePassword,
 } from "../../utils/bcrypt";
-
 import {
   generateAccessToken,
   generateRefreshToken,
   verifyRefreshToken,
 } from "../../utils/jwt";
-
 import { AppError } from "../../utils/appError";
 import { STATUS_CODES } from "../../constants/StatusCodes";
 import { AUTH_MESSAGES } from "../../constants/Messages";
+import {
+  SignupPayload,
+  LoginPayload,
+  UpdateProfilePayload,
+  ChangePasswordPayload,
+} from "./AuthTypes";
 
 /* ---------------- REGISTER ---------------- */
-export const signupService = async (data: any) => {
+export const signupService = async (data: SignupPayload) => {
   const { name, email, password, role } = data;
 
   const existing = await User.findOne({ email });
@@ -36,12 +40,14 @@ export const signupService = async (data: any) => {
     role: role || "student",
   });
 
+  const safeUser = await User.findById(user._id)
+  .select("-password");
 
-  return { user};
+  return { safeUser};
 };
 
 /* ---------------- LOGIN ---------------- */
-export const loginService = async (data: any) => {
+export const loginService = async (data: LoginPayload) => {
   const { email, password } = data;
 
   const user = await User.findOne({ email }).select("+password");
@@ -74,7 +80,10 @@ export const loginService = async (data: any) => {
     role: user.role,
   });
 
-  return { user, accessToken, refreshToken };
+  const safeUser = await User.findById(user._id)
+  .select("-password");
+
+  return { safeUser, accessToken, refreshToken };
 };
 
 /* ---------------- REFRESH TOKEN ---------------- */
@@ -125,7 +134,7 @@ export const getMeService = async (userId: string) => {
 };
 
 /* ---------------- UPDATE PROFILE ---------------- */
-export const updateProfileService = async (userId: string, data: any) => {
+export const updateProfileService = async (userId: string, data: UpdateProfilePayload) => {
   const user = await User.findByIdAndUpdate(
     userId,
     { $set: data },
@@ -140,7 +149,7 @@ export const updateProfileService = async (userId: string, data: any) => {
 };
 
 /* ---------------- CHANGE PASSWORD ---------------- */
-export const changePasswordService = async (userId: string, data: any) => {
+export const changePasswordService = async (userId: string, data: ChangePasswordPayload) => {
   const { oldPassword, newPassword } = data;
 
   const user = await User.findById(userId).select("+password");
