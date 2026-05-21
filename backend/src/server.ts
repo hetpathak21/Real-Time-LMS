@@ -1,13 +1,14 @@
+import "dotenv/config";
 import http from "http";
-import dotenv from "dotenv";
 import { Server } from "socket.io";
 
-import app from "./app"
+import app from "./app";
 import connectDB from "./config/db";
 
-dotenv.config();
-
 const PORT = process.env.PORT || 5000;
+const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:5173"].filter(
+  Boolean
+) as string[];
 
 // Database Connection
 connectDB();
@@ -18,7 +19,7 @@ const server = http.createServer(app);
 // Socket.IO Setup
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL,
+    origin: allowedOrigins,
     credentials: true,
   },
 });

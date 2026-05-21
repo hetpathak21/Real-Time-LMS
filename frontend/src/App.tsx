@@ -9,16 +9,13 @@ import AppRoutes from "./routes/AppRoutes";
 
 export default function App() {
   const dispatch = useAppDispatch();
-
-  const { loading, user } = useAppSelector((state) => state.auth);
-  const token = localStorage.getItem('token');
+  const { loading, token } = useAppSelector((state) => state.auth);
 
   /**
    * Load logged-in user on app start
    */
   useEffect(() => {
-    if(token){
-
+    if (token) {
       dispatch(loadUser());
     }
   }, [dispatch, token]);
@@ -26,7 +23,7 @@ export default function App() {
   /**
    * Show global loader only during initial auth check
    */
-  if (loading && !user) {
+  if (loading) {
     return (
       <Box
         sx={{

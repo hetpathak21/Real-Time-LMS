@@ -1,25 +1,41 @@
+import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { loginApi, registerApi, getMeApi } from "../../api/authApi";
-import {
-  LoginPayload,
-  RegisterPayload,
-  AuthResponse,
-} from "./authTypes";
+import { LoginPayload, RegisterPayload, AuthResponse } from "./authTypes";
+import { IUser } from "../../types/userTypes";
 
-// LOGIN
+const getErrorMessage = (error: unknown, fallback: string) => {
+  if (axios.isAxiosError(error)) {
+    if (!error.response) {
+      return "Unable to reach server. Please check backend and CORS settings.";
+    }
+
+    return (
+      error.response?.data?.message ||
+      error.response?.data?.errors?.[0]?.message ||
+      fallback
+    );
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return fallback;
+};
+
 export const loginUser = createAsyncThunk<
   AuthResponse,
   LoginPayload,
   { rejectValue: string }
->("auth/loginUser", async (data, { rejectWithValue }) => {
+>("auth/login", async (data, { rejectWithValue }) => {
   try {
     return await loginApi(data);
-  } catch {
-    return rejectWithValue("Login failed");
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error, "Login failed"));
   }
 });
 
-// REGISTER
 export const registerUser = createAsyncThunk<
   AuthResponse,
   RegisterPayload,
@@ -27,20 +43,19 @@ export const registerUser = createAsyncThunk<
 >("auth/registerUser", async (data, { rejectWithValue }) => {
   try {
     return await registerApi(data);
-  } catch {
-    return rejectWithValue("Register failed!");
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error, "Register failed"));
   }
 });
 
-// LOAD USER
 export const loadUser = createAsyncThunk<
-  AuthResponse,
+  IUser,
   void,
   { rejectValue: string }
 >("auth/loadUser", async (_, { rejectWithValue }) => {
   try {
     return await getMeApi();
-  } catch {
-    return rejectWithValue("Failed to load user!");
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error, "Failed to load user!"));
   }
 });

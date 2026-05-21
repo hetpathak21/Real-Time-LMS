@@ -1,6 +1,15 @@
-import { useState } from "react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { registerUser } from "../../features/auth/authThunks";
+import {
+  registerSchema,
+  type RegisterFormValues,
+} from "../../features/auth/authSchemas";
+import { getDashboardPathByRole } from "../../features/auth/authHelpers";
 
 import {
   Box,
@@ -14,25 +23,52 @@ import {
 
 import { showToast } from "../../utils/toast";
 
+const errorFieldStyles = {
+  "& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline": {
+    borderColor: "error.main",
+    borderWidth: 2,
+  },
+};
+
 export default function Register() {
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((state) => state.auth);
+  const navigate = useNavigate();
+  const { loading, isAuthenticated, user } = useAppSelector(
+    (state) => state.auth
+  );
 
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
+    mode: "onBlur",
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!form.name || !form.email || !form.password) {
-      showToast("All fields are required", "warning");
-      return;
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      navigate(getDashboardPathByRole(user.role), { replace: true });
     }
+  }, [isAuthenticated, navigate, user]);
 
-    await dispatch(registerUser(form));
+  const onSubmit = async (form: RegisterFormValues) => {
+    try {
+      const result = await dispatch(registerUser(form)).unwrap();
+      showToast("Registration successful", "success");
+      navigate(getDashboardPathByRole(result.user.role), { replace: true });
+    } catch (error) {
+      const message =
+        typeof error === "string"
+          ? error
+          : "Unable to register. Please try again.";
+      showToast(message, "error");
+    }
   };
 
   return (
@@ -61,21 +97,35 @@ export default function Register() {
           Register
         </Typography>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <TextField
             fullWidth
             label="Name"
             margin="normal"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            {...register("name")}
+            error={!!errors.name}
+            helperText={errors.name?.message}
+            slotProps={{
+              formHelperText: {
+                sx: { color: "error.main", ml: 0 },
+              },
+            }}
+            sx={errorFieldStyles}
           />
 
           <TextField
             fullWidth
             label="Email"
             margin="normal"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            {...register("email")}
+            error={!!errors.email}
+            helperText={errors.email?.message}
+            slotProps={{
+              formHelperText: {
+                sx: { color: "error.main", ml: 0 },
+              },
+            }}
+            sx={errorFieldStyles}
           />
 
           <TextField
@@ -83,8 +133,15 @@ export default function Register() {
             type="password"
             label="Password"
             margin="normal"
-            value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            {...register("password")}
+            error={!!errors.password}
+            helperText={errors.password?.message}
+            slotProps={{
+              formHelperText: {
+                sx: { color: "error.main", ml: 0 },
+              },
+            }}
+            sx={errorFieldStyles}
           />
 
           <Button
@@ -104,7 +161,10 @@ export default function Register() {
 
         <Box sx={{ mt: 2, textAlign: "center" }}>
           <Typography variant="body2">
-            Already have an account? <Link href="/login">Login</Link>
+            Already have an account?{" "}
+            <Link component={RouterLink} to="/login">
+              Login
+            </Link>
           </Typography>
         </Box>
       </Paper>

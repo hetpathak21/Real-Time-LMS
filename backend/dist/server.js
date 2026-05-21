@@ -3,13 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+require("dotenv/config");
 const http_1 = __importDefault(require("http"));
-const dotenv_1 = __importDefault(require("dotenv"));
 const socket_io_1 = require("socket.io");
 const app_1 = __importDefault(require("./app"));
 const db_1 = __importDefault(require("./config/db"));
-dotenv_1.default.config();
 const PORT = process.env.PORT || 5000;
+const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:5173"].filter(Boolean);
 // Database Connection
 (0, db_1.default)();
 // Create HTTP Server
@@ -17,7 +17,7 @@ const server = http_1.default.createServer(app_1.default);
 // Socket.IO Setup
 const io = new socket_io_1.Server(server, {
     cors: {
-        origin: process.env.CLIENT_URL,
+        origin: allowedOrigins,
         credentials: true,
     },
 });
