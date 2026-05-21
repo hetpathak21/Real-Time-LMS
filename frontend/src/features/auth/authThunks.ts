@@ -28,7 +28,7 @@ export const registerUser = createAsyncThunk<
   try {
     return await registerApi(data);
   } catch {
-    return rejectWithValue("Register failed");
+    return rejectWithValue("Register failed!");
   }
 });
 

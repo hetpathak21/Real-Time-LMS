@@ -7,7 +7,7 @@ export const loginApi = async (data: LoginPayload) => {
 };
 
 export const registerApi = async (data: RegisterPayload) => {
-  const res = await axiosInstance.post("/auth/register", data);
+  const res = await axiosInstance.post("/auth/signup", data);
   return res.data;
 };
 

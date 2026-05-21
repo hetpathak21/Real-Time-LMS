@@ -85,9 +85,10 @@ export const reorderLessons = async (
 export const markLessonComplete = async (
   courseId: string,
   lessonId: string
-): Promise<{ message: string }> => {
+): Promise<ILesson> => {
   const res = await axiosInstance.post(
     `/courses/${courseId}/lessons/${lessonId}/complete`
   );
-  return res.data;
+
+  return res.data; 
 };

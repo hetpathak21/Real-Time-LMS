@@ -24,8 +24,15 @@ import { useAuth } from "../../hooks/useAuth";
 
 const drawerWidth = 260;
 
+interface MenuItem {
+  label: string;
+  path: string;
+  icon: React.ReactNode;
+}
+
 export default function Sidebar() {
   const theme = useTheme();
+
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -34,27 +41,37 @@ export default function Sidebar() {
 
   const { user } = useAuth();
 
+  const role = user?.role || "student";
+
   const handleDrawerToggle = () => {
     setMobileOpen((prev) => !prev);
   };
 
-  const menuItems = [
+  /* -------------------------------------------------------------------------- */
+  /*                                 MENU ITEMS                                 */
+  /* -------------------------------------------------------------------------- */
+
+  const menuItems: MenuItem[] = [
     {
       label: "Dashboard",
       icon: <DashboardIcon />,
-      path: `/${user?.role}/dashboard`,
+      path: `/${role}/dashboard`,
     },
     {
       label: "Courses",
       icon: <MenuBookIcon />,
-      path: `/${user?.role}/courses`,
+      path: `/${role}/courses`,
     },
     {
       label: "Assignments",
       icon: <AssignmentIcon />,
-      path: `/${user?.role}/assignments`,
+      path: `/${role}/assignments`,
     },
   ];
+
+  /* -------------------------------------------------------------------------- */
+  /*                              DRAWER CONTENT                                */
+  /* -------------------------------------------------------------------------- */
 
   const drawerContent = (
     <Box>
@@ -69,25 +86,46 @@ export default function Sidebar() {
         </Typography>
       </Toolbar>
 
-      <List>
-        {menuItems.map((item) => (
-          <ListItemButton
-            key={item.label}
-            component={Link}
-            to={item.path}
-            selected={location.pathname === item.path}
-            onClick={() => setMobileOpen(false)}
-            sx={{
-              mx: 1,
-              borderRadius: 2,
-              mb: 1,
-            }}
-          >
-            <ListItemIcon>{item.icon}</ListItemIcon>
+      <List
+        sx={{
+          px: 1,
+        }}
+      >
+        {menuItems.map((item) => {
+          const isActive = location.pathname === item.path;
 
-            <ListItemText primary={item.label} />
-          </ListItemButton>
-        ))}
+          return (
+            <ListItemButton
+              key={item.label}
+              component={Link}
+              to={item.path}
+              selected={isActive}
+              onClick={() => setMobileOpen(false)}
+              sx={{
+                borderRadius: 2,
+                mb: 1,
+
+                bgcolor: isActive ? "primary.main" : "transparent",
+
+                color: isActive ? "#fff" : "inherit",
+
+                "&:hover": {
+                  bgcolor: isActive
+                    ? "primary.dark"
+                    : "rgba(0,0,0,0.04)",
+                },
+
+                "& .MuiListItemIcon-root": {
+                  color: isActive ? "#fff" : "inherit",
+                },
+              }}
+            >
+              <ListItemIcon>{item.icon}</ListItemIcon>
+
+              <ListItemText primary={item.label} />
+            </ListItemButton>
+          );
+        })}
       </List>
     </Box>
   );
@@ -100,11 +138,16 @@ export default function Sidebar() {
           onClick={handleDrawerToggle}
           sx={{
             position: "fixed",
-            top: 12,
-            left: 12,
-            zIndex: 1300,
+            top: 14,
+            left: 14,
+            zIndex: 1400,
             bgcolor: "#fff",
-            boxShadow: 2,
+
+            boxShadow: 3,
+
+            "&:hover": {
+              bgcolor: "#f3f4f6",
+            },
           }}
         >
           <MenuIcon />
@@ -123,21 +166,24 @@ export default function Sidebar() {
           sx={{
             "& .MuiDrawer-paper": {
               width: drawerWidth,
+              boxSizing: "border-box",
             },
           }}
         >
           {drawerContent}
         </Drawer>
       ) : (
-        // Desktop Drawer
+        /* Desktop Drawer */
         <Drawer
           variant="permanent"
           sx={{
             width: drawerWidth,
             flexShrink: 0,
+
             "& .MuiDrawer-paper": {
               width: drawerWidth,
               boxSizing: "border-box",
+              borderRight: "1px solid #e5e7eb",
             },
           }}
         >

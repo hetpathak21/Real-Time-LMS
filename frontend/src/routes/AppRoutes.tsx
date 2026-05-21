@@ -13,14 +13,15 @@ import AdminDashboard from "../pages/dashboard/AdminDashboard";
 import ProtectedRoutes from "./ProtectedRoute";
 
 // Layouts
+import AuthLayout from "../layouts/AuthLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
 
 // MUI
 import { Box, Typography, Button } from "@mui/material";
 
-// --------------------
-// Unauthorized Page
-// --------------------
+/* -------------------------------------------------------------------------- */
+/*                          UNAUTHORIZED PAGE                                 */
+/* -------------------------------------------------------------------------- */
 
 function UnauthorizedPage() {
   return (
@@ -45,27 +46,15 @@ function UnauthorizedPage() {
           maxWidth: 400,
         }}
       >
-        <Typography
-          variant="h4"
-          sx={{
-            fontWeight: 700,
-          }}
-          gutterBottom
-        >
+        <Typography variant="h4" sx={{ fontWeight: 700 }} gutterBottom>
           403
         </Typography>
 
         <Typography variant="h6" gutterBottom>
-          Unauthorized Access
+          Unauthorized Access!
         </Typography>
 
-        <Typography
-          variant="body1"
-          color="text.secondary"
-          sx={{
-            mb: 3,
-          }}
-        >
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
           You do not have permission to access this page.
         </Typography>
 
@@ -77,47 +66,44 @@ function UnauthorizedPage() {
   );
 }
 
-// --------------------
-// App Routes
-// --------------------
+/* -------------------------------------------------------------------------- */
+/*                                ROUTES                                      */
+/* -------------------------------------------------------------------------- */
 
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* ================= PUBLIC ROUTES ================= */}
+      {/* PUBLIC ROUTES */}
 
-      <Route path="/login" element={<Login />} />
-
-      <Route path="/register" element={<Register />} />
-
+      <Route element={<AuthLayout />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Route>
+      
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-      {/* ================= STUDENT ROUTES ================= */}
-
+      {/* STUDENT */}
       <Route element={<ProtectedRoutes allowedRoles={["student"]} />}>
         <Route element={<DashboardLayout />}>
           <Route path="/student/dashboard" element={<StudentDashboard />} />
         </Route>
       </Route>
 
-      {/* ================= TEACHER ROUTES ================= */}
-
+      {/* TEACHER */}
       <Route element={<ProtectedRoutes allowedRoles={["teacher"]} />}>
         <Route element={<DashboardLayout />}>
           <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
         </Route>
       </Route>
 
-      {/* ================= ADMIN ROUTES ================= */}
-
+      {/* ADMIN */}
       <Route element={<ProtectedRoutes allowedRoles={["admin"]} />}>
         <Route element={<DashboardLayout />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Route>
       </Route>
 
-      {/* ================= DEFAULT REDIRECT ================= */}
-
+      {/* DEFAULT */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

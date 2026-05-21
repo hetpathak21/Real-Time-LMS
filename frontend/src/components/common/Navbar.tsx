@@ -14,6 +14,9 @@ import { useAppDispatch } from "../../app/hooks";
 import { useAuth } from "../../hooks/useAuth";
 
 import { showToast } from "../../utils/toast";
+import { ROUTES } from "../../utils/constants";
+
+const drawerWidth = 260;
 
 export default function Navbar() {
   const dispatch = useAppDispatch();
@@ -26,28 +29,33 @@ export default function Navbar() {
 
     showToast("Logged out successfully", "info");
 
-    navigate("/login");
+    navigate(ROUTES.LOGIN);
   };
 
   return (
     <AppBar
-      position="fixed"
+      position="sticky"
       elevation={1}
       sx={{
         bgcolor: "#fff",
         color: "#000",
+
         width: {
-          md: "calc(100% - 260px)",
+          md: `calc(100% - ${drawerWidth}px)`,
         },
+
         ml: {
-          md: "260px",
+          md: `${drawerWidth}px`,
         },
+
+        borderBottom: "1px solid #e5e7eb",
       }}
     >
       <Toolbar
         sx={{
           display: "flex",
           justifyContent: "space-between",
+          minHeight: "70px !important",
         }}
       >
         {/* Title */}
@@ -55,13 +63,19 @@ export default function Navbar() {
           variant="h6"
           sx={{
             fontWeight: 700,
+
             ml: {
               xs: 5,
               md: 0,
             },
+
+            fontSize: {
+              xs: "1rem",
+              sm: "1.2rem",
+            },
           }}
         >
-          Learning Management System
+          LMS Portal
         </Typography>
 
         {/* Right Section */}
@@ -69,9 +83,13 @@ export default function Navbar() {
           sx={{
             display: "flex",
             alignItems: "center",
-            gap: 2,
+            gap: {
+              xs: 1,
+              sm: 2,
+            },
           }}
         >
+          {/* Username */}
           <Typography
             variant="body1"
             sx={{
@@ -79,14 +97,25 @@ export default function Navbar() {
                 xs: "none",
                 sm: "block",
               },
+
+              fontWeight: 500,
             }}
           >
-            {user?.name}
+            {user?.name || "User"}
           </Typography>
 
-          <Avatar>{user?.name?.charAt(0).toUpperCase()}</Avatar>
+          {/* Avatar */}
+          <Avatar>
+            {user?.name?.charAt(0).toUpperCase() || "U"}
+          </Avatar>
 
-          <Button variant="outlined" color="error" onClick={handleLogout}>
+          {/* Logout */}
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={handleLogout}
+            size="small"
+          >
             Logout
           </Button>
         </Box>
