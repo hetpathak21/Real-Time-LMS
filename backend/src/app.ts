@@ -3,10 +3,8 @@ import cors from "cors";
 import { AuthRoutes } from "./modules/Auth/AuthRoutes";
 import { AdminRoutes } from "./modules/Admin/adminRoute";
 import { CourseRoutes } from "./modules/Course/courseRoute";
-import { LessonRoutes } from "./modules/Lessions/lessionRoute";
-import { AppError } from "./utils/appError";
-import { STATUS_CODES } from "./constants/StatusCodes";
-import { GENERAL_MESSAGES } from "./constants/Messages";
+import { LessonRoutes } from "./modules/Lessons/lessonRoute";
+import { globalErrorHandler } from "./middleware/GlobalErrorHandler"
 
 const app = express();
 const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:5174"].filter(
@@ -42,20 +40,5 @@ app.use("/api/v1/admin", AdminRoutes);
 app.use("/api/v1/course", CourseRoutes);
 app.use("/api/v1/lesson", LessonRoutes);
 
-app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
-  if (err instanceof AppError) {
-    return res.status(err.statusCode).json({
-      success: false,
-      message: err.message,
-    });
-  }
-
-  console.error(err);
-
-  return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-    success: false,
-    message: GENERAL_MESSAGES.SERVER_ERROR,
-  });
-});
-
+app.use(globalErrorHandler);
 export default app;

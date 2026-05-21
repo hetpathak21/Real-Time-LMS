@@ -9,7 +9,7 @@ import {
   getCourseLessonsService,
   getLessonByIdService,
   updateLessonService,
-} from "./lessionService";
+} from "./lessonService";
 
 export const createLesson = asyncHandler(
   async (req: AuthRequest, res: Response) => {
