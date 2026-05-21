@@ -1,15 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AuthState, AuthResponse } from "./authTypes";
 import { loginUser, registerUser, loadUser } from "./authThunks";
+import { IUser } from "../../types/userTypes";
+
+const token = localStorage.getItem("token");
 
 const initialState: AuthState = {
   user: null,
-  token: localStorage.getItem("token"),
+  token,
   loading: false,
   error: null,
-  isAuthenticated: false,
+  isAuthenticated: !!token,
 };
-
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -17,16 +19,16 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.token = null;
+      state.error = null;
       state.isAuthenticated = false;
       localStorage.removeItem("token");
     },
   },
   extraReducers: (builder) => {
     builder
-
-      // LOGIN
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(
         loginUser.fulfilled,
@@ -35,7 +37,6 @@ const authSlice = createSlice({
           state.user = action.payload.user;
           state.token = action.payload.token;
           state.isAuthenticated = true;
-
           localStorage.setItem("token", action.payload.token);
         }
       )
@@ -43,27 +44,39 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload ?? "Login failed";
       })
-
-      // REGISTER
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(
         registerUser.fulfilled,
         (state, action: PayloadAction<AuthResponse>) => {
+          state.loading = false;
           state.user = action.payload.user;
           state.token = action.payload.token;
           state.isAuthenticated = true;
-
           localStorage.setItem("token", action.payload.token);
         }
       )
-
-      // LOAD USER
-      .addCase(
-        loadUser.fulfilled,
-        (state, action: PayloadAction<AuthResponse>) => {
-          state.user = action.payload.user;
-          state.isAuthenticated = true;
-        }
-      );
+      .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload ?? "Register failed";
+      })
+      .addCase(loadUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(loadUser.fulfilled, (state, action: PayloadAction<IUser>) => {
+        state.loading = false;
+        state.user = action.payload;
+        state.isAuthenticated = true;
+      })
+      .addCase(loadUser.rejected, (state) => {
+        state.loading = false;
+        state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
+        localStorage.removeItem("token");
+      });
   },
 });
 

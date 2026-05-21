@@ -9,12 +9,13 @@ import AppRoutes from "./routes/AppRoutes";
 
 export default function App() {
   const dispatch = useAppDispatch();
-
-  const { loading } = useAppSelector((state) => state.auth);
+  const { loading, token } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    dispatch(loadUser());
-  }, [dispatch]);
+    if (token) {
+      dispatch(loadUser());
+    }
+  }, [dispatch, token]);
 
   // Initial auth loading screen
   if (loading) {

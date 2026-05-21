@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import { AuthRoutes } from "./modules/Auth/AuthRoutes";
 import { AdminRoutes } from "./modules/Admin/adminRoute";
@@ -8,10 +8,19 @@ import enrollmentRoutes  from "./modules/Enrollment/enrollmentRoutes"
 import { globalErrorHandler } from "./middleware/GlobalErrorHandler"
 
 const app = express();
+const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:5174"].filter(
+  Boolean
+) as string[];
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   })
 );

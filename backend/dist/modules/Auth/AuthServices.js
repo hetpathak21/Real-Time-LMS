@@ -24,9 +24,18 @@ const signupService = async (data) => {
         password: hashedPassword,
         role: role || "student",
     });
-    const safeUser = await UserModel_1.default.findById(user._id)
-        .select("-password");
-    return { safeUser };
+    const safeUser = await UserModel_1.default.findById(user._id).select("-password");
+    const accessToken = (0, jwt_1.generateAccessToken)({
+        userId: user._id.toString(),
+        email: user.email,
+        role: user.role,
+    });
+    const refreshToken = (0, jwt_1.generateRefreshToken)({
+        userId: user._id.toString(),
+        email: user.email,
+        role: user.role,
+    });
+    return { user: safeUser, token: accessToken, refreshToken };
 };
 exports.signupService = signupService;
 /* ---------------- LOGIN ---------------- */
@@ -50,9 +59,8 @@ const loginService = async (data) => {
         email: user.email,
         role: user.role,
     });
-    const safeUser = await UserModel_1.default.findById(user._id)
-        .select("-password");
-    return { safeUser, accessToken, refreshToken };
+    const safeUser = await UserModel_1.default.findById(user._id).select("-password");
+    return { user: safeUser, token: accessToken, refreshToken };
 };
 exports.loginService = loginService;
 /* ---------------- REFRESH TOKEN ---------------- */
