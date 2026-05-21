@@ -14,4 +14,4 @@ export interface UpdateLessonPayload {
   order?: number;
   duration?: number;
   isPreview?: boolean;
-};
+}

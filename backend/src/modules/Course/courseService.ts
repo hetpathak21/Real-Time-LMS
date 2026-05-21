@@ -1,8 +1,11 @@
 import Course from "../../models/CourseModel";
-import { AppError } from "../../utils/appError"
+import { AppError } from "../../utils/appError";
 import { dbCall } from "../../utils/dbCall";
-import { CreateCoursePayload , UpdateCoursePayload , CourseQuery } from "./courseTypes";
-
+import {
+  CourseQuery,
+  CreateCoursePayload,
+  UpdateCoursePayload,
+} from "./courseTypes";
 
 export const createCourseService = async (
   payload: CreateCoursePayload,

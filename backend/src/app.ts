@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import { AuthRoutes } from "./modules/Auth/AuthRoutes";
+import { CourseRoutes } from "./modules/Course/courseRoute";
+import { LessonRoutes } from "./modules/Lessions/lessionRoute";
 
 const app = express();
 
@@ -22,6 +24,8 @@ app.get("/", (_req, res) => {
   });
 });
 
-app.use("/api/v1/auth/",AuthRoutes);
+app.use("/auth", AuthRoutes);
+app.use("/course", CourseRoutes);
+app.use("/course", LessonRoutes);
 
 export default app;

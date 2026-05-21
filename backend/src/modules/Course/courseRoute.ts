@@ -10,83 +10,75 @@ import {
   updateCourse,
 } from "./courseController";
 import {
-  courseIdValidation,
-  courseListValidation,
-  createCourseValidation,
-  updateCourseValidation,
-} from "../../validators/CourseValidation";
-import { validateRequest } from "../../middlewares/validateRequest.middleware";
-import { protect } from "../../middlewares/auth.middleware";
-import { authorizeRoles } from "../../middlewares/role.middleware";
+  courseIdValidationSchema,
+  courseListValidationSchema,
+  createCourseValidationSchema,
+  updateCourseValidationSchema,
+} from "./CourseValidation";
+import { validateRequest } from "../../middleware/ValiateMiddleware";
+import { authMiddleware } from "../../middleware/AuthMiddleware";
+import { authorizeRoles } from "../../middleware/RoleMiddleware";
 
 const router = Router();
 
 router.get(
   "/",
-  courseListValidation,
-  validateRequest,
+  validateRequest(courseListValidationSchema),
   getPublishedCourses
 );
 
 router.get(
   "/my-courses",
-  protect,
+  authMiddleware,
   authorizeRoles("teacher"),
-  courseListValidation,
-  validateRequest,
+  validateRequest(courseListValidationSchema),
   getMyCourses
 );
 
 router.post(
   "/",
-  protect,
+  authMiddleware,
   authorizeRoles("teacher"),
-  createCourseValidation,
-  validateRequest,
+  validateRequest(createCourseValidationSchema),
   createCourse
 );
 
 router.get(
   "/:courseId",
-  courseIdValidation,
-  validateRequest,
+  validateRequest(courseIdValidationSchema),
   getCourseById
 );
 
 router.put(
   "/:courseId",
-  protect,
+  authMiddleware,
   authorizeRoles("teacher"),
-  updateCourseValidation,
-  validateRequest,
+  validateRequest(updateCourseValidationSchema),
   updateCourse
 );
 
 router.delete(
   "/:courseId",
-  protect,
+  authMiddleware,
   authorizeRoles("teacher"),
-  courseIdValidation,
-  validateRequest,
+  validateRequest(courseIdValidationSchema),
   deleteCourse
 );
 
 router.patch(
   "/:courseId/publish",
-  protect,
+  authMiddleware,
   authorizeRoles("teacher"),
-  courseIdValidation,
-  validateRequest,
+  validateRequest(courseIdValidationSchema),
   publishCourse
 );
 
 router.patch(
   "/:courseId/unpublish",
-  protect,
+  authMiddleware,
   authorizeRoles("teacher"),
-  courseIdValidation,
-  validateRequest,
+  validateRequest(courseIdValidationSchema),
   unpublishCourse
 );
 
-export default router;
+export const CourseRoutes = router;
