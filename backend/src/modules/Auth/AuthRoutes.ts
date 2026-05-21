@@ -32,22 +32,42 @@ import {
 
 import { authMiddleware } from "../../middleware/AuthMiddleware";
 import { validateRequest } from "../../middleware/ValiateMiddleware";
-import { changePasswordSchema, loginSchema, signupSchema, updateProfileSchema } from "./AuthValidation";
+import {
+  changePasswordValidationSchema,
+  loginValidationSchema,
+  refreshTokenValidationSchema,
+  signupValidationSchema,
+  updateProfileValidationSchema,
+} from "./AuthValidation";
 
 const router = express.Router();
 
 /* ---------------- PUBLIC ROUTES ---------------- */
-router.post("/signup",validateRequest(signupSchema), signupController);
-router.post("/login",validateRequest(loginSchema), loginController);
-router.post("/refresh-token", refreshTokenController);
+router.post("/signup", validateRequest(signupValidationSchema), signupController);
+router.post("/login", validateRequest(loginValidationSchema), loginController);
+router.post(
+  "/refresh-token",
+  validateRequest(refreshTokenValidationSchema),
+  refreshTokenController
+);
 
 /* ---------------- PROTECTED ROUTES ---------------- */
 router.post("/logout", authMiddleware, logoutController);
 
 router.get("/me", authMiddleware, getMeController);
 
-router.put("/profile", authMiddleware,validateRequest(updateProfileSchema), updateProfileController);
+router.put(
+  "/profile",
+  authMiddleware,
+  validateRequest(updateProfileValidationSchema),
+  updateProfileController
+);
 
-router.put("/change-password", authMiddleware, validateRequest(changePasswordSchema),changePasswordController);
+router.put(
+  "/change-password",
+  authMiddleware,
+  validateRequest(changePasswordValidationSchema),
+  changePasswordController
+);
 
 export const AuthRoutes = router;

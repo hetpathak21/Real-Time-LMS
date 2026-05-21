@@ -26,12 +26,12 @@ const ValiateMiddleware_1 = require("../../middleware/ValiateMiddleware");
 const AuthValidation_1 = require("./AuthValidation");
 const router = express_1.default.Router();
 /* ---------------- PUBLIC ROUTES ---------------- */
-router.post("/signup", (0, ValiateMiddleware_1.validateRequest)(AuthValidation_1.signupSchema), AuthController_1.signupController);
-router.post("/login", (0, ValiateMiddleware_1.validateRequest)(AuthValidation_1.loginSchema), AuthController_1.loginController);
-router.post("/refresh-token", AuthController_1.refreshTokenController);
+router.post("/signup", (0, ValiateMiddleware_1.validateRequest)(AuthValidation_1.signupValidationSchema), AuthController_1.signupController);
+router.post("/login", (0, ValiateMiddleware_1.validateRequest)(AuthValidation_1.loginValidationSchema), AuthController_1.loginController);
+router.post("/refresh-token", (0, ValiateMiddleware_1.validateRequest)(AuthValidation_1.refreshTokenValidationSchema), AuthController_1.refreshTokenController);
 /* ---------------- PROTECTED ROUTES ---------------- */
 router.post("/logout", AuthMiddleware_1.authMiddleware, AuthController_1.logoutController);
 router.get("/me", AuthMiddleware_1.authMiddleware, AuthController_1.getMeController);
-router.put("/profile", AuthMiddleware_1.authMiddleware, (0, ValiateMiddleware_1.validateRequest)(AuthValidation_1.updateProfileSchema), AuthController_1.updateProfileController);
-router.put("/change-password", AuthMiddleware_1.authMiddleware, (0, ValiateMiddleware_1.validateRequest)(AuthValidation_1.changePasswordSchema), AuthController_1.changePasswordController);
+router.put("/profile", AuthMiddleware_1.authMiddleware, (0, ValiateMiddleware_1.validateRequest)(AuthValidation_1.updateProfileValidationSchema), AuthController_1.updateProfileController);
+router.put("/change-password", AuthMiddleware_1.authMiddleware, (0, ValiateMiddleware_1.validateRequest)(AuthValidation_1.changePasswordValidationSchema), AuthController_1.changePasswordController);
 exports.AuthRoutes = router;
