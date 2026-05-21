@@ -5,8 +5,8 @@ import { IUser } from "../types/userTypes";
  * Get logged-in user profile
  */
 export const getMyProfile = async (): Promise<IUser> => {
-  const res = await axiosInstance.get("/users/me");
-  return res.data;
+  const res = await axiosInstance.get("/auth/me");
+  return res.data.data;
 };
 
 /**
@@ -21,11 +21,11 @@ export const getUserById = async (userId: string): Promise<IUser> => {
  * Update user profile
  */
 export const updateUserProfile = async (
-  userId: string,
+  _userId: string,
   data: Partial<IUser>
 ): Promise<IUser> => {
-  const res = await axiosInstance.put(`/users/${userId}`, data);
-  return res.data;
+  const res = await axiosInstance.put("/auth/profile", data);
+  return res.data.data;
 };
 
 /**

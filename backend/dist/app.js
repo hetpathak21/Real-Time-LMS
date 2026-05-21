@@ -13,7 +13,7 @@ const appError_1 = require("./utils/appError");
 const StatusCodes_1 = require("./constants/StatusCodes");
 const Messages_1 = require("./constants/Messages");
 const app = (0, express_1.default)();
-const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:5173"].filter(Boolean);
+const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:5174"].filter(Boolean);
 app.use((0, cors_1.default)({
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.includes(origin)) {

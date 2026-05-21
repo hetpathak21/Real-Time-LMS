@@ -113,8 +113,8 @@ import {
   LogoutOutlined,
 } from "@mui/icons-material";
 
-import { logout } from "../../features/auth/authSlice";
 import { useAppDispatch } from "../../app/hooks";
+import { logoutUser } from "../../features/auth/authThunks";
 import { useAuth } from "../../hooks/useAuth";
 import { showToast } from "../../utils/toast";
 
@@ -123,10 +123,13 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const handleLogout = () => {
-    dispatch(logout());
-    showToast("Logged out successfully", "info");
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap();
+    } finally {
+      showToast("Logged out successfully", "info");
+      navigate("/login");
+    }
   };
 
   return (
@@ -186,20 +189,22 @@ export default function Navbar() {
               </Typography>
             </Box>
             <Avatar 
+              onClick={() => navigate("/profile")}
               sx={{ 
                 width: 40, 
                 height: 40, 
                 bgcolor: "#00a3ff", 
                 fontWeight: 600,
                 fontSize: "15px",
-                boxShadow: "0px 4px 12px rgba(0, 163, 255, 0.2)" 
+                boxShadow: "0px 4px 12px rgba(0, 163, 255, 0.2)",
+                cursor: "pointer",
               }}
             >
               {user?.name?.charAt(0).toUpperCase() || "A"}
             </Avatar>
           </Box>
 
-          <IconButton size="small" sx={{ color: "#64748b", ml: 0.5 }}><SettingsOutlined /></IconButton>
+          {/* <IconButton size="small" sx={{ color: "#64748b", ml: 0.5 }}><SettingsOutlined /></IconButton> */}
           <IconButton size="small" color="error" onClick={handleLogout} sx={{ ml: 0.5 }}><LogoutOutlined /></IconButton>
         </Box>
       </Toolbar>

@@ -8,6 +8,7 @@ import Register from "../pages/auth/Register";
 import StudentDashboard from "../pages/dashboard/StudentDashboard";
 import TeacherDashboard from "../pages/dashboard/TeacherDashboard";
 import AdminDashboard from "../pages/dashboard/AdminDashboard";
+import Profile from "../pages/profile/Profile";
 
 // Protected Routes
 import ProtectedRoutes from "./ProtectedRoute";
@@ -113,6 +114,12 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoutes allowedRoles={["admin"]} />}>
         <Route element={<DashboardLayout />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        </Route>
+      </Route>
+
+      <Route element={<ProtectedRoutes />}>
+        <Route element={<DashboardLayout />}>
+          <Route path="/profile" element={<Profile />} />
         </Route>
       </Route>
 

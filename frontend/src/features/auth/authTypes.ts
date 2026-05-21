@@ -19,6 +19,16 @@ export interface RegisterPayload {
   password: string;
 }
 
+export interface UpdateProfilePayload {
+  name?: string;
+  avatar?: string;
+}
+
+export interface ChangePasswordPayload {
+  oldPassword: string;
+  newPassword: string;
+}
+
 export interface AuthResponse {
   user: IUser;
   token: string;
