@@ -63,3 +63,23 @@ export const changePasswordSchema = z.object({
 
   newPassword: passwordSchema,
 });
+
+export const signupValidationSchema = z.object({
+  body: signupSchema,
+});
+
+export const loginValidationSchema = z.object({
+  body: loginSchema,
+});
+
+export const refreshTokenValidationSchema = z.object({
+  body: refreshTokenSchema,
+});
+
+export const updateProfileValidationSchema = z.object({
+  body: updateProfileSchema,
+});
+
+export const changePasswordValidationSchema = z.object({
+  body: changePasswordSchema,
+});

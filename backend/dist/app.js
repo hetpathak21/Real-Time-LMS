@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const AuthRoutes_1 = require("./modules/Auth/AuthRoutes");
+const adminRoute_1 = require("./modules/Admin/adminRoute");
 const courseRoute_1 = require("./modules/Course/courseRoute");
 const lessionRoute_1 = require("./modules/Lessions/lessionRoute");
 const app = (0, express_1.default)();
@@ -22,7 +23,8 @@ app.get("/", (_req, res) => {
         message: "LMS API Running",
     });
 });
-app.use("/auth", AuthRoutes_1.AuthRoutes);
-app.use("/course", courseRoute_1.CourseRoutes);
-app.use("/course", lessionRoute_1.LessonRoutes);
+app.use("/api/v1/auth", AuthRoutes_1.AuthRoutes);
+app.use("/api/v1/admin", adminRoute_1.AdminRoutes);
+app.use("/api/v1/course", courseRoute_1.CourseRoutes);
+app.use("/api/v1/lesson", lessionRoute_1.LessonRoutes);
 exports.default = app;
