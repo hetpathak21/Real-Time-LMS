@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AdminRoutes = void 0;
+const express_1 = require("express");
+const AuthMiddleware_1 = require("../../middleware/AuthMiddleware");
+const RoleMiddleware_1 = require("../../middleware/RoleMiddleware");
+const ValiateMiddleware_1 = require("../../middleware/ValiateMiddleware");
+const AdminValidation_1 = require("./AdminValidation");
+const adminController_1 = require("./adminController");
+const router = (0, express_1.Router)();
+router.use(AuthMiddleware_1.authMiddleware, (0, RoleMiddleware_1.authorizeRoles)("admin"));
+router.get("/users", (0, ValiateMiddleware_1.validateRequest)(AdminValidation_1.adminUsersListValidationSchema), adminController_1.getAdminUsers);
+router.get("/users/:userId", (0, ValiateMiddleware_1.validateRequest)(AdminValidation_1.adminUserIdValidationSchema), adminController_1.getAdminUserById);
+router.put("/users/:userId", (0, ValiateMiddleware_1.validateRequest)(AdminValidation_1.adminUpdateUserValidationSchema), adminController_1.updateAdminUser);
+router.patch("/users/:userId/status", (0, ValiateMiddleware_1.validateRequest)(AdminValidation_1.adminUpdateUserStatusValidationSchema), adminController_1.updateAdminUserStatus);
+router.delete("/users/:userId", (0, ValiateMiddleware_1.validateRequest)(AdminValidation_1.adminUserIdValidationSchema), adminController_1.deleteAdminUser);
+exports.AdminRoutes = router;

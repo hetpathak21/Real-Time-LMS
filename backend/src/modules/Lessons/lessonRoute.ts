@@ -14,7 +14,7 @@ import {
   getCourseLessons,
   getLessonById,
   updateLesson,
-} from "./lessionController";
+} from "./lessonController";
 
 const router = Router();
 
@@ -27,29 +27,29 @@ router.get(
 router.post(
   "/:courseId/lessons",
   authMiddleware,
-  authorizeRoles("teacher"),
+  authorizeRoles("teacher","admin"),
   validateRequest(createLessonValidationSchema),
   createLesson
 );
 
 router.get(
-  "/lessons/:lessonId",
+  "/:lessonId",
   validateRequest(lessonIdValidationSchema),
   getLessonById
 );
 
 router.put(
-  "/lessons/:lessonId",
+  "/:lessonId",
   authMiddleware,
-  authorizeRoles("teacher"),
+  authorizeRoles("teacher","admin"),
   validateRequest(updateLessonValidationSchema),
   updateLesson
 );
 
 router.delete(
-  "/lessons/:lessonId",
+  "/:lessonId",
   authMiddleware,
-  authorizeRoles("teacher"),
+  authorizeRoles("teacher","admin"),
   validateRequest(lessonIdValidationSchema),
   deleteLesson
 );
