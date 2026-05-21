@@ -1,5 +1,5 @@
-import { MESSAGES } from "../constants/messages";
-import { STATUS_CODES } from "../constants/statusCodes";
+import { GENERAL_MESSAGES } from "../constants/Messages";
+import { STATUS_CODES } from "../constants/StatusCodes";
 import { AppError } from "./appError";
 
 export const dbCall = async <T>(fn: () => Promise<T>): Promise<T> => {
@@ -13,7 +13,7 @@ export const dbCall = async <T>(fn: () => Promise<T>): Promise<T> => {
     }
 
     throw new AppError(
-      MESSAGES.INTERNAL_ERROR ?? "Database operation failed",
+      GENERAL_MESSAGES.SERVER_ERROR ?? "Database operation failed",
       STATUS_CODES.INTERNAL_SERVER_ERROR,
     );
   }

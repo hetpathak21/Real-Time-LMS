@@ -1,5 +1,8 @@
 import express from "express";
 import cors from "cors";
+import { AuthRoutes } from "./modules/Auth/AuthRoutes";
+import { CourseRoutes } from "./modules/Course/courseRoute";
+import { LessonRoutes } from "./modules/Lessions/lessionRoute";
 
 const app = express();
 
@@ -20,5 +23,9 @@ app.get("/", (_req, res) => {
     message: "LMS API Running",
   });
 });
+
+app.use("/auth", AuthRoutes);
+app.use("/course", CourseRoutes);
+app.use("/course", LessonRoutes);
 
 export default app;

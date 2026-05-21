@@ -1,0 +1,16 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LessonRoutes = void 0;
+const express_1 = require("express");
+const AuthMiddleware_1 = require("../../middleware/AuthMiddleware");
+const RoleMiddleware_1 = require("../../middleware/RoleMiddleware");
+const ValiateMiddleware_1 = require("../../middleware/ValiateMiddleware");
+const LessonValidation_1 = require("./LessonValidation");
+const lessionController_1 = require("./lessionController");
+const router = (0, express_1.Router)();
+router.get("/:courseId/lessons", (0, ValiateMiddleware_1.validateRequest)(LessonValidation_1.courseLessonIdValidationSchema), lessionController_1.getCourseLessons);
+router.post("/:courseId/lessons", AuthMiddleware_1.authMiddleware, (0, RoleMiddleware_1.authorizeRoles)("teacher"), (0, ValiateMiddleware_1.validateRequest)(LessonValidation_1.createLessonValidationSchema), lessionController_1.createLesson);
+router.get("/lessons/:lessonId", (0, ValiateMiddleware_1.validateRequest)(LessonValidation_1.lessonIdValidationSchema), lessionController_1.getLessonById);
+router.put("/lessons/:lessonId", AuthMiddleware_1.authMiddleware, (0, RoleMiddleware_1.authorizeRoles)("teacher"), (0, ValiateMiddleware_1.validateRequest)(LessonValidation_1.updateLessonValidationSchema), lessionController_1.updateLesson);
+router.delete("/lessons/:lessonId", AuthMiddleware_1.authMiddleware, (0, RoleMiddleware_1.authorizeRoles)("teacher"), (0, ValiateMiddleware_1.validateRequest)(LessonValidation_1.lessonIdValidationSchema), lessionController_1.deleteLesson);
+exports.LessonRoutes = router;
