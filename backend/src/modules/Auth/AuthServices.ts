@@ -40,16 +40,26 @@ export const signupService = async (data: SignupPayload) => {
     role: role || "student",
   });
 
-  const safeUser = await User.findById(user._id)
-  .select("-password");
+  const safeUser = await User.findById(user._id).select("-password");
 
-  return { safeUser};
+  const accessToken = generateAccessToken({
+    userId: user._id.toString(),
+    email: user.email,
+    role: user.role,
+  });
+
+  const refreshToken = generateRefreshToken({
+    userId: user._id.toString(),
+    email: user.email,
+    role: user.role,
+  });
+
+  return { user: safeUser, token: accessToken, refreshToken };
 };
 
 /* ---------------- LOGIN ---------------- */
 export const loginService = async (data: LoginPayload) => {
   const { email, password } = data;
-
   const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
@@ -80,10 +90,9 @@ export const loginService = async (data: LoginPayload) => {
     role: user.role,
   });
 
-  const safeUser = await User.findById(user._id)
-  .select("-password");
+  const safeUser = await User.findById(user._id).select("-password");
 
-  return { safeUser, accessToken, refreshToken };
+  return { user: safeUser, token: accessToken, refreshToken };
 };
 
 /* ---------------- REFRESH TOKEN ---------------- */

@@ -1,0 +1,31 @@
+import { z } from "zod";
+
+export const passwordSchema = z
+  .string()
+  .min(6, "Password must be at least 6 characters")
+  .refine((value) => /[a-z]/.test(value), {
+    message: "Must include lowercase letter",
+  })
+  .refine((value) => /[A-Z]/.test(value), {
+    message: "Must include uppercase letter",
+  })
+  .refine((value) => /\d/.test(value), {
+    message: "Must include number",
+  })
+  .refine((value) => /[@$!%*?&]/.test(value), {
+    message: "Must include special character",
+  });
+
+export const loginSchema = z.object({
+  email: z.string().trim().toLowerCase().email("Invalid email"),
+  password: z.string().min(6, "Password required"),
+});
+
+export const registerSchema = z.object({
+  name: z.string().trim().min(2, "Name required"),
+  email: z.string().trim().toLowerCase().email("Invalid email"),
+  password: passwordSchema,
+});
+
+export type LoginFormValues = z.infer<typeof loginSchema>;
+export type RegisterFormValues = z.infer<typeof registerSchema>;

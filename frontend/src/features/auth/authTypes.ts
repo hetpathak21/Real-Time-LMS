@@ -22,6 +22,7 @@ export interface RegisterPayload {
 export interface AuthResponse {
   user: IUser;
   token: string;
+  refreshToken?: string;
 }
 
 export interface ErrorResponse {
