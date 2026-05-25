@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { ICourse } from "../../types/courseTypes";
+import { ICourse, ICourseListMeta } from "../../types/courseTypes";
 
 import {
   fetchAllCourses,
@@ -8,14 +8,16 @@ import {
   createCourseThunk,
   updateCourseThunk,
   deleteCourseThunk,
-  togglePublishCourseThunk,
+  publishCourseThunk,
+  unpublishCourseThunk,
 } from "./courseThunks";
 
 interface CourseState {
   courses: ICourse[];
   myCourses: ICourse[];
   selectedCourse: ICourse | null;
-
+  coursesMeta: ICourseListMeta | null;
+  myCoursesMeta: ICourseListMeta | null;
   loading: boolean;
   error: string | null;
 }
@@ -24,9 +26,27 @@ const initialState: CourseState = {
   courses: [],
   myCourses: [],
   selectedCourse: null,
-
+  coursesMeta: null,
+  myCoursesMeta: null,
   loading: false,
   error: null,
+};
+
+/**
+ * Helper: update course in all lists
+ */
+const updateCourseInLists = (state: CourseState, updated: ICourse) => {
+  state.courses = state.courses.map((c) =>
+    c._id === updated._id ? updated : c
+  );
+
+  state.myCourses = state.myCourses.map((c) =>
+    c._id === updated._id ? updated : c
+  );
+
+  if (state.selectedCourse?._id === updated._id) {
+    state.selectedCourse = updated;
+  }
 };
 
 const courseSlice = createSlice({
@@ -36,86 +56,113 @@ const courseSlice = createSlice({
     clearSelectedCourse: (state) => {
       state.selectedCourse = null;
     },
-
     clearCourseError: (state) => {
       state.error = null;
     },
   },
 
   extraReducers: (builder) => {
-    // 📚 Get all courses
+    /* ---------------- FETCH ALL COURSES ---------------- */
     builder.addCase(fetchAllCourses.pending, (state) => {
       state.loading = true;
-    });
-    builder.addCase(fetchAllCourses.fulfilled, (state, action) => {
-      state.loading = false;
-      state.courses = action.payload;
-    });
-    builder.addCase(fetchAllCourses.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload as string;
+      state.error = null;
     });
 
-    // 📄 Get course by ID
+    builder.addCase(fetchAllCourses.fulfilled, (state, action) => {
+      state.loading = false;
+      state.courses = action.payload.courses;
+      state.coursesMeta = action.payload.meta;
+    });
+
+    builder.addCase(fetchAllCourses.rejected, (state, action) => {
+      state.loading = false;
+      state.error = (action.payload as string) || "Failed to fetch courses";
+    });
+
+    /* ---------------- FETCH COURSE BY ID ---------------- */
+    builder.addCase(fetchCourseById.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+
     builder.addCase(fetchCourseById.fulfilled, (state, action) => {
+      state.loading = false;
       state.selectedCourse = action.payload;
     });
 
-    // 👨‍🏫 My courses (Teacher)
+    builder.addCase(fetchCourseById.rejected, (state, action) => {
+      state.loading = false;
+      state.error = (action.payload as string) || "Failed to fetch course";
+    });
+
+    /* ---------------- MY COURSES ---------------- */
+    builder.addCase(fetchMyCourses.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+
     builder.addCase(fetchMyCourses.fulfilled, (state, action) => {
-      state.myCourses = action.payload;
+      state.loading = false;
+      state.myCourses = action.payload.courses;
+      state.myCoursesMeta = action.payload.meta;
     });
 
-    // ➕ Create course
+    builder.addCase(fetchMyCourses.rejected, (state, action) => {
+      state.loading = false;
+      state.error = (action.payload as string) || "Failed to fetch my courses";
+    });
+
+    /* ---------------- CREATE COURSE ---------------- */
     builder.addCase(createCourseThunk.fulfilled, (state, action) => {
-      state.courses.push(action.payload);
-      state.myCourses.push(action.payload);
+      // safer: avoid duplicates
+      state.myCourses.unshift(action.payload);
     });
 
-    // ✏️ Update course
+    builder.addCase(createCourseThunk.rejected, (state, action) => {
+      state.error = action.payload as string;
+    });
+
+    /* ---------------- UPDATE COURSE ---------------- */
     builder.addCase(updateCourseThunk.fulfilled, (state, action) => {
-      const updated = action.payload;
-
-      state.courses = state.courses.map((course) =>
-        course._id === updated._id ? updated : course
-      );
-
-      state.myCourses = state.myCourses.map((course) =>
-        course._id === updated._id ? updated : course
-      );
-
-      if (state.selectedCourse?._id === updated._id) {
-        state.selectedCourse = updated;
-      }
+      updateCourseInLists(state, action.payload);
     });
 
-    // 🗑 Delete course
+    builder.addCase(updateCourseThunk.rejected, (state, action) => {
+      state.error = action.payload as string;
+    });
+
+    /* ---------------- DELETE COURSE ---------------- */
     builder.addCase(deleteCourseThunk.fulfilled, (state, action) => {
-      const deletedId = action.payload;
+      const id = action.payload;
 
-      state.courses = state.courses.filter((c) => c._id !== deletedId);
-      state.myCourses = state.myCourses.filter((c) => c._id !== deletedId);
+      state.courses = state.courses.filter((c) => c._id !== id);
+      state.myCourses = state.myCourses.filter((c) => c._id !== id);
 
-      if (state.selectedCourse?._id === deletedId) {
+      if (state.selectedCourse?._id === id) {
         state.selectedCourse = null;
       }
     });
 
-    // 📢 Toggle publish/unpublish
-    builder.addCase(togglePublishCourseThunk.fulfilled, (state, action) => {
-      const updated = action.payload;
+    builder.addCase(deleteCourseThunk.rejected, (state, action) => {
+      state.error = action.payload as string;
+    });
 
-      state.courses = state.courses.map((course) =>
-        course._id === updated._id ? updated : course
-      );
+    /* ---------------- PUBLISH COURSE ---------------- */
+    builder.addCase(publishCourseThunk.fulfilled, (state, action) => {
+      updateCourseInLists(state, action.payload);
+    });
 
-      state.myCourses = state.myCourses.map((course) =>
-        course._id === updated._id ? updated : course
-      );
+    builder.addCase(publishCourseThunk.rejected, (state, action) => {
+      state.error = action.payload as string;
+    });
 
-      if (state.selectedCourse?._id === updated._id) {
-        state.selectedCourse = updated;
-      }
+    /* ---------------- UNPUBLISH COURSE ---------------- */
+    builder.addCase(unpublishCourseThunk.fulfilled, (state, action) => {
+      updateCourseInLists(state, action.payload);
+    });
+
+    builder.addCase(unpublishCourseThunk.rejected, (state, action) => {
+      state.error = action.payload as string;
     });
   },
 });

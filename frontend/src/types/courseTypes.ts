@@ -1,23 +1,27 @@
+import { ILesson } from "./lessonTypes";
 import { IUser } from "./userTypes";
+
+export interface ICourseListMeta {
+  page: number;
+  limit: number;
+  total: number;
+}
 
 export interface ICourse {
   _id: string;
-
   title: string;
   description: string;
-
   thumbnail?: string;
 
   category?: string;
-
   tags?: string[];
-
   isPublished: boolean;
-
-  enrollmentCount: number;
-
-  teacherId: IUser | string;
-
+  enrollmentCount?: number;
+  teacherId?: IUser | string;
+  instructor?: IUser | string;
+  students?: (IUser | string)[];
+  lessons?: (ILesson | string)[];
+  price?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -29,12 +33,8 @@ export interface ICreateCoursePayload {
   thumbnail?: string;
 
   category?: string;
-
-  tags?: string[];
-
-  level: "beginner" | "intermediate" | "advanced";
-
   price?: number;
+  tags?: string[];
 }
 
 export interface IUpdateCoursePayload {
@@ -44,31 +44,33 @@ export interface IUpdateCoursePayload {
   thumbnail?: string;
 
   category?: string;
-
-  tags?: string[];
-
-  level: "beginner" | "intermediate" | "advanced";
-
   price?: number;
 
   isPublished?: boolean;
+  tags?: string[];
 }
 
 export interface ICourseQuery {
-  page?: number;
-  limit?: number;
-
   search?: string;
 
   category?: string;
+  instructorId?: string;
+  isPublished?: boolean;
+  page?: number;
+  limit?: number;
 }
 
 export interface ICourseListResponse {
   courses: ICourse[];
+  meta: ICourseListMeta;
+}
 
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-  };
+export interface ICourseDetails extends Omit<
+  ICourse,
+  "teacherId" | "instructor" | "students" | "lessons"
+> {
+  teacherId?: IUser | string;
+  instructor?: IUser | string;
+  students?: IUser[];
+  lessons?: ILesson[];
 }

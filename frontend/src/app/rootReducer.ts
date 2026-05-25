@@ -14,11 +14,13 @@ const rootReducer = combineReducers({
   auth: authReducer,
   user: userReducer,
   course: courseReducer,
+  lesson: lessonReducer,
   assignment: assignmentReducer,
   submission: submissionReducer,
   enrollment: enrollmentReducer,
   notification: notificationReducer,
-  lesson: lessonReducer
 });
 
 export default rootReducer;
+
+export type RootState = ReturnType<typeof rootReducer>;

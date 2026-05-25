@@ -1,31 +1,35 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { ILesson } from "../../types/lessonTypes";
-
 import {
-  fetchLessonsByCourse,
-  fetchLessonById,
   createLessonThunk,
-  updateLessonThunk,
   deleteLessonThunk,
-  markLessonCompleteThunk,
+  fetchLessonById,
+  fetchLessonsByCourse,
+  updateLessonThunk,
 } from "./lessonThunks";
 
 interface LessonState {
-  lessons: ILesson[];
   courseLessons: ILesson[];
   selectedLesson: ILesson | null;
-
   loading: boolean;
   error: string | null;
 }
 
 const initialState: LessonState = {
-  lessons: [],
   courseLessons: [],
   selectedLesson: null,
-
   loading: false,
   error: null,
+};
+
+const updateLessonInState = (state: LessonState, lesson: ILesson) => {
+  state.courseLessons = state.courseLessons.map((item) =>
+    item._id === lesson._id ? lesson : item
+  );
+
+  if (state.selectedLesson?._id === lesson._id) {
+    state.selectedLesson = lesson;
+  }
 };
 
 const lessonSlice = createSlice({
@@ -35,111 +39,68 @@ const lessonSlice = createSlice({
     clearSelectedLesson: (state) => {
       state.selectedLesson = null;
     },
-
     clearLessonError: (state) => {
       state.error = null;
     },
   },
-
   extraReducers: (builder) => {
-    /* -------------------------------------------------------------------------- */
-    /*                           FETCH LESSONS BY COURSE                          */
-    /* -------------------------------------------------------------------------- */
-
     builder.addCase(fetchLessonsByCourse.pending, (state) => {
       state.loading = true;
+      state.error = null;
     });
-
     builder.addCase(fetchLessonsByCourse.fulfilled, (state, action) => {
       state.loading = false;
       state.courseLessons = action.payload;
     });
-
     builder.addCase(fetchLessonsByCourse.rejected, (state, action) => {
       state.loading = false;
+      state.error = (action.payload as string) || "Failed to fetch lessons";
+    });
+
+    builder.addCase(fetchLessonById.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(fetchLessonById.fulfilled, (state, action) => {
+      state.loading = false;
+      state.selectedLesson = action.payload;
+    });
+    builder.addCase(fetchLessonById.rejected, (state, action) => {
+      state.loading = false;
+      state.error = (action.payload as string) || "Failed to fetch lesson";
+    });
+
+    builder.addCase(createLessonThunk.fulfilled, (state, action) => {
+      state.courseLessons.push(action.payload);
+      state.courseLessons.sort((a, b) => a.order - b.order);
+    });
+    builder.addCase(createLessonThunk.rejected, (state, action) => {
       state.error = action.payload as string;
     });
 
-    /* -------------------------------------------------------------------------- */
-    /*                             FETCH SINGLE LESSON                            */
-    /* -------------------------------------------------------------------------- */
-
-    builder.addCase(fetchLessonById.fulfilled, (state, action) => {
-      state.selectedLesson = action.payload;
-    });
-
-    /* -------------------------------------------------------------------------- */
-    /*                               CREATE LESSON                                */
-    /* -------------------------------------------------------------------------- */
-
-    builder.addCase(createLessonThunk.fulfilled, (state, action) => {
-      const newLesson = action.payload;
-
-      state.courseLessons.push(newLesson);
-      state.lessons.push(newLesson);
-    });
-
-    /* -------------------------------------------------------------------------- */
-    /*                               UPDATE LESSON                                */
-    /* -------------------------------------------------------------------------- */
-
     builder.addCase(updateLessonThunk.fulfilled, (state, action) => {
-      const updated = action.payload;
-
-      state.courseLessons = state.courseLessons.map((l) =>
-        l._id === updated._id ? updated : l
-      );
-
-      state.lessons = state.lessons.map((l) =>
-        l._id === updated._id ? updated : l
-      );
-
-      if (state.selectedLesson?._id === updated._id) {
-        state.selectedLesson = updated;
-      }
+      updateLessonInState(state, action.payload);
+      state.courseLessons.sort((a, b) => a.order - b.order);
     });
-
-    /* -------------------------------------------------------------------------- */
-    /*                               DELETE LESSON                                */
-    /* -------------------------------------------------------------------------- */
+    builder.addCase(updateLessonThunk.rejected, (state, action) => {
+      state.error = action.payload as string;
+    });
 
     builder.addCase(deleteLessonThunk.fulfilled, (state, action) => {
-      const lessonId = action.payload;
-
       state.courseLessons = state.courseLessons.filter(
-        (l) => l._id !== lessonId
+        (lesson) => lesson._id !== action.payload
       );
 
-      state.lessons = state.lessons.filter((l) => l._id !== lessonId);
-
-      if (state.selectedLesson?._id === lessonId) {
+      if (state.selectedLesson?._id === action.payload) {
         state.selectedLesson = null;
       }
     });
-
-    /* -------------------------------------------------------------------------- */
-    /*                          MARK LESSON COMPLETED                             */
-    /* -------------------------------------------------------------------------- */
-
-    builder.addCase(markLessonCompleteThunk.fulfilled, (state, action) => {
-      const updated = action.payload;
-
-      state.courseLessons = state.courseLessons.map((l) =>
-        l._id === updated._id ? updated : l
-      );
-
-      state.lessons = state.lessons.map((l) =>
-        l._id === updated._id ? updated : l
-      );
-
-      if (state.selectedLesson?._id === updated._id) {
-        state.selectedLesson = updated;
-      }
+    builder.addCase(deleteLessonThunk.rejected, (state, action) => {
+      state.error = action.payload as string;
     });
   },
 });
 
-export const { clearSelectedLesson, clearLessonError } =
-  lessonSlice.actions;
+export const { clearSelectedLesson, clearLessonError } = lessonSlice.actions;
 
 export default lessonSlice.reducer;

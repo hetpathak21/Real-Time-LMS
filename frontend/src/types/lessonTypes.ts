@@ -1,88 +1,34 @@
-import { IUser } from "./userTypes";
+import { ICourse } from "./courseTypes";
 
-/**
- * Lesson Type (expandable for LMS flexibility)
- */
-export type LessonType = "video" | "text" | "pdf" | "quiz";
+export type LessonType = "video" | "text" | "pdf" | "link";
 
-/**
- * Core Lesson Interface
- */
 export interface ILesson {
   _id: string;
-
+  courseId: string | Pick<ICourse, "_id" | "title" | "teacherId" | "isPublished">;
   title: string;
-  description?: string;
-
   type: LessonType;
-
-  /**
-   * Main content can vary based on type:
-   * - video → URL
-   * - pdf → file URL
-   * - text → rich text / markdown
-   * - quiz → quiz reference ID
-   */
-  content: string;
-
-  /**
-   * Order inside course (important for LMS flow)
-   */
+  contentUrl?: string;
   order: number;
-
-  /**
-   * Parent course reference
-   */
-  course: string;
-
-  /**
-   * Optional duration (for video lessons)
-   */
-  duration?: number; // in minutes
-
-  /**
-   * Completion tracking
-   */
-  isPreview?: boolean;
-
-  createdBy?: IUser | string;
-
+  duration?: number;
+  isPreview: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-/**
- * Create Lesson Payload
- */
 export interface ICreateLessonPayload {
   title: string;
-  description?: string;
   type: LessonType;
-  content: string;
+  contentUrl?: string;
   order?: number;
   duration?: number;
   isPreview?: boolean;
 }
 
-/**
- * Update Lesson Payload
- */
 export interface IUpdateLessonPayload {
   title?: string;
-  description?: string;
   type?: LessonType;
-  content?: string;
+  contentUrl?: string;
   order?: number;
   duration?: number;
   isPreview?: boolean;
-}
-
-/**
- * Lesson Progress (for student tracking)
- */
-export interface ILessonProgress {
-  lessonId: string;
-  userId: string;
-  isCompleted: boolean;
-  completedAt?: string;
 }
