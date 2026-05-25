@@ -5,6 +5,7 @@ import { AdminRoutes } from "./modules/Admin/adminRoute";
 import { CourseRoutes } from "./modules/Course/courseRoute";
 import { LessonRoutes } from "./modules/Lessons/lessonRoute";
 import enrollmentRoutes  from "./modules/Enrollment/enrollmentRoutes"
+import  assignmentRoutes  from "./modules/Assignment/assignmentRoutes"
 import { globalErrorHandler } from "./middleware/GlobalErrorHandler"
 
 const app = express();
@@ -41,6 +42,7 @@ app.use("/api/v1/admin", AdminRoutes);
 app.use("/api/v1/course", CourseRoutes);
 app.use("/api/v1/lesson", LessonRoutes);
 app.use("/api/v1/enrollment", enrollmentRoutes);
+app.use("/api/v1/assignment",assignmentRoutes);
 
 app.use(globalErrorHandler);
 export default app;
