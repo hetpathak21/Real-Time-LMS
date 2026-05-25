@@ -30,7 +30,7 @@ router.get(
 router.get(
   "/my-courses",
   authMiddleware,
-  authorizeRoles("teacher"),
+  authorizeRoles("teacher","admin"),
   validateRequest(courseListValidationSchema),
   getMyCourses
 );
@@ -38,7 +38,7 @@ router.get(
 router.post(
   "/",
   authMiddleware,
-  authorizeRoles("teacher"),
+  authorizeRoles("teacher","admin"),
   validateRequest(createCourseValidationSchema),
   createCourse
 );
@@ -60,7 +60,7 @@ router.put(
 router.delete(
   "/:courseId",
   authMiddleware,
-  authorizeRoles("teacher"),
+  authorizeRoles("teacher","admin"),
   validateRequest(courseIdValidationSchema),
   deleteCourse
 );
@@ -68,7 +68,7 @@ router.delete(
 router.patch(
   "/:courseId/publish",
   authMiddleware,
-  authorizeRoles("teacher"),
+  authorizeRoles("teacher","admin"),
   validateRequest(courseIdValidationSchema),
   publishCourse
 );
@@ -76,7 +76,7 @@ router.patch(
 router.patch(
   "/:courseId/unpublish",
   authMiddleware,
-  authorizeRoles("teacher"),
+  authorizeRoles("teacher","admin"),
   validateRequest(courseIdValidationSchema),
   unpublishCourse
 );
