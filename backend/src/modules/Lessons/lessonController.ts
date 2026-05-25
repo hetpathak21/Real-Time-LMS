@@ -11,12 +11,28 @@ import {
   updateLessonService,
 } from "./lessonService";
 
+const getUploadedFileUrl = (file?: Express.Multer.File) => {
+  if (!file) return undefined;
+
+  // Cloudinary multer-storage-cloudinary gives uploaded file URL in file.path.
+  return file.path;
+};
+
 export const createLesson = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const teacherId = req.user?.userId;
     const { courseId } = req.params as { courseId: string };
 
-    const lesson = await createLessonService(courseId, teacherId!, req.body);
+    const lessonPayload = {
+      ...req.body,
+      contentUrl: getUploadedFileUrl(req.file) || req.body.contentUrl,
+    };
+
+    const lesson = await createLessonService(
+      courseId,
+      teacherId!,
+      lessonPayload
+    );
 
     return sendResponse(
       res,
@@ -63,7 +79,16 @@ export const updateLesson = asyncHandler(
     const teacherId = req.user?.userId;
     const { lessonId } = req.params as { lessonId: string };
 
-    const lesson = await updateLessonService(lessonId, teacherId!, req.body);
+    const lessonPayload = {
+      ...req.body,
+      contentUrl: getUploadedFileUrl(req.file) || req.body.contentUrl,
+    };
+
+    const lesson = await updateLessonService(
+      lessonId,
+      teacherId!,
+      lessonPayload
+    );
 
     return sendResponse(
       res,
