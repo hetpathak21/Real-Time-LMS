@@ -9,7 +9,7 @@ import {
   ListItemText,
   Typography,
   IconButton,
-  useMediaQuery,
+  useMediaQuery,  
   useTheme,
   Toolbar,
 } from "@mui/material";
@@ -45,7 +45,7 @@ export default function Sidebar() {
     {
       label: "Courses",
       icon: <MenuBookOutlined />,
-      path: `/${user?.role || "admin"}/courses`,
+      path: "/courses",
     },
     {
       label: "Assignments",

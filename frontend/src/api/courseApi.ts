@@ -5,91 +5,115 @@ import {
   IUpdateCoursePayload,
   ICourseQuery,
   ICourseDetails,
+  ICourseListResponse,
 } from "../types/courseTypes";
 
+const emptyMeta = {
+  page: 1,
+  limit: 10,
+  total: 0,
+};
+
+const normalizeCourseListResponse = (payload: unknown): ICourseListResponse => {
+  if (Array.isArray(payload)) {
+    return {
+      courses: payload as ICourse[],
+      meta: {
+        ...emptyMeta,
+        total: payload.length,
+        limit: payload.length || emptyMeta.limit,
+      },
+    };
+  }
+
+  const response = (payload || {}) as Partial<ICourseListResponse>;
+
+  return {
+    courses: Array.isArray(response.courses) ? response.courses : [],
+    meta: response.meta
+      ? {
+          page: Number(response.meta.page) || emptyMeta.page,
+          limit: Number(response.meta.limit) || emptyMeta.limit,
+          total: Number(response.meta.total) || 0,
+        }
+      : emptyMeta,
+  };
+};
+
 /**
- * Create Course (Teacher/Admin)
+ * Create Course
  */
 export const createCourse = async (
   data: ICreateCoursePayload
 ): Promise<ICourse> => {
-  const res = await axiosInstance.post("/courses", data);
-  return res.data;
+  const res = await axiosInstance.post("/course", data);
+  return res.data.data; // important if using sendResponse
 };
 
 /**
- * Get all courses (with optional filters)
+ * Get published courses (public)
  */
 export const getAllCourses = async (
   query?: ICourseQuery
-): Promise<ICourse[]> => {
-  const res = await axiosInstance.get("/courses", {
+): Promise<ICourseListResponse> => {
+  const res = await axiosInstance.get("/course", {
     params: query,
   });
-  return res.data;
+  return normalizeCourseListResponse(res.data.data);
 };
 
 /**
- * Get course by ID (detailed view)
+ * Get course by ID
  */
 export const getCourseById = async (
   courseId: string
 ): Promise<ICourseDetails> => {
-  const res = await axiosInstance.get(`/courses/${courseId}`);
-  return res.data;
+  const res = await axiosInstance.get(`/course/${courseId}`);
+  return res.data.data;
 };
 
 /**
- * Update course (Teacher/Admin only)
+ * Update course
  */
 export const updateCourse = async (
   courseId: string,
   data: IUpdateCoursePayload
 ): Promise<ICourse> => {
-  const res = await axiosInstance.put(`/courses/${courseId}`, data);
-  return res.data;
+  const res = await axiosInstance.put(`/course/${courseId}`, data);
+  return res.data.data;
 };
 
 /**
- * Delete course (Admin or owner teacher)
+ * Delete course
  */
 export const deleteCourse = async (courseId: string): Promise<void> => {
-  await axiosInstance.delete(`/courses/${courseId}`);
+  await axiosInstance.delete(`/course/${courseId}`);
 };
 
 /**
- * Get courses created by logged-in teacher
+ * Teacher courses
  */
-export const getMyCourses = async (): Promise<ICourse[]> => {
-  const res = await axiosInstance.get("/courses/my");
-  return res.data;
+export const getMyCourses = async (
+  query?: ICourseQuery
+): Promise<ICourseListResponse> => {
+  const res = await axiosInstance.get("/course/my-courses", {
+    params: query,
+  });
+  return normalizeCourseListResponse(res.data.data);
 };
 
 /**
- * Publish / Unpublish course
+ * Publish course
  */
-export const toggleCoursePublishStatus = async (
-  courseId: string
-): Promise<ICourse> => {
-  const res = await axiosInstance.patch(`/courses/${courseId}/toggle-publish`);
-  return res.data;
+export const publishCourse = async (courseId: string): Promise<ICourse> => {
+  const res = await axiosInstance.patch(`/course/${courseId}/publish`);
+  return res.data.data;
 };
 
 /**
- * Enroll in a course (Student)
- * 🔥 This is key for LMS flow
+ * Unpublish course
  */
-export const enrollInCourse = async (
-  courseId: string
-): Promise<{ message: string }> => {
-  const res = await axiosInstance.post(`/courses/${courseId}/enroll`);
-  return res.data;
-};
-
-/**
- * Get enrolled courses (Student dashboard)
- */
-export const getEnrolledCourses = async (): Promise<ICourse[]> => {
-  const res = await axiosInstance.get("/courses/enrolled/me");
-  return res.data;
+export const unpublishCourse = async (courseId: string): Promise<ICourse> => {
+  const res = await axiosInstance.patch(`/course/${courseId}/unpublish`);
+  return res.data.data;
 };

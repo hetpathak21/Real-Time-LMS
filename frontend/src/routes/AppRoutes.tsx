@@ -10,6 +10,11 @@ import TeacherDashboard from "../pages/dashboard/TeacherDashboard";
 import AdminDashboard from "../pages/dashboard/AdminDashboard";
 import Profile from "../pages/profile/Profile";
 
+import CreateCourse from "../pages/course/CreateCourse";
+import CourseList from "../pages/course/CourseList";
+import CourseDetails from "../pages/course/CourseDetails";
+import LessonView from "../pages/lesson/LessonView";
+
 // Protected Routes
 import ProtectedRoutes from "./ProtectedRoute";
 
@@ -106,6 +111,9 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoutes allowedRoles={["teacher"]} />}>
         <Route element={<DashboardLayout />}>
           <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+          <Route path="/teacher/courses" element={<TeacherDashboard />} />
+          <Route path="/teacher/create-course" element={<CreateCourse />} />
+          <Route path="/courses/:courseId/edit" element={<CreateCourse />} />
         </Route>
       </Route>
 
@@ -120,6 +128,9 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoutes />}>
         <Route element={<DashboardLayout />}>
           <Route path="/profile" element={<Profile />} />
+          <Route path="/courses" element={<CourseList />} />
+          <Route path="/course/:courseId" element={<CourseDetails />} />
+          <Route path="/lesson/:lessonId" element={<LessonView />} />
         </Route>
       </Route>
 

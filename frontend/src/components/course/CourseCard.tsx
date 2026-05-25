@@ -5,21 +5,32 @@ import {
   Chip,
   Card,
   CardContent,
+  Stack,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { ICourse } from "../../types/courseTypes";
 
-interface CourseCardProps {
-  title: string;
-  description: string;
-  category: string;
-  instructor: string;
-}
+type CourseCardProps = ICourse;
 
 export default function CourseCard({
+  _id,
   title,
   description,
   category,
+  teacherId,
   instructor,
+  isPublished,
 }: CourseCardProps) {
+  const navigate = useNavigate();
+  const teacherName =
+    typeof instructor === "object"
+      ? instructor?.name
+      : typeof teacherId === "object"
+        ? teacherId?.name
+        : typeof instructor === "string"
+          ? instructor
+          : "Instructor";
+
   return (
     <Card
       sx={{
@@ -44,7 +55,14 @@ export default function CourseCard({
             {title}
           </Typography>
 
-          <Chip label={category} color="primary" />
+          <Stack direction="row" spacing={1}>
+            {category ? <Chip label={category} color="primary" /> : null}
+            <Chip
+              label={isPublished ? "Published" : "Draft"}
+              color={isPublished ? "success" : "default"}
+              variant={isPublished ? "filled" : "outlined"}
+            />
+          </Stack>
         </Box>
 
         <Typography
@@ -58,12 +76,16 @@ export default function CourseCard({
         </Typography>
 
         <Typography variant="body2">
-          Instructor: <strong>{instructor}</strong>
+          Instructor: <strong>{teacherName}</strong>
         </Typography>
       </CardContent>
 
       <Box sx={{ p: 2, pt: 0 }}>
-        <Button fullWidth variant="contained">
+        <Button
+          fullWidth
+          variant="contained"
+          onClick={() => navigate(`/course/${_id}`)}
+        >
           View Course
         </Button>
       </Box>

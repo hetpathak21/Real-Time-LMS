@@ -1,6 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-
 import {
   getAllCourses,
   getCourseById,
@@ -8,13 +7,15 @@ import {
   createCourse,
   updateCourse,
   deleteCourse,
-  toggleCoursePublishStatus,
+  publishCourse,
+  unpublishCourse,
 } from "../../api/courseApi";
 
 import {
   ICourse,
   ICreateCoursePayload,
   IUpdateCoursePayload,
+  ICourseListResponse,
 } from "../../types/courseTypes";
 
 /**
@@ -39,16 +40,16 @@ const extractErrorMessage = (error: unknown): string => {
 /**
  * Get all courses (student view)
  */
-export const fetchAllCourses = createAsyncThunk<ICourse[]>(
-  "course/fetchAllCourses",
-  async (_, thunkAPI) => {
-    try {
-      return await getAllCourses();
-    } catch (error) {
-      return thunkAPI.rejectWithValue(extractErrorMessage(error));
-    }
+export const fetchAllCourses = createAsyncThunk<{
+  courses: ICourse[];
+  meta: ICourseListResponse["meta"];
+}>("course/fetchAllCourses", async (_, thunkAPI) => {
+  try {
+    return await getAllCourses();
+  } catch (error) {
+    return thunkAPI.rejectWithValue(extractErrorMessage(error));
   }
-);
+});
 
 /**
  * Get course by ID
@@ -61,13 +62,13 @@ export const fetchCourseById = createAsyncThunk<ICourse, string>(
     } catch (error) {
       return thunkAPI.rejectWithValue(extractErrorMessage(error));
     }
-  }
+  },
 );
 
 /**
  * Get teacher's courses
  */
-export const fetchMyCourses = createAsyncThunk<ICourse[]>(
+export const fetchMyCourses = createAsyncThunk<ICourseListResponse>(
   "course/fetchMyCourses",
   async (_, thunkAPI) => {
     try {
@@ -75,7 +76,7 @@ export const fetchMyCourses = createAsyncThunk<ICourse[]>(
     } catch (error) {
       return thunkAPI.rejectWithValue(extractErrorMessage(error));
     }
-  }
+  },
 );
 
 /**
@@ -118,19 +119,27 @@ export const deleteCourseThunk = createAsyncThunk<string, string>(
     } catch (error) {
       return thunkAPI.rejectWithValue(extractErrorMessage(error));
     }
-  }
+  },
 );
 
-/**
- * Toggle publish/unpublish course
- */
-export const togglePublishCourseThunk = createAsyncThunk<ICourse, string>(
-  "course/togglePublish",
+export const publishCourseThunk = createAsyncThunk<ICourse, string>(
+  "course/publishCourse",
   async (courseId, thunkAPI) => {
     try {
-      return await toggleCoursePublishStatus(courseId);
+      return await publishCourse(courseId);
     } catch (error) {
       return thunkAPI.rejectWithValue(extractErrorMessage(error));
     }
-  }
+  },
+);
+
+export const unpublishCourseThunk = createAsyncThunk<ICourse, string>(
+  "course/unpublishCourse",
+  async (courseId, thunkAPI) => {
+    try {
+      return await unpublishCourse(courseId);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(extractErrorMessage(error));
+    }
+  },
 );
