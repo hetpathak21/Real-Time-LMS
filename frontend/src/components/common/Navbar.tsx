@@ -117,9 +117,9 @@ import { logout } from "../../features/auth/authSlice";
 import { useAppDispatch } from "../../app/hooks";
 import { useAuth } from "../../hooks/useAuth";
 import { showToast } from "../../utils/toast";
-import { ROUTES } from "../../utils/constants";
+// import { ROUTES } from "../../utils/constants";
 
-const drawerWidth = 260;
+// const drawerWidth = 260;
 
 export default function Navbar() {
   const dispatch = useAppDispatch();
@@ -129,33 +129,11 @@ export default function Navbar() {
   const handleLogout = () => {
     dispatch(logout());
     showToast("Logged out successfully", "info");
-<<<<<<< HEAD
-
-    navigate(ROUTES.LOGIN);
-=======
     navigate("/login");
->>>>>>> c7bdfded10a9e0c95b8c24bbe1a1907b536506eb
   };
 
   return (
     <AppBar
-<<<<<<< HEAD
-      position="sticky"
-      elevation={1}
-      sx={{
-        bgcolor: "#fff",
-        color: "#000",
-
-        width: {
-          md: `calc(100% - ${drawerWidth}px)`,
-        },
-
-        ml: {
-          md: `${drawerWidth}px`,
-        },
-
-        borderBottom: "1px solid #e5e7eb",
-=======
       position="fixed"
       elevation={0}
       sx={{
@@ -164,78 +142,12 @@ export default function Navbar() {
         borderBottom: "1px solid #edf2f9",
         width: { md: "calc(100% - 260px)" },
         ml: { md: "260px" },
->>>>>>> c7bdfded10a9e0c95b8c24bbe1a1907b536506eb
       }}
     >
       <Toolbar
         sx={{
           display: "flex",
           justifyContent: "space-between",
-<<<<<<< HEAD
-          minHeight: "70px !important",
-        }}
-      >
-        {/* Title */}
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: 700,
-
-            ml: {
-              xs: 5,
-              md: 0,
-            },
-
-            fontSize: {
-              xs: "1rem",
-              sm: "1.2rem",
-            },
-          }}
-        >
-          LMS Portal
-        </Typography>
-
-        {/* Right Section */}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: {
-              xs: 1,
-              sm: 2,
-            },
-          }}
-        >
-          {/* Username */}
-          <Typography
-            variant="body1"
-            sx={{
-              display: {
-                xs: "none",
-                sm: "block",
-              },
-
-              fontWeight: 500,
-            }}
-          >
-            {user?.name || "User"}
-          </Typography>
-
-          {/* Avatar */}
-          <Avatar>
-            {user?.name?.charAt(0).toUpperCase() || "U"}
-          </Avatar>
-
-          {/* Logout */}
-          <Button
-            variant="outlined"
-            color="error"
-            onClick={handleLogout}
-            size="small"
-          >
-            Logout
-          </Button>
-=======
           px: { xs: 2, sm: 3 },
           minHeight: "70px !important",
         }}
@@ -292,7 +204,6 @@ export default function Navbar() {
 
           <IconButton size="small" sx={{ color: "#64748b", ml: 0.5 }}><SettingsOutlined /></IconButton>
           <IconButton size="small" color="error" onClick={handleLogout} sx={{ ml: 0.5 }}><LogoutOutlined /></IconButton>
->>>>>>> c7bdfded10a9e0c95b8c24bbe1a1907b536506eb
         </Box>
       </Toolbar>
     </AppBar>
