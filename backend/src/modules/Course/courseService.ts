@@ -43,11 +43,12 @@ export const getMyCoursesService = async (
       filter.category = query.category;
     }
 
+    if (query.level) {
+      filter.level = query.level;
+    }
+
     const [courses, total] = await Promise.all([
-      Course.find(filter)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit),
+      Course.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
 
       Course.countDocuments(filter),
     ]);
@@ -63,9 +64,7 @@ export const getMyCoursesService = async (
   });
 };
 
-export const getPublishedCoursesService = async (
-  query: CourseQuery
-) => {
+export const getPublishedCoursesService = async (query: CourseQuery) => {
   return dbCall(async () => {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 10;
@@ -81,6 +80,10 @@ export const getPublishedCoursesService = async (
 
     if (query.category) {
       filter.category = query.category;
+    }
+
+    if (query.level) {
+      filter.level = query.level;
     }
 
     const [courses, total] = await Promise.all([
@@ -104,12 +107,12 @@ export const getPublishedCoursesService = async (
   });
 };
 
-export const getCourseByIdService = async (
-  courseId: string
-) => {
+export const getCourseByIdService = async (courseId: string) => {
   return dbCall(async () => {
-    const course = await Course.findById(courseId)
-      .populate("teacherId", "name email avatar");
+    const course = await Course.findById(courseId).populate(
+      "teacherId",
+      "name email avatar"
+    );
 
     if (!course) {
       throw new AppError("Course not found", 404);

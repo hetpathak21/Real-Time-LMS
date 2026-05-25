@@ -5,6 +5,7 @@ export interface JwtPayload {
   userId: string;
   email?: string;
   role: string;
+  roles?:string[];
 }
 
 //Generate Access Token (short-lived)
