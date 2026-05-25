@@ -1,6 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AuthState, AuthResponse } from "./authTypes";
-import { loginUser, registerUser, loadUser } from "./authThunks";
+import {
+  changePassword,
+  loadUser,
+  loginUser,
+  logoutUser,
+  registerUser,
+  updateProfile,
+} from "./authThunks";
 import { IUser } from "../../types/userTypes";
 
 const token = localStorage.getItem("token");
@@ -76,6 +83,40 @@ const authSlice = createSlice({
         state.token = null;
         state.isAuthenticated = false;
         localStorage.removeItem("token");
+      })
+      .addCase(updateProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProfile.fulfilled, (state, action: PayloadAction<IUser>) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload ?? "Profile update failed";
+      })
+      .addCase(changePassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(changePassword.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(changePassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload ?? "Password change failed";
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
+        state.token = null;
+        state.error = null;
+        state.loading = false;
+        state.isAuthenticated = false;
+        localStorage.removeItem("token");
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.error = action.payload ?? "Logout failed";
       });
   },
 });

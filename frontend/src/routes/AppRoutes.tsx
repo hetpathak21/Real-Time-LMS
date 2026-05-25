@@ -8,6 +8,7 @@ import Register from "../pages/auth/Register";
 import StudentDashboard from "../pages/dashboard/StudentDashboard";
 import TeacherDashboard from "../pages/dashboard/TeacherDashboard";
 import AdminDashboard from "../pages/dashboard/AdminDashboard";
+// import Profile from "../pages/profile/Profile";
 
 // Protected Routes
 import ProtectedRoutes from "./ProtectedRoute";

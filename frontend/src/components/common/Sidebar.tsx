@@ -17,6 +17,7 @@ import {
   DashboardOutlined,
   MenuBookOutlined,
   AssignmentOutlined,
+  PersonOutlined,
   Menu,
 } from "@mui/icons-material";
 
@@ -63,6 +64,11 @@ export default function Sidebar() {
       label: "Assignments",
       icon: <AssignmentOutlined />,
       path: `/${user?.role || "admin"}/assignments`,
+    },
+    {
+      label: "Profile",
+      icon: <PersonOutlined />,
+      path: "/profile",
     },
   ];
 
@@ -117,9 +123,12 @@ export default function Sidebar() {
               }}
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText 
-                primary={item.label} 
-                // primaryTypographyProps={{ fontSize: "14px", fontWeight: isSelected ? 700 : 500 }} 
+              <ListItemText
+                primary={
+                  <Typography sx={{ fontSize: "14px", fontWeight: isSelected ? 700 : 500 }}>
+                    {item.label}
+                  </Typography>
+                }
               />
             </ListItemButton>
           );
