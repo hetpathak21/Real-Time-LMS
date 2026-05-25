@@ -16,9 +16,9 @@ if (!rootElement) {
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <Provider store={store}>
-      <ToastProvider>
-        <App />
-      </ToastProvider>
+        <ToastProvider>
+          <App />
+        </ToastProvider>
     </Provider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
