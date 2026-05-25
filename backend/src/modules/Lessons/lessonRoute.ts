@@ -2,6 +2,7 @@ import { Router } from "express";
 import { authMiddleware } from "../../middleware/AuthMiddleware";
 import { authorizeRoles } from "../../middleware/RoleMiddleware";
 import { validateRequest } from "../../middleware/ValiateMiddleware";
+import { upload } from "../../middleware/uploadMiddleware";
 import {
   courseLessonIdValidationSchema,
   createLessonValidationSchema,
@@ -27,7 +28,8 @@ router.get(
 router.post(
   "/:courseId/lessons",
   authMiddleware,
-  authorizeRoles("teacher","admin"),
+  authorizeRoles("teacher", "admin"),
+  upload.single("content"),
   validateRequest(createLessonValidationSchema),
   createLesson
 );
@@ -41,7 +43,8 @@ router.get(
 router.put(
   "/:lessonId",
   authMiddleware,
-  authorizeRoles("teacher","admin"),
+  authorizeRoles("teacher", "admin"),
+  upload.single("content"),
   validateRequest(updateLessonValidationSchema),
   updateLesson
 );
@@ -49,7 +52,7 @@ router.put(
 router.delete(
   "/:lessonId",
   authMiddleware,
-  authorizeRoles("teacher","admin"),
+  authorizeRoles("teacher", "admin"),
   validateRequest(lessonIdValidationSchema),
   deleteLesson
 );
