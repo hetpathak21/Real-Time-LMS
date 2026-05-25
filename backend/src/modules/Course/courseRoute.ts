@@ -18,6 +18,7 @@ import {
 import { validateRequest } from "../../middleware/ValiateMiddleware";
 import { authMiddleware } from "../../middleware/AuthMiddleware";
 import { authorizeRoles } from "../../middleware/RoleMiddleware";
+import { upload } from "../../middleware/uploadMiddleware";
 
 const router = Router();
 
@@ -30,7 +31,7 @@ router.get(
 router.get(
   "/my-courses",
   authMiddleware,
-  authorizeRoles("teacher","admin"),
+  authorizeRoles("teacher", "admin"),
   validateRequest(courseListValidationSchema),
   getMyCourses
 );
@@ -38,7 +39,8 @@ router.get(
 router.post(
   "/",
   authMiddleware,
-  authorizeRoles("teacher","admin"),
+  authorizeRoles("teacher", "admin"),
+  upload.single("thumbnail"),
   validateRequest(createCourseValidationSchema),
   createCourse
 );
@@ -53,6 +55,7 @@ router.put(
   "/:courseId",
   authMiddleware,
   authorizeRoles("teacher"),
+  upload.single("thumbnail"),
   validateRequest(updateCourseValidationSchema),
   updateCourse
 );
@@ -60,7 +63,7 @@ router.put(
 router.delete(
   "/:courseId",
   authMiddleware,
-  authorizeRoles("teacher","admin"),
+  authorizeRoles("teacher", "admin"),
   validateRequest(courseIdValidationSchema),
   deleteCourse
 );
@@ -68,7 +71,7 @@ router.delete(
 router.patch(
   "/:courseId/publish",
   authMiddleware,
-  authorizeRoles("teacher","admin"),
+  authorizeRoles("teacher", "admin"),
   validateRequest(courseIdValidationSchema),
   publishCourse
 );
@@ -76,7 +79,7 @@ router.patch(
 router.patch(
   "/:courseId/unpublish",
   authMiddleware,
-  authorizeRoles("teacher","admin"),
+  authorizeRoles("teacher", "admin"),
   validateRequest(courseIdValidationSchema),
   unpublishCourse
 );

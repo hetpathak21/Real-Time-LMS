@@ -1,5 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 
+export type CourseLevel = "beginner" | "intermediate" | "advanced";
+
 export interface ICourse extends Document {
   title: string;
   description: string;
@@ -7,6 +9,8 @@ export interface ICourse extends Document {
   teacherId: mongoose.Types.ObjectId;
   category?: string;
   tags?: string[];
+  price: number;
+  level: CourseLevel;
   isPublished: boolean;
   enrollmentCount: number;
 }
@@ -43,6 +47,19 @@ const courseSchema = new Schema<ICourse>(
         type: String,
       },
     ],
+
+    price: {
+      type: Number,
+      required: true,
+      min: 0,
+      default: 0,
+    },
+
+    level: {
+      type: String,
+      enum: ["beginner", "intermediate", "advanced"],
+      required: true,
+    },
 
     isPublished: {
       type: Boolean,
