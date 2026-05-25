@@ -1,80 +1,67 @@
 import { IUser } from "./userTypes";
 import { ILesson } from "./lessonTypes";
 
-/**
- * Course Level Type
- */
-export type CourseLevel = "beginner" | "intermediate" | "advanced";
+export interface ICourseListMeta {
+  page: number;
+  limit: number;
+  total: number;
+}
 
-/**
- * Core Course Entity
- */
 export interface ICourse {
   _id: string;
-
   title: string;
   description: string;
-
   thumbnail?: string;
   category?: string;
-
-  level: CourseLevel;
-
+  tags?: string[];
   isPublished: boolean;
-
+  enrollmentCount?: number;
+  teacherId?: IUser | string;
+  instructor?: IUser | string;
+  students?: (IUser | string)[];
+  lessons?: (ILesson | string)[];
   price?: number;
-
-  instructor: IUser | string;
-
-  students: (IUser | string)[];
-
-  lessons: (ILesson | string)[];
-
   createdAt: string;
   updatedAt: string;
 }
 
-/**
- * Course Creation Payload (Teacher/Admin)
- */
 export interface ICreateCoursePayload {
   title: string;
   description: string;
   thumbnail?: string;
   category?: string;
-  level: CourseLevel;
   price?: number;
+  tags?: string[];
 }
 
-/**
- * Course Update Payload (Partial updates allowed)
- */
 export interface IUpdateCoursePayload {
   title?: string;
   description?: string;
   thumbnail?: string;
   category?: string;
-  level?: CourseLevel;
   price?: number;
   isPublished?: boolean;
+  tags?: string[];
 }
 
-/**
- * Course Query (filters for browsing/searching)
- */
 export interface ICourseQuery {
   search?: string;
   category?: string;
-  level?: CourseLevel;
   instructorId?: string;
   isPublished?: boolean;
+  page?: number;
+  limit?: number;
 }
 
-/**
- * Course Details Page (fully populated view)
- */
-export interface ICourseDetails extends Omit<ICourse, "instructor" | "students" | "lessons"> {
-  instructor: IUser;
-  students: IUser[];
-  lessons: ILesson[];
+export interface ICourseListResponse {
+  courses: ICourse[];
+  meta: ICourseListMeta;
+}
+
+export interface ICourseDetails
+  extends Omit<ICourse, "teacherId" | "instructor" | "students" | "lessons"> {
+  teacherId?: IUser | string;
+  instructor?: IUser | string;
+  students?: IUser[];
+  lessons?: ILesson[];
 }
