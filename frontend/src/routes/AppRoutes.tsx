@@ -19,6 +19,8 @@ import DashboardLayout from "../layouts/DashboardLayout";
 
 // MUI
 import { Box, Typography, Button } from "@mui/material";
+import AssignmentList from "../pages/assignment/AssignmentList";
+import AssignmentDetails from "../pages/assignment/AssignmentDetails";
 
 /* -------------------------------------------------------------------------- */
 /*                          UNAUTHORIZED PAGE                                 */
@@ -85,6 +87,8 @@ export default function AppRoutes() {
 
       {/* STUDENT */}
       <Route element={<ProtectedRoutes allowedRoles={["student"]} />}>
+      <Route path="/student/assignments" element={<AssignmentList />} />
+      <Route path="/student/assignments/details" element={<AssignmentDetails />} />
         <Route element={<DashboardLayout />}>
           <Route path="/student/dashboard" element={<StudentDashboard />} />
         </Route>

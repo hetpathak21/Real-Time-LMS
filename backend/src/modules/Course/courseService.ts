@@ -45,6 +45,7 @@ export const getMyCoursesService = async (
 
     const [courses, total] = await Promise.all([
       Course.find(filter)
+      .populate("teacherId", "name email avatar")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),

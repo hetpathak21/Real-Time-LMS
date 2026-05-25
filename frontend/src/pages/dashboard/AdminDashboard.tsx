@@ -76,10 +76,10 @@ export default function CompleteAdminDashboard() {
                 variant="h4"
                 sx={{ fontWeight: 700, mb: 1, fontSize: "1.8rem" }}
               >
-                Learn With Effectively With Us!
+                Learn Effectively With Us!
               </Typography>
               <Typography variant="body2" sx={{ opacity: 0.9, mb: 3 }}>
-                Get 30% off every course on january.
+                Get upto 30% off on every course.
               </Typography>
               <Box sx={{ display: "flex", gap: 4 }}>
                 <Box sx={{ display: "flex", alignsizes: "center", gap: 1 }}>

@@ -39,7 +39,7 @@ export const getMyCourses = asyncHandler(
       res,
       STATUS_CODES.SUCCESS,
       true,
-      "Courses fetched successfully",
+      "Courses fetched successfully!",
       result
     );
   }
@@ -53,7 +53,7 @@ export const getPublishedCourses = asyncHandler(
       res,
       STATUS_CODES.SUCCESS,
       true,
-      "Published courses fetched successfully",
+      "Published courses fetched successfully!",
       result
     );
   }
@@ -68,7 +68,7 @@ export const getCourseById = asyncHandler(
       res,
       STATUS_CODES.SUCCESS,
       true,
-      "Course fetched successfully",
+      "Course fetched successfully!",
       course
     );
   }
@@ -85,7 +85,7 @@ export const updateCourse = asyncHandler(
       res,
       STATUS_CODES.SUCCESS,
       true,
-      "Course updated successfully",
+      "Course updated successfully!",
       course
     );
   }
@@ -102,7 +102,7 @@ export const deleteCourse = asyncHandler(
       res,
       STATUS_CODES.SUCCESS,
       true,
-      "Course deleted successfully"
+      "Course deleted successfully!"
     );
   }
 );
@@ -118,7 +118,7 @@ export const publishCourse = asyncHandler(
       res,
       STATUS_CODES.SUCCESS,
       true,
-      "Course published successfully",
+      "Course published successfully!",
       course
     );
   }
@@ -135,7 +135,7 @@ export const unpublishCourse = asyncHandler(
       res,
       STATUS_CODES.SUCCESS,
       true,
-      "Course unpublished successfully",
+      "Course unpublished successfully!",
       course
     );
   }
