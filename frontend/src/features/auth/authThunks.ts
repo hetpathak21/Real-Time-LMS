@@ -1,7 +1,20 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { loginApi, registerApi, getMeApi } from "../../api/authApi";
-import { LoginPayload, RegisterPayload, AuthResponse } from "./authTypes";
+import {
+  changePasswordApi,
+  getMeApi,
+  loginApi,
+  logoutApi,
+  registerApi,
+  updateProfileApi,
+} from "../../api/authApi";
+import {
+  ChangePasswordPayload,
+  LoginPayload,
+  RegisterPayload,
+  UpdateProfilePayload,
+  AuthResponse,
+} from "./authTypes";
 import { IUser } from "../../types/userTypes";
 
 const getErrorMessage = (error: unknown, fallback: string) => {
@@ -57,5 +70,41 @@ export const loadUser = createAsyncThunk<
     return await getMeApi();
   } catch (error) {
     return rejectWithValue(getErrorMessage(error, "Failed to load user!"));
+  }
+});
+
+export const logoutUser = createAsyncThunk<
+  void,
+  void,
+  { rejectValue: string }
+>("auth/logout", async (_, { rejectWithValue }) => {
+  try {
+    await logoutApi();
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error, "Logout failed"));
+  }
+});
+
+export const updateProfile = createAsyncThunk<
+  IUser,
+  UpdateProfilePayload,
+  { rejectValue: string }
+>("auth/updateProfile", async (data, { rejectWithValue }) => {
+  try {
+    return await updateProfileApi(data);
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error, "Profile update failed"));
+  }
+});
+
+export const changePassword = createAsyncThunk<
+  void,
+  ChangePasswordPayload,
+  { rejectValue: string }
+>("auth/changePassword", async (data, { rejectWithValue }) => {
+  try {
+    await changePasswordApi(data);
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error, "Password change failed"));
   }
 });

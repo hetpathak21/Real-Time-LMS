@@ -27,5 +27,17 @@ export const registerSchema = z.object({
   password: passwordSchema,
 });
 
+export const updateProfileSchema = z.object({
+  name: z.string().trim().min(2, "Name must be at least 2 characters"),
+  avatar: z.string().trim().url("Avatar must be a valid URL").or(z.literal("")),
+});
+
+export const changePasswordSchema = z.object({
+  oldPassword: z.string().min(1, "Old password is required"),
+  newPassword: passwordSchema,
+});
+
 export type LoginFormValues = z.infer<typeof loginSchema>;
 export type RegisterFormValues = z.infer<typeof registerSchema>;
+export type UpdateProfileFormValues = z.infer<typeof updateProfileSchema>;
+export type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;
