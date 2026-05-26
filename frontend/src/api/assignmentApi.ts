@@ -3,7 +3,7 @@ import {
   IAssignment,
   ICreateAssignmentPayload,
   IUpdateAssignmentPayload,
-  IAssignmentQuery,
+  // IAssignmentQuery,
   IAssignmentDetails,
 } from "../types/assignmentTypes";
 
@@ -13,21 +13,21 @@ import {
 export const createAssignment = async (
   data: ICreateAssignmentPayload
 ): Promise<IAssignment> => {
-  const res = await axiosInstance.post("/assignments", data);
+  const res = await axiosInstance.post("/assignment", data);
   return res.data;
 };
 
-/**
- * Get all assignments (with filters)
- */
-export const getAssignments = async (
-  query?: IAssignmentQuery
-): Promise<IAssignment[]> => {
-  const res = await axiosInstance.get("/assignments", {
-    params: query,
-  });
-  return res.data;
-};
+// /**
+//  * Get all assignments (with filters)
+//  */
+// export const getAssignments = async (
+//   query?: IAssignmentQuery
+// ): Promise<IAssignment[]> => {
+//   const res = await axiosInstance.get("/assignment", {
+//     params: query,
+//   });
+//   return res.data;
+// };
 
 /**
  * Get assignment by ID
@@ -35,7 +35,7 @@ export const getAssignments = async (
 export const getAssignmentById = async (
   assignmentId: string
 ): Promise<IAssignmentDetails> => {
-  const res = await axiosInstance.get(`/assignments/${assignmentId}`);
+  const res = await axiosInstance.get(`/assignment/${assignmentId}`);
   return res.data;
 };
 
@@ -47,7 +47,7 @@ export const updateAssignment = async (
   data: IUpdateAssignmentPayload
 ): Promise<IAssignment> => {
   const res = await axiosInstance.put(
-    `/assignments/${assignmentId}`,
+    `/assignment/${assignmentId}`,
     data
   );
   return res.data;
@@ -59,7 +59,7 @@ export const updateAssignment = async (
 export const deleteAssignment = async (
   assignmentId: string
 ): Promise<void> => {
-  await axiosInstance.delete(`/assignments/${assignmentId}`);
+  await axiosInstance.delete(`/assignment/${assignmentId}`);
 };
 
 /**
@@ -69,31 +69,31 @@ export const getAssignmentsByCourse = async (
   courseId: string
 ): Promise<IAssignment[]> => {
   const res = await axiosInstance.get(
-    `/courses/${courseId}/assignments`
+    `/assignment/courses/${courseId}`
   );
   return res.data;
 };
 
 /**
- * Publish assignment (optional workflow control)
+ * Publish assignment 
  */
 export const publishAssignment = async (
   assignmentId: string
 ): Promise<IAssignment> => {
   const res = await axiosInstance.patch(
-    `/assignments/${assignmentId}/publish`
+    `/assignment/${assignmentId}/publish`
   );
   return res.data;
 };
 
 /**
- * Close assignment (stop submissions)
+ * Close assignment 
  */
 export const closeAssignment = async (
   assignmentId: string
 ): Promise<IAssignment> => {
   const res = await axiosInstance.patch(
-    `/assignments/${assignmentId}/close`
+    `/assignment/${assignmentId}/close`
   );
   return res.data;
 };

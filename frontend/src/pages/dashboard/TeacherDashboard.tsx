@@ -93,10 +93,10 @@ export default function TeacherDashboard() {
     try {
       if (course.isPublished) {
         await dispatch(unpublishCourseThunk(course._id)).unwrap();
-        showToast("Course moved to draft", "success");
+        showToast("Course moved to draft!", "success");
       } else {
         await dispatch(publishCourseThunk(course._id)).unwrap();
-        showToast("Course published successfully", "success");
+        showToast("Course published successfully!", "success");
       }
     } catch (err: unknown) {
       const message =
@@ -104,7 +104,7 @@ export default function TeacherDashboard() {
           ? err
           : err instanceof Error
             ? err.message
-            : "Failed to update course status";
+            : "Failed to update course status!";
 
       showToast(message, "error");
     }

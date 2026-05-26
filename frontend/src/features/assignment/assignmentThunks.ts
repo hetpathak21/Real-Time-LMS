@@ -2,7 +2,6 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 import {
-  getAssignments,
   getAssignmentById,
   getAssignmentsByCourse,
   createAssignment,
@@ -33,20 +32,6 @@ const getError = (error: unknown): string => {
 
   return "Something went wrong";
 };
-
-/**
- * Get all assignments
- */
-export const fetchAssignments = createAsyncThunk<IAssignment[]>(
-  "assignment/fetchAll",
-  async (_, thunkAPI) => {
-    try {
-      return await getAssignments();
-    } catch (error) {
-      return thunkAPI.rejectWithValue(getError(error));
-    }
-  }
-);
 
 /**
  * Get assignment by ID

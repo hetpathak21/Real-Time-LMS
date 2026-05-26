@@ -1,34 +1,37 @@
-import {
-  Box,
-  Grid,
-  Typography,
-  TextField,
-} from "@mui/material";
+import { Box, Grid, Typography, TextField } from "@mui/material";
 
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { fetchAssignmentsByCourse } from "../../features/assignment/assignmentThunks";
 import AssignmentCard from "../../components/assignment/AssignmentCard";
 
-const assignments = [
-  {
-    title: "React Hooks Assignment",
-    course: "React Fundamentals",
-    dueDate: "25 May 2026",
-    status: "Pending" as const,
-  },
-  {
-    title: "Node API Task",
-    course: "Backend Development",
-    dueDate: "28 May 2026",
-    status: "Submitted" as const,
-  },
-  {
-    title: "MongoDB Aggregation",
-    course: "Database Systems",
-    dueDate: "30 May 2026",
-    status: "Reviewed" as const,
-  },
-];
-
 export default function AssignmentList() {
+  const dispatch = useAppDispatch();
+
+  const { assignments, loading, error } = useAppSelector(
+    (state) => state.assignment,
+  );
+
+  const { courseId } = useParams<{ courseId: string }>();
+
+  useEffect(() => {
+    if (courseId) {
+      dispatch(fetchAssignmentsByCourse(courseId));
+    }
+  }, [dispatch, courseId]);
+
+  if (loading) {
+    return <Typography sx={{ mt: 2 }}>Loading assignments...</Typography>;
+  }
+
+  if (error) {
+    return <Typography sx={{ mt: 2, color: "error.main" }}>{error}</Typography>;
+  }
+
+  const mappedAssignments = assignments;
+
   return (
     <Box>
       <Box
@@ -73,9 +76,9 @@ export default function AssignmentList() {
       </Box>
 
       <Grid container spacing={3}>
-        {assignments.map((assignment) => (
+        {mappedAssignments.map((assignment) => (
           <Grid
-            key={assignment.title}
+            key={assignment._id}
             size={{
               xs: 12,
               sm: 6,

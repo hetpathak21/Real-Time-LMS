@@ -10,15 +10,16 @@ import {
 } from "@mui/material";
 
 interface AssignmentCardProps {
+  _id: string;
   title: string;
-  course: string;
+  courseName: string;
   dueDate: string;
   status: "Pending" | "Submitted" | "Reviewed";
 }
 
 export default function AssignmentCard({
   title,
-  course,
+  courseName,
   dueDate,
   status,
 }: AssignmentCardProps) {
@@ -52,7 +53,7 @@ export default function AssignmentCard({
             mb: 1,
           }}
         >
-          Course: {course}
+          Course: {courseName}
         </Typography>
 
         <Typography

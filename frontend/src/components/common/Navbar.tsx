@@ -6,21 +6,21 @@ import {
   Box,
   Avatar,
   IconButton,
-  InputBase,
+  // InputBase,
 } from "@mui/material";
 
 import {
   NotificationsOutlined,
   LogoutOutlined,
-  MenuOutlined,
-  Search,
+  // MenuOutlined,
+  // Search,
 } from "@mui/icons-material";
 
 import { useAppDispatch } from "../../app/hooks";
 import { logoutUser } from "../../features/auth/authThunks";
 import { useAuth } from "../../hooks/useAuth";
 import { showToast } from "../../utils/toast";
-import { useState } from "react";
+// import { useState } from "react";
 
 export default function Navbar() {
   const dispatch = useAppDispatch();
@@ -28,7 +28,7 @@ export default function Navbar() {
   const { user } = useAuth();
 
 
-  const [searchOpen, setSearchOpen] = useState(false);
+  // const [searchOpen, setSearchOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -60,56 +60,15 @@ export default function Navbar() {
           px: { xs: 1.5, sm: 2, md: 3 },
         }}
       >
-        {/* LEFT SIDE */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          {/* Mobile menu */}
-          <IconButton
-            sx={{ display: { md: "none" } }}
-            onClick={() => console.log("Open drawer")}
-          >
-            <MenuOutlined />
-          </IconButton>
+        {/* <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}> 
+         
 
-          {/* Search box */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              bgcolor: "#f1f5f9",
-              borderRadius: "10px",
-              px: 1.5,
-              py: 0.5,
-              width: searchOpen ? "180px" : { xs: 0, sm: 180, md: 260 },
-              transition: "0.3s ease",
-              overflow: "hidden",
-            }}
-          >
-            <Search sx={{ fontSize: 18, color: "#64748b" }} />
+        </Box>  */}
 
-            <InputBase
-              placeholder="Search courses..."
-              sx={{
-                ml: 1,
-                fontSize: "14px",
-                width: "100%",
-              }}
-            />
-          </Box>
-
-          {/* Mobile search toggle */}
-          <IconButton
-            sx={{ display: { xs: "flex", sm: "none" } }}
-            onClick={() => setSearchOpen((p) => !p)}
-          >
-            <Search />
-          </IconButton>
-        </Box>
-
-        {/* RIGHT SIDE */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.2 }}>
+        <Box sx={{ display: "flex", ml: 100, alignItems: "center", gap: 1.5 }}>
 
           <IconButton>
-            <NotificationsOutlined sx={{ fontSize: 20 }} />
+            <NotificationsOutlined sx={{ fontSize: 20, px: 0.6 }} />
           </IconButton>
 
           {/* USER INFO */}
@@ -118,6 +77,7 @@ export default function Navbar() {
               display: { xs: "none", sm: "flex" },
               alignItems: "center",
               gap: 1,
+              px: 0.7
             }}
           >
             <Box sx={{ textAlign: "right", lineHeight: 1.1 }}>
@@ -153,7 +113,7 @@ export default function Navbar() {
 
           {/* LOGOUT */}
           <IconButton color="error" onClick={handleLogout}>
-            <LogoutOutlined sx={{ fontSize: 20 }} />
+            <LogoutOutlined sx={{ fontSize: 25, px: 0.5 }} />
           </IconButton>
         </Box>
       </Toolbar>

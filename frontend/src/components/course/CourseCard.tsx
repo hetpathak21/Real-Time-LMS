@@ -76,7 +76,7 @@ export default function CourseCard({
         </Typography>
 
         <Typography variant="body2">
-          Instructor: <strong>{teacherName}</strong>
+          Instructor : <strong>{teacherName}</strong>
         </Typography>
       </CardContent>
 

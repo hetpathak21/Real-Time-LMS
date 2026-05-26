@@ -1,8 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { IAssignment } from "../../types/assignmentTypes";
 
 import {
-  fetchAssignments,
+  AssignmentUI,
+  mapAssignmentToUI,
+} from "../../mappers/assignmentMapper";
+
+import {
   fetchAssignmentById,
   fetchAssignmentsByCourse,
   createAssignmentThunk,
@@ -13,9 +16,9 @@ import {
 } from "./assignmentThunks";
 
 interface AssignmentState {
-  assignments: IAssignment[];
-  courseAssignments: IAssignment[];
-  selectedAssignment: IAssignment | null;
+  assignments: AssignmentUI[];
+  courseAssignments: AssignmentUI[];
+  selectedAssignment: AssignmentUI | null;
 
   loading: boolean;
   error: string | null;
@@ -44,45 +47,35 @@ const assignmentSlice = createSlice({
   },
 
   extraReducers: (builder) => {
-    // 📚 All assignments
-    builder.addCase(fetchAssignments.pending, (state) => {
-      state.loading = true;
-    });
-    builder.addCase(fetchAssignments.fulfilled, (state, action) => {
-      state.loading = false;
-      state.assignments = action.payload;
-    });
-    builder.addCase(fetchAssignments.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload as string;
-    });
 
-    // 📄 Single assignment
+    //  Single assignment
     builder.addCase(fetchAssignmentById.fulfilled, (state, action) => {
-      state.selectedAssignment = action.payload;
+      state.selectedAssignment = mapAssignmentToUI(action.payload);
     });
 
-    // 📘 Course-specific assignments
+    // Course-specific assignments
     builder.addCase(fetchAssignmentsByCourse.fulfilled, (state, action) => {
-      state.courseAssignments = action.payload;
+      state.courseAssignments = action.payload.map(mapAssignmentToUI);
     });
 
-    // ➕ Create
+    //  Create
     builder.addCase(createAssignmentThunk.fulfilled, (state, action) => {
-      state.assignments.push(action.payload);
-      state.courseAssignments.push(action.payload);
+      const mapped = mapAssignmentToUI(action.payload);
+
+      state.assignments.push(mapped);
+      state.courseAssignments.push(mapped);
     });
 
-    // ✏️ Update
+    //  Update
     builder.addCase(updateAssignmentThunk.fulfilled, (state, action) => {
-      const updated = action.payload;
+      const updated = mapAssignmentToUI(action.payload);
 
       state.assignments = state.assignments.map((a) =>
-        a._id === updated._id ? updated : a
+        a._id === updated._id ? updated : a,
       );
 
       state.courseAssignments = state.courseAssignments.map((a) =>
-        a._id === updated._id ? updated : a
+        a._id === updated._id ? updated : a,
       );
 
       if (state.selectedAssignment?._id === updated._id) {
@@ -90,13 +83,13 @@ const assignmentSlice = createSlice({
       }
     });
 
-    // 🗑 Delete
+    // Delete
     builder.addCase(deleteAssignmentThunk.fulfilled, (state, action) => {
       const id = action.payload;
 
       state.assignments = state.assignments.filter((a) => a._id !== id);
       state.courseAssignments = state.courseAssignments.filter(
-        (a) => a._id !== id
+        (a) => a._id !== id,
       );
 
       if (state.selectedAssignment?._id === id) {
@@ -104,29 +97,27 @@ const assignmentSlice = createSlice({
       }
     });
 
-    // 📢 Publish
+    //  Publish
     builder.addCase(publishAssignmentThunk.fulfilled, (state, action) => {
-      const updated = action.payload;
+      const updated = mapAssignmentToUI(action.payload);
 
       state.assignments = state.assignments.map((a) =>
-        a._id === updated._id ? updated : a
+        a._id === updated._id ? updated : a,
       );
     });
 
-    // ❌ Close
+    //  Close
     builder.addCase(closeAssignmentThunk.fulfilled, (state, action) => {
-      const updated = action.payload;
+      const updated = mapAssignmentToUI(action.payload);
 
       state.assignments = state.assignments.map((a) =>
-        a._id === updated._id ? updated : a
+        a._id === updated._id ? updated : a,
       );
     });
   },
 });
 
-export const {
-  clearSelectedAssignment,
-  clearAssignmentError,
-} = assignmentSlice.actions;
+export const { clearSelectedAssignment, clearAssignmentError } =
+  assignmentSlice.actions;
 
 export default assignmentSlice.reducer;
