@@ -31,7 +31,7 @@ export const createCourse = asyncHandler(
       ...req.body,
       thumbnail: getUploadedFileUrl(req.file) || req.body.thumbnail,
     };
-
+    console.log(coursePayload);
     const course = await createCourseService(coursePayload, teacherId!);
 
     return sendResponse(

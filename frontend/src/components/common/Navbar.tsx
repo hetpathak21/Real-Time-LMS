@@ -109,7 +109,6 @@ import {
   Brightness4Outlined,
   ChatOutlined,
   LanguageOutlined,
-  SettingsOutlined,
   LogoutOutlined,
 } from "@mui/icons-material";
 

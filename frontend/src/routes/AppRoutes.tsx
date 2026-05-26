@@ -13,6 +13,7 @@ import Profile from "../pages/profile/Profile";
 import CreateCourse from "../pages/course/CreateCourse";
 import CourseList from "../pages/course/CourseList";
 import CourseDetails from "../pages/course/CourseDetails";
+import CreateLesson from "../pages/lesson/CreateLesson";
 import LessonView from "../pages/lesson/LessonView";
 
 // Protected Routes
@@ -130,6 +131,7 @@ export default function AppRoutes() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/courses" element={<CourseList />} />
           <Route path="/course/:courseId" element={<CourseDetails />} />
+          <Route path="/courses/:courseId/lessons/create"  element={<CreateLesson /> }/>
           <Route path="/lesson/:lessonId" element={<LessonView />} />
         </Route>
       </Route>

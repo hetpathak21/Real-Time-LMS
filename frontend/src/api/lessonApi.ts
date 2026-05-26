@@ -5,11 +5,39 @@ import {
   IUpdateLessonPayload,
 } from "../types/lessonTypes";
 
+const buildLessonRequestBody = (
+  data: ICreateLessonPayload | IUpdateLessonPayload
+) => {
+  if (!data.content) {
+    return data;
+  }
+
+  const formData = new FormData();
+
+  Object.entries(data).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === "") {
+      return;
+    }
+
+    if (typeof value === "boolean") {
+      if (value) {
+        formData.append(key, "true");
+      }
+      return;
+    }
+
+    formData.append(key, value as string | Blob);
+  });
+
+  return formData;
+};
+
 export const createLesson = async (
   courseId: string,
   data: ICreateLessonPayload
 ): Promise<ILesson> => {
-  const res = await axiosInstance.post(`/lesson/${courseId}/lessons`, data);
+  const body = buildLessonRequestBody(data);
+  const res = await axiosInstance.post(`/lesson/${courseId}/lessons`, body);
   return res.data.data;
 };
 
@@ -21,7 +49,7 @@ export const getLessonsByCourse = async (
 };
 
 export const getLessonById = async (lessonId: string): Promise<ILesson> => {
-  const res = await axiosInstance.get(`/lesson/lessons/${lessonId}`);
+  const res = await axiosInstance.get(`/lesson/${lessonId}`);
   return res.data.data;
 };
 
@@ -29,10 +57,11 @@ export const updateLesson = async (
   lessonId: string,
   data: IUpdateLessonPayload
 ): Promise<ILesson> => {
-  const res = await axiosInstance.put(`/lesson/lessons/${lessonId}`, data);
+  const body = buildLessonRequestBody(data);
+  const res = await axiosInstance.put(`/lesson/${lessonId}`, body);
   return res.data.data;
 };
 
 export const deleteLesson = async (lessonId: string): Promise<void> => {
-  await axiosInstance.delete(`/lesson/lessons/${lessonId}`);
+  await axiosInstance.delete(`/lesson/${lessonId}`);
 };

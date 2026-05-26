@@ -13,6 +13,7 @@ export interface ICourse {
   description: string;
   thumbnail?: string;
   category?: string;
+  level:string;
   tags?: string[];
   isPublished: boolean;
   enrollmentCount?: number;
@@ -28,8 +29,9 @@ export interface ICourse {
 export interface ICreateCoursePayload {
   title: string;
   description: string;
-  thumbnail?: string;
+  thumbnail?: File | null;
   category?: string;
+  level: string;
   price?: number;
   tags?: string[];
 }
@@ -37,9 +39,10 @@ export interface ICreateCoursePayload {
 export interface IUpdateCoursePayload {
   title?: string;
   description?: string;
-  thumbnail?: string;
+  thumbnail?: File | null | string;
   category?: string;
   price?: number;
+  level?: string;
   isPublished?: boolean;
   tags?: string[];
 }

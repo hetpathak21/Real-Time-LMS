@@ -45,6 +45,9 @@ const authSlice = createSlice({
           state.token = action.payload.token;
           state.isAuthenticated = true;
           localStorage.setItem("token", action.payload.token);
+          if (action.payload.refreshToken) {
+            localStorage.setItem("refresh-token", action.payload.refreshToken);
+          }
         }
       )
       .addCase(loginUser.rejected, (state, action) => {
@@ -63,6 +66,9 @@ const authSlice = createSlice({
           state.token = action.payload.token;
           state.isAuthenticated = true;
           localStorage.setItem("token", action.payload.token);
+          if (action.payload.refreshToken) {
+            localStorage.setItem("refresh-token", action.payload.refreshToken);
+          }
         }
       )
       .addCase(registerUser.rejected, (state, action) => {
@@ -83,6 +89,7 @@ const authSlice = createSlice({
         state.token = null;
         state.isAuthenticated = false;
         localStorage.removeItem("token");
+        localStorage.removeItem("refresh-token");
       })
       .addCase(updateProfile.pending, (state) => {
         state.loading = true;
@@ -114,6 +121,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.isAuthenticated = false;
         localStorage.removeItem("token");
+        localStorage.removeItem("refresh-token");
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.error = action.payload ?? "Logout failed";

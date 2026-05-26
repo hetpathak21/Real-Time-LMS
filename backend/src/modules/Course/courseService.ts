@@ -17,7 +17,6 @@ export const createCourseService = async (
       teacherId,
       isPublished: false,
     });
-
     return course;
   });
 };

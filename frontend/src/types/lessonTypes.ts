@@ -19,6 +19,7 @@ export interface ICreateLessonPayload {
   title: string;
   type: LessonType;
   contentUrl?: string;
+  content?: File | null;
   order?: number;
   duration?: number;
   isPreview?: boolean;
@@ -28,6 +29,7 @@ export interface IUpdateLessonPayload {
   title?: string;
   type?: LessonType;
   contentUrl?: string;
+  content?: File | null;
   order?: number;
   duration?: number;
   isPreview?: boolean;

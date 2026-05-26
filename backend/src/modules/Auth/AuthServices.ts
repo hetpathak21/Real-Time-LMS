@@ -1,8 +1,5 @@
 import User from "../../models/UserModel";
-import {
-  hashPassword,
-  comparePassword,
-} from "../../utils/bcrypt";
+import { hashPassword, comparePassword } from "../../utils/bcrypt";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -27,7 +24,7 @@ export const signupService = async (data: SignupPayload) => {
   if (existing) {
     throw new AppError(
       AUTH_MESSAGES.USER_ALREADY_EXISTS,
-      STATUS_CODES.CONFLICT
+      STATUS_CODES.CONFLICT,
     );
   }
 
@@ -63,10 +60,7 @@ export const loginService = async (data: LoginPayload) => {
   const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
-    throw new AppError(
-      AUTH_MESSAGES.USER_NOT_FOUND,
-      STATUS_CODES.NOT_FOUND
-    );
+    throw new AppError(AUTH_MESSAGES.USER_NOT_FOUND, STATUS_CODES.NOT_FOUND);
   }
 
   const match = await comparePassword(password, user.password);
@@ -74,7 +68,7 @@ export const loginService = async (data: LoginPayload) => {
   if (!match) {
     throw new AppError(
       AUTH_MESSAGES.INVALID_CREDENTIALS,
-      STATUS_CODES.UNAUTHORIZED
+      STATUS_CODES.UNAUTHORIZED,
     );
   }
 
@@ -98,10 +92,7 @@ export const loginService = async (data: LoginPayload) => {
 /* ---------------- REFRESH TOKEN ---------------- */
 export const refreshTokenService = async (token: string) => {
   if (!token) {
-    throw new AppError(
-      "Refresh Token Required",
-      STATUS_CODES.UNAUTHORIZED
-    );
+    throw new AppError("Refresh Token Required", STATUS_CODES.UNAUTHORIZED);
   }
 
   const decoded = verifyRefreshToken(token);
@@ -109,10 +100,7 @@ export const refreshTokenService = async (token: string) => {
   const user = await User.findById(decoded.userId);
 
   if (!user) {
-    throw new AppError(
-      AUTH_MESSAGES.USER_NOT_FOUND,
-      STATUS_CODES.NOT_FOUND
-    );
+    throw new AppError(AUTH_MESSAGES.USER_NOT_FOUND, STATUS_CODES.NOT_FOUND);
   }
 
   const newAccessToken = generateAccessToken({
@@ -130,7 +118,6 @@ export const logoutService = async () => {
   return true;
 };
 
-
 /* ---------------- GET ME ---------------- */
 export const getMeService = async (userId: string) => {
   const user = await User.findById(userId).select("-password");
@@ -143,11 +130,14 @@ export const getMeService = async (userId: string) => {
 };
 
 /* ---------------- UPDATE PROFILE ---------------- */
-export const updateProfileService = async (userId: string, data: UpdateProfilePayload) => {
+export const updateProfileService = async (
+  userId: string,
+  data: UpdateProfilePayload,
+) => {
   const user = await User.findByIdAndUpdate(
     userId,
     { $set: data },
-    { new: true }
+    { new: true },
   ).select("-password");
 
   if (!user) {
@@ -158,7 +148,10 @@ export const updateProfileService = async (userId: string, data: UpdateProfilePa
 };
 
 /* ---------------- CHANGE PASSWORD ---------------- */
-export const changePasswordService = async (userId: string, data: ChangePasswordPayload) => {
+export const changePasswordService = async (
+  userId: string,
+  data: ChangePasswordPayload,
+) => {
   const { oldPassword, newPassword } = data;
 
   const user = await User.findById(userId).select("+password");

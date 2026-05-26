@@ -15,5 +15,7 @@ export const useAuth = () => {
     loading,
     error,
     isAuthenticated,
+     isStudent: user?.role === "student",
+    isTeacher: user?.role === "teacher",
   };
 };

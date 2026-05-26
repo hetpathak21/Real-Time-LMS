@@ -25,7 +25,7 @@ const router = Router();
 router.get(
   "/",
   validateRequest(courseListValidationSchema),
-  getPublishedCourses
+  getPublishedCourses,
 );
 
 router.get(
@@ -33,7 +33,7 @@ router.get(
   authMiddleware,
   authorizeRoles("teacher", "admin"),
   validateRequest(courseListValidationSchema),
-  getMyCourses
+  getMyCourses,
 );
 
 router.post(
@@ -42,13 +42,13 @@ router.post(
   authorizeRoles("teacher", "admin"),
   upload.single("thumbnail"),
   validateRequest(createCourseValidationSchema),
-  createCourse
+  createCourse,
 );
 
 router.get(
   "/:courseId",
   validateRequest(courseIdValidationSchema),
-  getCourseById
+  getCourseById,
 );
 
 router.put(
@@ -57,7 +57,7 @@ router.put(
   authorizeRoles("teacher"),
   upload.single("thumbnail"),
   validateRequest(updateCourseValidationSchema),
-  updateCourse
+  updateCourse,
 );
 
 router.delete(
@@ -65,7 +65,7 @@ router.delete(
   authMiddleware,
   authorizeRoles("teacher", "admin"),
   validateRequest(courseIdValidationSchema),
-  deleteCourse
+  deleteCourse,
 );
 
 router.patch(
@@ -73,7 +73,7 @@ router.patch(
   authMiddleware,
   authorizeRoles("teacher", "admin"),
   validateRequest(courseIdValidationSchema),
-  publishCourse
+  publishCourse,
 );
 
 router.patch(
@@ -81,7 +81,7 @@ router.patch(
   authMiddleware,
   authorizeRoles("teacher", "admin"),
   validateRequest(courseIdValidationSchema),
-  unpublishCourse
+  unpublishCourse,
 );
 
 export const CourseRoutes = router;

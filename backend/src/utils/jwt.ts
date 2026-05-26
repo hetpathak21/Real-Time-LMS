@@ -11,7 +11,7 @@ export interface JwtPayload {
 //Generate Access Token (short-lived)
 export const generateAccessToken = (payload: JwtPayload) => {
   return jwt.sign(payload, process.env.JWT_ACCESS_SECRET as string, {
-    expiresIn: "15m",
+    expiresIn: "30m",
   });
 };
 
