@@ -9,7 +9,7 @@ export default function LessonView() {
   const { lessonId } = useParams();
   const dispatch = useAppDispatch();
   const { selectedLesson, loading, error } = useAppSelector(
-    (state) => state.lesson
+    (state) => state.lesson,
   );
 
   useEffect(() => {
@@ -39,10 +39,15 @@ export default function LessonView() {
     <Box>
       <Paper elevation={0} sx={{ p: 4, borderRadius: 3 }}>
         <Stack
-          direction={{ xs: "column", sm: "row" }}
-          justifyContent="space-between"
-          spacing={2}
-          sx={{ mb: 3 }}
+          sx={{
+            flexDirection: {
+              xs: "column",
+              sm: "row",
+            },
+            justifyContent: "space-between",
+            gap: 2,
+            mb: 3,
+          }}
         >
           <Box>
             <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
@@ -51,7 +56,9 @@ export default function LessonView() {
             <Stack direction="row" spacing={1}>
               <Chip label={selectedLesson.type.toUpperCase()} size="small" />
               <Chip
-                label={selectedLesson.isPreview ? "Preview" : "Locked to enrolled"}
+                label={
+                  selectedLesson.isPreview ? "Preview" : "Locked to enrolled"
+                }
                 size="small"
                 color={selectedLesson.isPreview ? "success" : "default"}
                 variant={selectedLesson.isPreview ? "filled" : "outlined"}
@@ -59,7 +66,10 @@ export default function LessonView() {
             </Stack>
           </Box>
 
-          <Button variant="outlined" onClick={() => navigate(`/course/${courseId}`)}>
+          <Button
+            variant="outlined"
+            onClick={() => navigate(`/course/${courseId}`)}
+          >
             Back To Course
           </Button>
         </Stack>
@@ -69,7 +79,10 @@ export default function LessonView() {
           {selectedLesson.duration ? ` | ${selectedLesson.duration} min` : ""}
         </Typography>
 
-        <Paper variant="outlined" sx={{ p: 3, borderRadius: 3, bgcolor: "#f8fafc" }}>
+        <Paper
+          variant="outlined"
+          sx={{ p: 3, borderRadius: 3, bgcolor: "#f8fafc" }}
+        >
           {selectedLesson.contentUrl ? (
             <>
               <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1 }}>

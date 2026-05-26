@@ -11,13 +11,18 @@ export default function App() {
   const dispatch = useAppDispatch();
   const { loading, token } = useAppSelector((state) => state.auth);
 
+  /**
+   * Load logged-in user on app start
+   */
   useEffect(() => {
     if (token) {
       dispatch(loadUser());
     }
   }, [dispatch, token]);
 
-  // Initial auth loading screen
+  /**
+   * Show global loader only during initial auth check
+   */
   if (loading) {
     return (
       <Box

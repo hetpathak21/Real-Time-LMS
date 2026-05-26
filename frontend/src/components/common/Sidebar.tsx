@@ -25,18 +25,31 @@ import { useAuth } from "../../hooks/useAuth";
 
 const drawerWidth = 260;
 
+interface MenuItem {
+  label: string;
+  path: string;
+  icon: React.ReactNode;
+}
+
 export default function Sidebar() {
   const theme = useTheme();
+
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const { user } = useAuth();
 
+  // const role = user?.role || "student";
+
   const handleDrawerToggle = () => {
     setMobileOpen((prev) => !prev);
   };
 
-  const menuItems = [
+  /* -------------------------------------------------------------------------- */
+  /*                                 MENU ITEMS                                 */
+  /* -------------------------------------------------------------------------- */
+
+  const menuItems: MenuItem[] = [
     {
       label: "Dashboard",
       icon: <DashboardOutlined />,
@@ -58,6 +71,10 @@ export default function Sidebar() {
       path: "/profile",
     },
   ];
+
+  /* -------------------------------------------------------------------------- */
+  /*                              DRAWER CONTENT                                */
+  /* -------------------------------------------------------------------------- */
 
   const drawerContent = (
     <Box sx={{ height: "100%", bgcolor: "#ffffff" }}>
@@ -166,6 +183,7 @@ export default function Sidebar() {
           sx={{
             width: drawerWidth,
             flexShrink: 0,
+
             "& .MuiDrawer-paper": {
               width: drawerWidth,
               boxSizing: "border-box",

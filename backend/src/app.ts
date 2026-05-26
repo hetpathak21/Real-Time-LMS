@@ -9,9 +9,10 @@ import  assignmentRoutes  from "./modules/Assignment/assignmentRoutes"
 import { globalErrorHandler } from "./middleware/GlobalErrorHandler"
 
 const app = express();
-const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:5174"].filter(
-  Boolean
-) as string[];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+].filter(Boolean) as string[];
 
 app.use(
   cors({
@@ -20,10 +21,10 @@ app.use(
         return callback(null, true);
       }
 
-      return callback(new Error("Not allowed by CORS"));
+      return callback(new Error("Not allowed by CORS!"));
     },
     credentials: true,
-  })
+  }),
 );
 
 app.use(express.json());

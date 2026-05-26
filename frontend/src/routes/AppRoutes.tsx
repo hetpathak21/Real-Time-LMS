@@ -8,7 +8,7 @@ import Register from "../pages/auth/Register";
 import StudentDashboard from "../pages/dashboard/StudentDashboard";
 import TeacherDashboard from "../pages/dashboard/TeacherDashboard";
 import AdminDashboard from "../pages/dashboard/AdminDashboard";
-import Profile from "../pages/profile/Profile";
+// import Profile from "../pages/profile/Profile";
 
 import CreateCourse from "../pages/course/CreateCourse";
 import CourseList from "../pages/course/CourseList";
@@ -20,14 +20,18 @@ import LessonView from "../pages/lesson/LessonView";
 import ProtectedRoutes from "./ProtectedRoute";
 
 // Layouts
+import AuthLayout from "../layouts/AuthLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
 
 // MUI
 import { Box, Typography, Button } from "@mui/material";
+import AssignmentList from "../pages/assignment/AssignmentList";
+import AssignmentDetails from "../pages/assignment/AssignmentDetails";
+import Profile from "../pages/profile/Profile";
 
-// --------------------
-// Unauthorized Page
-// --------------------
+/* -------------------------------------------------------------------------- */
+/*                          UNAUTHORIZED PAGE                                 */
+/* -------------------------------------------------------------------------- */
 
 function UnauthorizedPage() {
   return (
@@ -52,27 +56,15 @@ function UnauthorizedPage() {
           maxWidth: 400,
         }}
       >
-        <Typography
-          variant="h4"
-          sx={{
-            fontWeight: 700,
-          }}
-          gutterBottom
-        >
+        <Typography variant="h4" sx={{ fontWeight: 700 }} gutterBottom>
           403
         </Typography>
 
         <Typography variant="h6" gutterBottom>
-          Unauthorized Access
+          Unauthorized Access!
         </Typography>
 
-        <Typography
-          variant="body1"
-          color="text.secondary"
-          sx={{
-            mb: 3,
-          }}
-        >
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
           You do not have permission to access this page.
         </Typography>
 
@@ -84,31 +76,32 @@ function UnauthorizedPage() {
   );
 }
 
-// --------------------
-// App Routes
-// --------------------
+/* -------------------------------------------------------------------------- */
+/*                                ROUTES                                      */
+/* -------------------------------------------------------------------------- */
 
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* ================= PUBLIC ROUTES ================= */}
+      {/* PUBLIC ROUTES */}
 
-      <Route path="/login" element={<Login />} />
-
-      <Route path="/register" element={<Register />} />
-
+      <Route element={<AuthLayout />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Route>
+      
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-      {/* ================= STUDENT ROUTES ================= */}
-
+      {/* STUDENT */}
       <Route element={<ProtectedRoutes allowedRoles={["student"]} />}>
+      <Route path="/student/assignments" element={<AssignmentList />} />
+      <Route path="/student/assignments/details" element={<AssignmentDetails />} />
         <Route element={<DashboardLayout />}>
           <Route path="/student/dashboard" element={<StudentDashboard />} />
         </Route>
       </Route>
 
-      {/* ================= TEACHER ROUTES ================= */}
-
+      {/* TEACHER */}
       <Route element={<ProtectedRoutes allowedRoles={["teacher"]} />}>
         <Route element={<DashboardLayout />}>
           <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
@@ -118,8 +111,7 @@ export default function AppRoutes() {
         </Route>
       </Route>
 
-      {/* ================= ADMIN ROUTES ================= */}
-
+      {/* ADMIN */}
       <Route element={<ProtectedRoutes allowedRoles={["admin"]} />}>
         <Route element={<DashboardLayout />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />

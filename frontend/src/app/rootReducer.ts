@@ -4,10 +4,11 @@ import { combineReducers } from "@reduxjs/toolkit";
 import authReducer from "../features/auth/authSlice";
 import userReducer from "../features/user/userSlice";
 import courseReducer from "../features/course/courseSlice";
-import lessonReducer from "../features/lesson/lessonSlice";
 import assignmentReducer from "../features/assignment/assignmentSlice";
 import submissionReducer from "../features/submission/submissionSlice";
 import enrollmentReducer from "../features/enrollment/enrollmentSlice";
+import notificationReducer from "../features/notification/notificationSlice";
+import lessonReducer from "../features/lesson/lessonSlice";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   assignment: assignmentReducer,
   submission: submissionReducer,
   enrollment: enrollmentReducer,
+  notification: notificationReducer,
 });
 
 export default rootReducer;

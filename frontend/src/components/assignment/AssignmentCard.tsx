@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 import {
   Card,
   CardContent,
@@ -8,18 +10,22 @@ import {
 } from "@mui/material";
 
 interface AssignmentCardProps {
+  _id: string;
   title: string;
-  course: string;
+  courseName: string;
   dueDate: string;
   status: "Pending" | "Submitted" | "Reviewed";
 }
 
 export default function AssignmentCard({
   title,
-  course,
+  courseName,
   dueDate,
   status,
 }: AssignmentCardProps) {
+
+  const navigate = useNavigate();
+
   return (
     <Card
       sx={{
@@ -47,7 +53,7 @@ export default function AssignmentCard({
             mb: 1,
           }}
         >
-          Course: {course}
+          Course: {courseName}
         </Typography>
 
         <Typography
@@ -74,12 +80,23 @@ export default function AssignmentCard({
               status === "Pending"
                 ? "warning"
                 : status === "Submitted"
-                ? "primary"
-                : "success"
+                  ? "primary"
+                  : "success"
             }
           />
 
-          <Button variant="contained">
+          <Button
+            variant="contained"
+            onClick={() => navigate("/student/assignments/details")}
+            sx={{
+              textTransform: "none",
+              fontWeight: 600,
+              borderRadius: "8px",
+              px: 2,
+              boxShadow: "none",
+              "&:hover": { boxShadow: "none" },
+            }}
+          >
             View Details
           </Button>
         </Box>

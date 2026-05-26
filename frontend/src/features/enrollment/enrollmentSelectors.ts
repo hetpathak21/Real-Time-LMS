@@ -1,4 +1,4 @@
-import { RootState } from "../../app/rootReducer";
+import { RootState } from "../../app/store";
 
 /**
  * All enrollments (admin/teacher)

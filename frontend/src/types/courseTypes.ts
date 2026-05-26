@@ -1,5 +1,5 @@
-import { IUser } from "./userTypes";
 import { ILesson } from "./lessonTypes";
+import { IUser } from "./userTypes";
 
 export interface ICourseListMeta {
   page: number;
@@ -12,6 +12,7 @@ export interface ICourse {
   title: string;
   description: string;
   thumbnail?: string;
+
   category?: string;
   level:string;
   tags?: string[];
@@ -29,7 +30,9 @@ export interface ICourse {
 export interface ICreateCoursePayload {
   title: string;
   description: string;
-  thumbnail?: File | null;
+
+  thumbnail?: string;
+
   category?: string;
   level: string;
   price?: number;
@@ -39,16 +42,19 @@ export interface ICreateCoursePayload {
 export interface IUpdateCoursePayload {
   title?: string;
   description?: string;
-  thumbnail?: File | null | string;
+
+  thumbnail?: string;
+
   category?: string;
   price?: number;
-  level?: string;
+
   isPublished?: boolean;
   tags?: string[];
 }
 
 export interface ICourseQuery {
   search?: string;
+
   category?: string;
   instructorId?: string;
   isPublished?: boolean;
@@ -61,8 +67,10 @@ export interface ICourseListResponse {
   meta: ICourseListMeta;
 }
 
-export interface ICourseDetails
-  extends Omit<ICourse, "teacherId" | "instructor" | "students" | "lessons"> {
+export interface ICourseDetails extends Omit<
+  ICourse,
+  "teacherId" | "instructor" | "students" | "lessons"
+> {
   teacherId?: IUser | string;
   instructor?: IUser | string;
   students?: IUser[];

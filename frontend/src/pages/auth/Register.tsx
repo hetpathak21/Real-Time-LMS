@@ -78,10 +78,16 @@ export default function Register() {
         justifyContent: "center",
         alignItems: "center",
         minHeight: "100vh",
-        bgcolor: "#f5f5f5",
       }}
     >
-      <Paper elevation={6} sx={{ p: 4, width: 380 }}>
+      <Paper
+        elevation={6}
+        sx={{
+          p: 4,
+          width: 380,
+          borderRadius: 4,
+        }}
+      >
         <Typography
           sx={{
             fontWeight: 600,

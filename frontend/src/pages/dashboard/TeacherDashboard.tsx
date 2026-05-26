@@ -1,7 +1,6 @@
 import {
   Box,
   Typography,
-  Grid,
   Paper,
   Button,
   Avatar,
@@ -15,6 +14,7 @@ import {
   Stack,
   CircularProgress,
 } from "@mui/material";
+
 import {
   People,
   CheckCircleOutlined,
@@ -34,6 +34,7 @@ import {
 import { useAuth } from "../../hooks/useAuth";
 import { showToast } from "../../utils/toast";
 import { ICourse } from "../../types/courseTypes";
+import Grid from "@mui/system/Grid";
 
 const COLORS = {
   primary: "#00a3ff",
@@ -57,7 +58,7 @@ export default function TeacherDashboard() {
   const dispatch = useAppDispatch();
   const { user } = useAuth();
   const { myCourses, myCoursesMeta, loading, error } = useAppSelector(
-    (state) => state.course
+    (state) => state.course,
   );
 
   const courses = Array.isArray(myCourses) ? myCourses : [];
@@ -65,12 +66,12 @@ export default function TeacherDashboard() {
   const draftCourses = courses.filter((course) => !course.isPublished);
   const totalEnrollments = courses.reduce(
     (sum, course) => sum + (course.enrollmentCount || 0),
-    0
+    0,
   );
   const recentCourses = [...courses].slice(0, 3);
   const maxEnrollment = Math.max(
     ...courses.map((course) => course.enrollmentCount || 0),
-    1
+    1,
   );
 
   const categoryCount = new Map<string, number>();
@@ -92,13 +93,20 @@ export default function TeacherDashboard() {
     try {
       if (course.isPublished) {
         await dispatch(unpublishCourseThunk(course._id)).unwrap();
-        showToast("Course moved to draft", "success");
+        showToast("Course moved to draft!", "success");
       } else {
         await dispatch(publishCourseThunk(course._id)).unwrap();
-        showToast("Course published successfully", "success");
+        showToast("Course published successfully!", "success");
       }
-    } catch (err: any) {
-      showToast(err || "Failed to update course status", "error");
+    } catch (err: unknown) {
+      const message =
+        typeof err === "string"
+          ? err
+          : err instanceof Error
+            ? err.message
+            : "Failed to update course status!";
+
+      showToast(message, "error");
     }
   };
 
@@ -106,8 +114,15 @@ export default function TeacherDashboard() {
     try {
       await dispatch(deleteCourseThunk(courseId)).unwrap();
       showToast("Course deleted successfully", "success");
-    } catch (err: any) {
-      showToast(err || "Failed to delete course", "error");
+    } catch (err: unknown) {
+      const message =
+        typeof err === "string"
+          ? err
+          : err instanceof Error
+            ? err.message
+            : "Failed to update course status";
+
+      showToast(message, "error");
     }
   };
 
@@ -179,6 +194,7 @@ export default function TeacherDashboard() {
                     </Typography>
                   </Box>
                 </Box>
+
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <Avatar
                     sx={{
@@ -412,7 +428,9 @@ export default function TeacherDashboard() {
                               size="small"
                               label={course.isPublished ? "Published" : "Draft"}
                               color={course.isPublished ? "success" : "default"}
-                              variant={course.isPublished ? "filled" : "outlined"}
+                              variant={
+                                course.isPublished ? "filled" : "outlined"
+                              }
                               sx={{ height: 22 }}
                             />
                           </Stack>
@@ -498,14 +516,17 @@ export default function TeacherDashboard() {
                   }}
                 >
                   {(courses.length > 0
-                    ? courses.slice(0, 5).map((course) =>
-                        Math.max(
-                          20,
-                          Math.round(
-                            ((course.enrollmentCount || 0) / maxEnrollment) * 100
-                          )
+                    ? courses
+                        .slice(0, 5)
+                        .map((course) =>
+                          Math.max(
+                            20,
+                            Math.round(
+                              ((course.enrollmentCount || 0) / maxEnrollment) *
+                                100,
+                            ),
+                          ),
                         )
-                      )
                     : [20, 35, 25, 45, 30]
                   ).map((val, index) => (
                     <Box
@@ -598,14 +619,17 @@ export default function TeacherDashboard() {
                   }}
                 >
                   {(courses.length > 0
-                    ? courses.slice(0, 5).map((course) =>
-                        Math.max(
-                          20,
-                          Math.round(
-                            ((course.enrollmentCount || 0) / maxEnrollment) * 100
-                          )
+                    ? courses
+                        .slice(0, 5)
+                        .map((course) =>
+                          Math.max(
+                            20,
+                            Math.round(
+                              ((course.enrollmentCount || 0) / maxEnrollment) *
+                                100,
+                            ),
+                          ),
                         )
-                      )
                     : [20, 35, 25, 45, 30]
                   ).map((val, index) => (
                     <Box
@@ -664,7 +688,7 @@ export default function TeacherDashboard() {
                     {courses.length === 0
                       ? "0%"
                       : `${Math.round(
-                          (publishedCourses.length / courses.length) * 100
+                          (publishedCourses.length / courses.length) * 100,
                         )}%`}
                   </Typography>
                 </Box>
@@ -954,7 +978,9 @@ export default function TeacherDashboard() {
                   label: course.title,
                   value: Math.max(
                     12,
-                    Math.round(((course.enrollmentCount || 0) / maxEnrollment) * 100)
+                    Math.round(
+                      ((course.enrollmentCount || 0) / maxEnrollment) * 100,
+                    ),
                   ),
                   user: `${course.enrollmentCount || 0} Active`,
                   color: getCourseColor(index),
@@ -968,7 +994,10 @@ export default function TeacherDashboard() {
                   },
                 ]
             ).map((row, index) => (
-              <Box key={`${row.label}-${index}`} sx={{ mb: 2, "&:last-child": { mb: 0 } }}>
+              <Box
+                key={`${row.label}-${index}`}
+                sx={{ mb: 2, "&:last-child": { mb: 0 } }}
+              >
                 <Box
                   sx={{
                     display: "flex",
@@ -1035,7 +1064,9 @@ export default function TeacherDashboard() {
             {(recentCourses.length > 0
               ? recentCourses.map((course, index) => ({
                   title: course.title,
-                  meta: `Created: ${new Date(course.createdAt).toLocaleDateString("en-IN", {
+                  meta: `Created: ${new Date(
+                    course.createdAt,
+                  ).toLocaleDateString("en-IN", {
                     day: "2-digit",
                     month: "short",
                     year: "numeric",

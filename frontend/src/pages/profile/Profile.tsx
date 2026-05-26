@@ -15,10 +15,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useAuth } from "../../hooks/useAuth";
 import { showToast } from "../../utils/toast";
-import {
-  changePassword,
-  updateProfile,
-} from "../../features/auth/authThunks";
+import { changePassword, updateProfile } from "../../features/auth/authThunks";
 import {
   changePasswordSchema,
   type ChangePasswordFormValues,
@@ -70,7 +67,7 @@ export default function Profile() {
     } catch (error) {
       showToast(
         typeof error === "string" ? error : "Unable to update profile.",
-        "error"
+        "error",
       );
     }
   };
@@ -83,7 +80,7 @@ export default function Profile() {
     } catch (error) {
       showToast(
         typeof error === "string" ? error : "Unable to change password.",
-        "error"
+        "error",
       );
     }
   };
@@ -101,7 +98,14 @@ export default function Profile() {
               height: "100%",
             }}
           >
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                textAlign: "center",
+              }}
+            >
               <Avatar
                 src={user?.avatar}
                 sx={{
@@ -152,13 +156,13 @@ export default function Profile() {
             }}
           >
             <Typography variant="h6" sx={{ fontWeight: 800, mb: 0.5 }}>
-              Profile Settings
-            </Typography>
-            <Typography sx={{ color: "#64748b", mb: 3 }}>
-              Update your basic account details with the same validation style as login and signup.
+              Update Profile
             </Typography>
 
-            <form onSubmit={profileForm.handleSubmit(handleProfileSubmit)} noValidate>
+            <form
+              onSubmit={profileForm.handleSubmit(handleProfileSubmit)}
+              noValidate
+            >
               <TextField
                 fullWidth
                 label="Name"
@@ -166,7 +170,9 @@ export default function Profile() {
                 {...profileForm.register("name")}
                 error={!!profileForm.formState.errors.name}
                 helperText={profileForm.formState.errors.name?.message}
-                slotProps={{ formHelperText: { sx: { color: "error.main", ml: 0 } } }}
+                slotProps={{
+                  formHelperText: { sx: { color: "error.main", ml: 0 } },
+                }}
                 sx={errorFieldStyles}
               />
 
@@ -176,8 +182,19 @@ export default function Profile() {
                 margin="normal"
                 {...profileForm.register("avatar")}
                 error={!!profileForm.formState.errors.avatar}
-                helperText={profileForm.formState.errors.avatar?.message || "Optional"}
-                slotProps={{ formHelperText: { sx: { color: profileForm.formState.errors.avatar ? "error.main" : "#64748b", ml: 0 } } }}
+                helperText={
+                  profileForm.formState.errors.avatar?.message || "Optional"
+                }
+                slotProps={{
+                  formHelperText: {
+                    sx: {
+                      color: profileForm.formState.errors.avatar
+                        ? "error.main"
+                        : "#64748b",
+                      ml: 0,
+                    },
+                  },
+                }}
                 sx={errorFieldStyles}
               />
 
@@ -187,7 +204,11 @@ export default function Profile() {
                 disabled={loading}
                 sx={{ mt: 2, minWidth: 180 }}
               >
-                {loading ? <CircularProgress size={22} color="inherit" /> : "Save Profile"}
+                {loading ? (
+                  <CircularProgress size={22} color="inherit" />
+                ) : (
+                  "Save Profile"
+                )}
               </Button>
             </form>
           </Paper>
@@ -204,10 +225,14 @@ export default function Profile() {
               Change Password
             </Typography>
             <Typography sx={{ color: "#64748b", mb: 3 }}>
-              Use the same password rules already enforced in the backend and auth forms.
+              Use the same password rules as used in registration and login
+              forms.
             </Typography>
 
-            <form onSubmit={passwordForm.handleSubmit(handlePasswordSubmit)} noValidate>
+            <form
+              onSubmit={passwordForm.handleSubmit(handlePasswordSubmit)}
+              noValidate
+            >
               <TextField
                 fullWidth
                 type="password"
@@ -216,7 +241,9 @@ export default function Profile() {
                 {...passwordForm.register("oldPassword")}
                 error={!!passwordForm.formState.errors.oldPassword}
                 helperText={passwordForm.formState.errors.oldPassword?.message}
-                slotProps={{ formHelperText: { sx: { color: "error.main", ml: 0 } } }}
+                slotProps={{
+                  formHelperText: { sx: { color: "error.main", ml: 0 } },
+                }}
                 sx={errorFieldStyles}
               />
 
@@ -228,7 +255,9 @@ export default function Profile() {
                 {...passwordForm.register("newPassword")}
                 error={!!passwordForm.formState.errors.newPassword}
                 helperText={passwordForm.formState.errors.newPassword?.message}
-                slotProps={{ formHelperText: { sx: { color: "error.main", ml: 0 } } }}
+                slotProps={{
+                  formHelperText: { sx: { color: "error.main", ml: 0 } },
+                }}
                 sx={errorFieldStyles}
               />
 
@@ -240,7 +269,11 @@ export default function Profile() {
                 disabled={loading}
                 sx={{ minWidth: 220 }}
               >
-                {loading ? <CircularProgress size={22} color="inherit" /> : "Update Password"}
+                {loading ? (
+                  <CircularProgress size={22} color="inherit" />
+                ) : (
+                  "Update Password"
+                )}
               </Button>
             </form>
           </Paper>
