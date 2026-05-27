@@ -1,10 +1,22 @@
+import { useCallback } from "react";
 import { Outlet } from "react-router-dom";
 import { Box, Toolbar } from "@mui/material";
 
 import Navbar from "../components/common/Navbar";
 import Sidebar from "../components/common/Sidebar";
+import CourseCreatedAnimation from "../components/course/CourseCreatedAnimation";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { dismissCourseCreatedAnimation } from "../features/course/courseSlice";
 
 export default function DashboardLayout() {
+  const dispatch = useAppDispatch();
+  const courseCreationAnimation = useAppSelector(
+    (state) => state.course.courseCreationAnimation,
+  );
+  const handleAnimationComplete = useCallback(() => {
+    dispatch(dismissCourseCreatedAnimation());
+  }, [dispatch]);
+
   return (
     <Box
       sx={{
@@ -43,6 +55,13 @@ export default function DashboardLayout() {
           <Outlet />
         </Box>
       </Box>
+
+      {/* Kept at layout level so the success animation survives page navigation. */}
+      <CourseCreatedAnimation
+        open={Boolean(courseCreationAnimation)}
+        courseTitle={courseCreationAnimation?.title}
+        onComplete={handleAnimationComplete}
+      />
     </Box>
   );
 }

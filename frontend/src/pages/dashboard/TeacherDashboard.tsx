@@ -31,6 +31,7 @@ import {
   publishCourseThunk,
   unpublishCourseThunk,
 } from "../../features/course/courseThunks";
+import { clearRecentlyCreatedCourse } from "../../features/course/courseSlice";
 import { useAuth } from "../../hooks/useAuth";
 import { showToast } from "../../utils/toast";
 import { ICourse } from "../../types/courseTypes";
@@ -57,9 +58,13 @@ export default function TeacherDashboard() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { user } = useAuth();
-  const { myCourses, myCoursesMeta, loading, error } = useAppSelector(
-    (state) => state.course,
-  );
+  const {
+    myCourses,
+    myCoursesMeta,
+    loading,
+    error,
+    recentlyCreatedCourseId,
+  } = useAppSelector((state) => state.course);
 
   const courses = Array.isArray(myCourses) ? myCourses : [];
   const publishedCourses = courses.filter((course) => course.isPublished);
@@ -88,6 +93,21 @@ export default function TeacherDashboard() {
   useEffect(() => {
     dispatch(fetchMyCourses());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (
+      !recentlyCreatedCourseId ||
+      !courses.some((course) => course._id === recentlyCreatedCourseId)
+    ) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      dispatch(clearRecentlyCreatedCourse());
+    }, 3200);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [courses, dispatch, recentlyCreatedCourseId]);
 
   const handleTogglePublish = async (course: ICourse) => {
     try {
@@ -376,97 +396,109 @@ export default function TeacherDashboard() {
                     </Box>
                   </Paper>
 
-                  {courses.map((course, index) => (
-                    <Paper
-                      key={course._id}
-                      elevation={0}
-                      sx={{
-                        p: 1.75,
-                        borderRadius: "12px",
-                        mb: 1.5,
-                        display: "flex",
-                        justifyContent: "space-between",
-                        gap: 2,
-                        bgcolor: "#fff",
-                      }}
-                    >
-                      <Box sx={{ display: "flex", gap: 1.5, width: "100%" }}>
-                        <Avatar
-                          variant="rounded"
-                          sx={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: "10px",
-                            bgcolor: getCourseColor(index),
-                            fontWeight: 700,
-                          }}
-                        >
-                          {getCourseInitial(course)}
-                        </Avatar>
+                  {courses.map((course, index) => {
+                    const isRecentlyCreated =
+                      course._id === recentlyCreatedCourseId;
 
-                        <Box sx={{ width: "100%" }}>
-                          <Typography
-                            variant="subtitle2"
-                            sx={{ fontWeight: 600 }}
+                    return (
+                      <Paper
+                        key={course._id}
+                        elevation={0}
+                        sx={{
+                          p: 1.75,
+                          borderRadius: "12px",
+                          mb: 1.5,
+                          display: "flex",
+                          justifyContent: "space-between",
+                          gap: 2,
+                          bgcolor: isRecentlyCreated ? "#f0f9ff" : "#fff",
+                          border: isRecentlyCreated
+                            ? "1px solid #38bdf8"
+                            : "1px solid transparent",
+                          boxShadow: isRecentlyCreated
+                            ? "0 18px 42px rgba(14, 165, 233, 0.18)"
+                            : "none",
+                          transition: "all 0.35s ease",
+                        }}
+                      >
+                        <Box sx={{ display: "flex", gap: 1.5, width: "100%" }}>
+                          <Avatar
+                            variant="rounded"
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              borderRadius: "10px",
+                              bgcolor: getCourseColor(index),
+                              fontWeight: 700,
+                            }}
                           >
-                            {course.title}
-                          </Typography>
+                            {getCourseInitial(course)}
+                          </Avatar>
 
-                          <Stack
-                            direction="row"
-                            spacing={1}
-                            sx={{ mt: 0.5, mb: 0.75, flexWrap: "wrap" }}
-                          >
-                            {course.category ? (
+                          <Box sx={{ width: "100%" }}>
+                            <Typography
+                              variant="subtitle2"
+                              sx={{ fontWeight: 600 }}
+                            >
+                              {course.title}
+                            </Typography>
+
+                            <Stack
+                              direction="row"
+                              spacing={1}
+                              sx={{ mt: 0.5, mb: 0.75, flexWrap: "wrap" }}
+                            >
+                              {course.category ? (
+                                <Chip
+                                  size="small"
+                                  label={course.category}
+                                  sx={{ height: 22 }}
+                                />
+                              ) : null}
                               <Chip
                                 size="small"
-                                label={course.category}
+                                label={course.isPublished ? "Published" : "Draft"}
+                                color={course.isPublished ? "success" : "default"}
+                                variant={
+                                  course.isPublished ? "filled" : "outlined"
+                                }
                                 sx={{ height: 22 }}
                               />
-                            ) : null}
-                            <Chip
-                              size="small"
-                              label={course.isPublished ? "Published" : "Draft"}
-                              color={course.isPublished ? "success" : "default"}
-                              variant={
-                                course.isPublished ? "filled" : "outlined"
-                              }
-                              sx={{ height: 22 }}
-                            />
-                          </Stack>
+                            </Stack>
 
-                          <Typography
-                            variant="caption"
-                            sx={{ display: "block", color: COLORS.textSub }}
-                          >
-                            {course.enrollmentCount || 0} students enrolled
-                          </Typography>
+                            <Typography
+                              variant="caption"
+                              sx={{ display: "block", color: COLORS.textSub }}
+                            >
+                              {course.enrollmentCount || 0} students enrolled
+                            </Typography>
+                          </Box>
                         </Box>
-                      </Box>
 
-                      <Stack spacing={1} sx={{ alignItems: "flex-end" }}>
-                        <Button
-                          size="small"
-                          onClick={() => navigate(`/course/${course._id}`)}
-                        >
-                          View
-                        </Button>
-                        <Button
-                          size="small"
-                          onClick={() => handleTogglePublish(course)}
-                        >
-                          {course.isPublished ? "Unpublish" : "Publish"}
-                        </Button>
-                        <Button
-                          size="small"
-                          color="error"
-                          onClick={() => handleDeleteCourse(course._id)}
-                        >
-                          Delete
-                        </Button>
-                      </Stack>
-                    </Paper>
-                  ))}
+                        <Stack spacing={1} sx={{ alignItems: "flex-end" }}>
+                          <Button
+                            size="small"
+                            onClick={() => navigate(`/course/${course._id}`)}
+                          >
+                            View
+                          </Button>
+                          <Button
+                            size="small"
+                            onClick={() => handleTogglePublish(course)}
+                          >
+                            {course.isPublished ? "Unpublish" : "Publish"}
+                          </Button>
+                          <Button
+                            size="small"
+                            color="error"
+                            onClick={() => handleDeleteCourse(course._id)}
+                          >
+                            Delete
+                          </Button>
+                        </Stack>
+                      </Paper>
+                    );
+                  })}
                 </>
               )}
             </Grid>

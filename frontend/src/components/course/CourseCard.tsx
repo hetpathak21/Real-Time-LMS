@@ -9,9 +9,12 @@ import {
 import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
 import AutoStoriesRoundedIcon from "@mui/icons-material/AutoStoriesRounded";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { ICourse } from "../../types/courseTypes";
 
-type CourseCardProps = ICourse;
+type CourseCardProps = ICourse & {
+  isHighlighted?: boolean;
+};
 
 const ACCENTS = ["#0ea5e9", "#14b8a6", "#f59e0b", "#ec4899", "#6366f1"];
 
@@ -56,29 +59,45 @@ export default function CourseCard({
   instructor,
   isPublished,
   enrollmentCount,
+  isHighlighted = false,
 }: CourseCardProps) {
   const navigate = useNavigate();
   const accent = getAccent(_id);
   const teacherName = getTeacherName(teacherId, instructor);
 
   return (
-    <Card
-      sx={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        borderRadius: 3,
-        overflow: "hidden",
-        border: "1px solid #e2e8f0",
-        boxShadow: "0 6px 18px rgba(15, 23, 42, 0.06)",
-        transition: "all 0.25s ease",
-        "&:hover": {
-          transform: "translateY(-6px)",
-          boxShadow: "0 18px 40px rgba(14, 165, 233, 0.18)",
-          cursor: "pointer",
-        },
-      }}
+    <motion.div
+      initial={isHighlighted ? { y: 16, scale: 0.96 } : false}
+      animate={
+        isHighlighted
+          ? {
+              y: [16, -4, 0],
+              scale: [0.96, 1.03, 1],
+            }
+          : undefined
+      }
+      transition={{ duration: 1.35, ease: "easeOut" }}
+      style={{ height: "100%" }}
     >
+      <Card
+        sx={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          borderRadius: 3,
+          overflow: "hidden",
+          border: isHighlighted ? "1px solid #38bdf8" : "1px solid #e2e8f0",
+          boxShadow: isHighlighted
+            ? "0 22px 52px rgba(14, 165, 233, 0.22)"
+            : "0 6px 18px rgba(15, 23, 42, 0.06)",
+          transition: "all 0.25s ease",
+          "&:hover": {
+            transform: "translateY(-6px)",
+            boxShadow: "0 18px 40px rgba(14, 165, 233, 0.18)",
+            cursor: "pointer",
+          },
+        }}
+      >
       {/* IMAGE SECTION */}
       <Box
         sx={{
@@ -209,6 +228,7 @@ export default function CourseCard({
           Open
         </Button>
       </CardContent>
-    </Card>
+      </Card>
+    </motion.div>
   );
 }

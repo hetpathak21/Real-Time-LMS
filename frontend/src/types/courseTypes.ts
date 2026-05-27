@@ -31,7 +31,7 @@ export interface ICreateCoursePayload {
   title: string;
   description: string;
 
-  thumbnail?: string;
+  thumbnail?: string | File;
 
   category?: string;
   level: string;
@@ -43,7 +43,7 @@ export interface IUpdateCoursePayload {
   title?: string;
   description?: string;
 
-  thumbnail?: string;
+  thumbnail?: string | File;
 
   category?: string;
   price?: number;
