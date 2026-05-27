@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+
 import {
   changePasswordApi,
   getMeApi,
@@ -7,7 +8,9 @@ import {
   logoutApi,
   registerApi,
   updateProfileApi,
+  getTeachersApi,
 } from "../../api/authApi";
+
 import {
   ChangePasswordPayload,
   LoginPayload,
@@ -15,7 +18,9 @@ import {
   UpdateProfilePayload,
   AuthResponse,
 } from "./authTypes";
+
 import { IUser } from "../../types/userTypes";
+import { ITeacher } from "./authTypes";
 
 const getErrorMessage = (error: unknown, fallback: string) => {
   if (axios.isAxiosError(error)) {
@@ -108,3 +113,20 @@ export const changePassword = createAsyncThunk<
     return rejectWithValue(getErrorMessage(error, "Password change failed"));
   }
 });
+
+export const fetchTeachers = createAsyncThunk<
+  ITeacher[],
+  void,
+  { rejectValue: string }
+>(
+  "auth/fetchTeachers",
+  async (_, thunkAPI) => {
+    try {
+      return await getTeachersApi();
+    } catch {
+      return thunkAPI.rejectWithValue(
+        "Failed to fetch teachers!"
+      );
+    }
+  }
+);

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   Box,
   Typography,
@@ -7,22 +8,28 @@ import {
   LinearProgress,
 } from "@mui/material";
 
+import { useTheme } from "@mui/material/styles";
+
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+
+import { fetchTeachers } from "../../features/auth/authThunks";
+
 import { People, School } from "@mui/icons-material";
 
-const COLORS = {
-  primary: "#00a3ff",
-  bgLight: "#f4f7fd",
-  cardBg: "#ffffff",
-  textMain: "#2c3e50",
-  textSub: "#8a99ad",
-  bannerGreen: "#3bc0aa",
-};
-
 export default function CompleteAdminDashboard() {
+  const dispatch = useAppDispatch();
+  const theme = useTheme();
+
+  const { teachers, teachersLoading } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(fetchTeachers());
+  }, [dispatch]);
+
   return (
     <Box
       sx={{
-        bgcolor: COLORS.bgLight,
+        bgcolor: theme.palette.background.default,
         minHeight: "100vh",
         p: { xs: 2, md: 4 },
       }}
@@ -30,7 +37,7 @@ export default function CompleteAdminDashboard() {
       {/* HEADER */}
       <Typography
         variant="h5"
-        sx={{ fontWeight: 700, mb: 3, color: COLORS.textMain }}
+        sx={{ fontWeight: 700, mb: 3, color: theme.palette.text.primary}}
       >
         Admin Dashboard
       </Typography>
@@ -52,7 +59,7 @@ export default function CompleteAdminDashboard() {
               p: { xs: 2.5, md: 4 },
               borderRadius: 3,
               background: "linear-gradient(135deg, #1e927e 15%, #18c8ab 100%)",
-              color: "#fff",
+              color: theme.palette.common.white,
               display: "flex",
               flexDirection: "column",
               gap: 2,
@@ -185,36 +192,20 @@ export default function CompleteAdminDashboard() {
           </Paper>
         </Box>
 
-        {/* RIGHT SIDE */}
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
           
-          {/* INSTRUCTORS */}
+          {/* TEACHERS */}
           <Paper sx={{ p: 2.5, borderRadius: 3 }}>
             <Typography sx={{ fontWeight: 700, mb: 2 }}>
               Best Instructors
             </Typography>
 
+            {teachersLoading && (
+              <Typography variant="body2">Loading instructors...</Typography>
+            )}
+
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
-              {[
-                {
-                  name: "Nil Yeager",
-                  desc: "Backend Dev.",
-                  char: "N",
-                  color: "#d83232",
-                },
-                {
-                  name: "James Martin",
-                  desc: "UI/UX Designer",
-                  char: "J",
-                  color: "#7325c1",
-                },
-                {
-                  name: "David Frank",
-                  desc: "Sales Manager",
-                  char: "D",
-                  color: "#15cabd",
-                },
-              ].map((ins, i) => (
+              {teachers?.map((teacher, i) => (
                 <Box
                   key={i}
                   sx={{
@@ -224,15 +215,20 @@ export default function CompleteAdminDashboard() {
                   }}
                 >
                   <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
-                    <Avatar sx={{ width: 30, height: 30, bgcolor: ins.color }}>
-                      {ins.char}
+                    <Avatar
+                      sx={{
+                        width: 30,
+                        height: 30,
+                        bgcolor: "#15cabd",
+                      }}
+                    >
+                      {teacher.name?.charAt(0).toUpperCase()}
                     </Avatar>
 
                     <Box>
                       <Typography sx={{ fontWeight: 600, fontSize: 12 }}>
-                        {ins.name}
+                        {teacher.name}
                       </Typography>
-                      <Typography variant="caption">{ins.desc}</Typography>
                     </Box>
                   </Box>
 

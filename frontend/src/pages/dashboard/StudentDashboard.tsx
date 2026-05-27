@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -8,18 +10,22 @@ import {
 } from "@mui/material";
 
 import { AssignmentTurnedIn, AccessTime } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { useTheme } from "@mui/material/styles";
 
-const COLORS = {
-  primary: "#00a3ff",
-  primaryLight: "#e0f2fe",
-  bgLight: "#f4f7fd",
-  cardBg: "#ffffff",
-  textMain: "#1e293b",
-  textSub: "#64748b",
-  border: "#e2e8f0",
-  purple: "#9124f7",
-};
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+
+import { fetchTeachers } from "../../features/auth/authThunks";
+
+// const COLORS = {
+//   primary: "#00a3ff",
+//   primaryLight: "#e0f2fe",
+//   bgLight: "#f4f7fd",
+//   cardBg: "#ffffff",
+//   textMain: "#1e293b",
+//   textSub: "#64748b",
+//   border: "#e2e8f0",
+//   purple: "#9124f7",
+// };
 
 const activeCourses = [
   {
@@ -31,24 +37,18 @@ const activeCourses = [
   },
   {
     title: "UI Design Principles",
-    instructor: "Theron Trump",
+    instructor: "James Martin",
     progress: 40,
     char: "D",
     color: "#eab308",
   },
   {
     title: "Node.js Backend Architecture",
-    instructor: "Johen Mark",
+    instructor: "David Frank",
     progress: 15,
     char: "N",
     color: "#ec4899",
   },
-];
-
-const instructors = [
-  { name: "Nil Yeager", desc: "React Advisor" },
-  { name: "Theron Trump", desc: "UI Expert" },
-  { name: "Tyler Mark", desc: "Backend Dev." },
 ];
 
 const dashboardStats = [
@@ -65,14 +65,27 @@ const dashboardStats = [
 ];
 
 export default function StudentDashboard() {
+  const dispatch = useAppDispatch();
+  const theme = useTheme();
+
+  const { teachers, teachersLoading } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(fetchTeachers());
+  }, [dispatch]);
+
   const navigate = useNavigate();
+
   return (
     <Box
       sx={{
-        minHeight: "100vh",
-        bgcolor: COLORS.bgLight,
+        minHeight: "150vh",
+        minWidth: "81vw",
+        bgcolor: theme.palette.background.default,
         px: { xs: 2, sm: 3, md: 4 },
-        py: { xs: 2, md: 3 },
+        py: { xs: 2, md: 4 },
+        mt: -6.8,
+        ml: -4
       }}
     >
       {/* ================= HEADER ================= */}
@@ -90,7 +103,7 @@ export default function StudentDashboard() {
           <Typography sx={{ fontWeight: 800, fontSize: 28 }}>
             Student Workspace
           </Typography>
-          <Typography sx={{ color: COLORS.textSub }}>
+          <Typography sx={{ color: theme.palette.text.secondary }}>
             Track courses, assignments and progress.
           </Typography>
         </Box>
@@ -99,10 +112,14 @@ export default function StudentDashboard() {
           variant="contained"
           onClick={() => navigate("/courses")}
           sx={{
-            bgcolor: COLORS.primary,
+            bgcolor: theme.palette.primary.main,
+            color: "#fff",
             textTransform: "none",
             borderRadius: 2,
             px: 3,
+            "&hover": {
+              bgcolor: theme.palette.primary.dark,
+            },
           }}
         >
           Continue Learning
@@ -124,14 +141,13 @@ export default function StudentDashboard() {
             sx={{
               p: { xs: 2.5, md: 4 },
               borderRadius: 3,
-              color: "#fff",
+              color: theme.palette.common.white,
               position: "relative",
               overflow: "hidden",
               background: `linear-gradient(135deg, #770cea, #8b4df6)`,
               mb: 3,
             }}
           >
-
             <Box
               sx={{
                 display: "grid",
@@ -189,7 +205,7 @@ export default function StudentDashboard() {
             </Box>
           </Paper>
 
-          {/* ACTIVE COURSES (USES activeCourses PROPERLY) */}
+          {/* ACTIVE COURSES */}
           <Box sx={{ display: "grid", gap: 3 }}>
             <Paper sx={{ p: 2.5, borderRadius: 3 }}>
               <Typography sx={{ fontWeight: 700, mb: 2 }}>
@@ -221,7 +237,12 @@ export default function StudentDashboard() {
                       <LinearProgress
                         value={c.progress}
                         variant="determinate"
-                        sx={{ mt: 1, height: 7, borderRadius: 5 }}
+                        sx={{
+                          mt: 1,
+                          height: 7,
+                          borderRadius: 5,
+                          bgcolor: theme.palette.action.disabledBackground,
+                        }}
                       />
                     </Box>
 
@@ -235,30 +256,42 @@ export default function StudentDashboard() {
           </Box>
         </Box>
 
-        {/* ================= RIGHT SIDEBAR (USES instructors PROPERLY) ================= */}
         <Paper sx={{ p: 2.5, borderRadius: 3, height: "fit-content" }}>
           <Typography sx={{ fontWeight: 700, mb: 2 }}>
             My Instructors
           </Typography>
 
+          {teachersLoading && (
+            <Typography variant="body2">Loading instructors...</Typography>
+          )}
+
           <Box sx={{ display: "grid", gap: 2 }}>
-            {instructors.map((i, idx) => (
+            {teachers?.map((teacher, idx) => (
               <Box
                 key={idx}
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  borderBottom: "1px solid #e2e8f0",
+                  borderBottom: `1px solid ${theme.palette.divider}`,
                   pb: 1.5,
                 }}
               >
                 <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
-                  <Avatar>{i.name[0]}</Avatar>
+                  <Avatar
+                    sx={{
+                      width: 30,
+                      height: 30,
+                      bgcolor: "#15cabd",
+                    }}
+                  >
+                    {teacher.name?.charAt(0).toUpperCase()}
+                  </Avatar>
 
                   <Box>
-                    <Typography sx={{ fontWeight: 700 }}>{i.name}</Typography>
-                    <Typography variant="caption">{i.desc}</Typography>
+                    <Typography sx={{ fontWeight: 700 }}>
+                      {teacher.name}
+                    </Typography>
                   </Box>
                 </Box>
 

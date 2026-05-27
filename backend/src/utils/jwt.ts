@@ -4,25 +4,26 @@ import jwt from "jsonwebtoken";
 export interface JwtPayload {
   userId: string;
   email?: string;
+  name?: string;
   role: string;
   roles?:string[];
 }
 
-//Generate Access Token (short-lived)
+//Generate Access Token 
 export const generateAccessToken = (payload: JwtPayload) => {
   return jwt.sign(payload, process.env.JWT_ACCESS_SECRET as string, {
     expiresIn: "30m",
   });
 };
 
-//Generate Refresh Token (long-lived)
+//Generate Refresh Token
 export const generateRefreshToken = (payload: JwtPayload) => {
   return jwt.sign(payload, process.env.JWT_REFRESH_SECRET as string, {
     expiresIn: "30d",
   });
 };
 
-//Verify Access Token (for protected routes)
+//Verify Access Token 
 export const verifyAccessToken = (token: string): JwtPayload => {
   try {
     return jwt.verify(
@@ -34,7 +35,7 @@ export const verifyAccessToken = (token: string): JwtPayload => {
   }
 };
 
-//Verify Refresh Token (for refresh API)
+//Verify Refresh Token 
 export const verifyRefreshToken = (token: string): JwtPayload => {
   try {
     return jwt.verify(

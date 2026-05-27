@@ -28,6 +28,7 @@ import {
   getMeController,
   updateProfileController,
   changePasswordController,
+  getTeachersController,
 } from "./AuthController";
 
 import { authMiddleware } from "../../middleware/AuthMiddleware";
@@ -55,6 +56,12 @@ router.post(
 router.post("/logout", authMiddleware, logoutController);
 
 router.get("/me", authMiddleware, getMeController);
+
+router.get(
+  "/teachers",
+  authMiddleware,
+  getTeachersController
+);
 
 router.put(
   "/profile",
