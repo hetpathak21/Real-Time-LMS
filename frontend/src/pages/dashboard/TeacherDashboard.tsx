@@ -13,6 +13,7 @@ import {
   Chip,
   Stack,
   CircularProgress,
+  alpha,
 } from "@mui/material";
 
 import {
@@ -326,7 +327,150 @@ export default function TeacherDashboard() {
                   </Button>
                 </Paper>
               ) : (
+                // <>
+                //   <Paper
+                //     elevation={0}
+                //     onClick={() => navigate("/teacher/create-course")}
+                //     sx={{
+                //       p: 2,
+                //       borderRadius: "12px",
+                //       mb: 2,
+                //       display: "flex",
+                //       alignItems: "center",
+                //       gap: 2,
+                //       cursor: "pointer",
+                //       border: "2px dashed #bfdbfe",
+                //       bgcolor: "#f8fbff",
+                //       transition: "0.2s",
+                //       "&:hover": {
+                //         bgcolor: "#eef6ff",
+                //         transform: "translateY(-2px)",
+                //       },
+                //     }}
+                //   >
+                //     <RateReview
+                //       sx={{
+                //         fontSize: 34,
+                //         color: COLORS.primary,
+                //       }}
+                //     />
+
+                //     <Box>
+                //       <Typography
+                //         variant="subtitle2"
+                //         sx={{
+                //           fontWeight: 700,
+                //           color: COLORS.textMain,
+                //         }}
+                //       >
+                //         Create New Course
+                //       </Typography>
+
+                //       <Typography
+                //         variant="caption"
+                //         sx={{
+                //           color: COLORS.textSub,
+                //         }}
+                //       >
+                //         Add a new learning program
+                //       </Typography>
+                //     </Box>
+                //   </Paper>
+
+                //   {courses.map((course, index) => (
+                //     <Paper
+                //       key={course._id}
+                //       elevation={0}
+                //       sx={{
+                //         p: 1.75,
+                //         borderRadius: "12px",
+                //         mb: 1.5,
+                //         display: "flex",
+                //         justifyContent: "space-between",
+                //         gap: 2,
+                //         bgcolor: "#fff",
+                //       }}
+                //     >
+                //       <Box sx={{ display: "flex", gap: 1.5, width: "100%" }}>
+                //         <Avatar
+                //           variant="rounded"
+                //           sx={{
+                //             width: 40,
+                //             height: 40,
+                //             borderRadius: "10px",
+                //             bgcolor: getCourseColor(index),
+                //             fontWeight: 700,
+                //           }}
+                //         >
+                //           {getCourseInitial(course)}
+                //         </Avatar>
+
+                //         <Box sx={{ width: "100%" }}>
+                //           <Typography
+                //             variant="subtitle2"
+                //             sx={{ fontWeight: 600 }}
+                //           >
+                //             {course.title}
+                //           </Typography>
+
+                //           <Stack
+                //             direction="row"
+                //             spacing={1}
+                //             sx={{ mt: 0.5, mb: 0.75, flexWrap: "wrap" }}
+                //           >
+                //             {course.category ? (
+                //               <Chip
+                //                 size="small"
+                //                 label={course.category}
+                //                 sx={{ height: 22 }}
+                //               />
+                //             ) : null}
+                //             <Chip
+                //               size="small"
+                //               label={course.isPublished ? "Published" : "Draft"}
+                //               color={course.isPublished ? "success" : "default"}
+                //               variant={
+                //                 course.isPublished ? "filled" : "outlined"
+                //               }
+                //               sx={{ height: 22 }}
+                //             />
+                //           </Stack>
+
+                //           <Typography
+                //             variant="caption"
+                //             sx={{ display: "block", color: COLORS.textSub }}
+                //           >
+                //             {course.enrollmentCount || 0} students enrolled
+                //           </Typography>
+                //         </Box>
+                //       </Box>
+
+                //       <Stack spacing={1} sx={{ alignItems: "flex-end" }}>
+                //         <Button
+                //           size="small"
+                //           onClick={() => navigate(`/course/${course._id}`)}
+                //         >
+                //           View
+                //         </Button>
+                //         <Button
+                //           size="small"
+                //           onClick={() => handleTogglePublish(course)}
+                //         >
+                //           {course.isPublished ? "Unpublish" : "Publish"}
+                //         </Button>
+                //         <Button
+                //           size="small"
+                //           color="error"
+                //           onClick={() => handleDeleteCourse(course._id)}
+                //         >
+                //           Delete
+                //         </Button>
+                //       </Stack>
+                //     </Paper>
+                //   ))}
+                // </>
                 <>
+                  {/* ================= PRESERVED CREATE COURSE TRIGGER ================= */}
                   <Paper
                     elevation={0}
                     onClick={() => navigate("/teacher/create-course")}
@@ -376,97 +520,153 @@ export default function TeacherDashboard() {
                     </Box>
                   </Paper>
 
-                  {courses.map((course, index) => (
-                    <Paper
-                      key={course._id}
-                      elevation={0}
-                      sx={{
-                        p: 1.75,
-                        borderRadius: "12px",
-                        mb: 1.5,
-                        display: "flex",
-                        justifyContent: "space-between",
-                        gap: 2,
-                        bgcolor: "#fff",
-                      }}
-                    >
-                      <Box sx={{ display: "flex", gap: 1.5, width: "100%" }}>
-                        <Avatar
-                          variant="rounded"
+                  {/* ================= PREMIUM FIXED SCROLL VIEWPORT WRAPPER ================= */}
+                  <Box
+                    sx={{
+                      maxHeight: "380px", // Clamps the vertical layout height perfectly
+                      overflowY: "auto",
+                      pr: 0.5, // Padding buffer prevents layout shift when scrollbar activates
+                      display: "flex",
+                      flexDirection: "column",
+                      // High-End Custom Scrollbar Styling
+                      "&::-webkit-scrollbar": {
+                        width: "6px",
+                      },
+                      "&::-webkit-scrollbar-track": {
+                        background: "transparent",
+                      },
+                      "&::-webkit-scrollbar-thumb": {
+                        background: alpha(COLORS.textSub, 0.2),
+                        borderRadius: "10px",
+                      },
+                      "&::-webkit-scrollbar-thumb:hover": {
+                        background: alpha(COLORS.textSub, 0.4),
+                      },
+                    }}
+                  >
+                    {courses.map((course, index) => (
+                      <Paper
+                        key={course._id}
+                        elevation={0}
+                        sx={{
+                          p: 1.75,
+                          borderRadius: "12px",
+                          mb: 1.5,
+                          display: "flex",
+                          justifyContent: "space-between",
+                          gap: 2,
+                          bgcolor: "#fff",
+                          border: "1px solid #e2e8f0", // Subtle containment outline
+                          "&:last-child": {
+                            mb: 0, // Cleans trailing margin at the bottom of scroll block
+                          },
+                        }}
+                      >
+                        <Box
                           sx={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: "10px",
-                            bgcolor: getCourseColor(index),
-                            fontWeight: 700,
+                            display: "flex",
+                            gap: 1.5,
+                            width: "100%",
+                            minWidth: 0,
                           }}
                         >
-                          {getCourseInitial(course)}
-                        </Avatar>
-
-                        <Box sx={{ width: "100%" }}>
-                          <Typography
-                            variant="subtitle2"
-                            sx={{ fontWeight: 600 }}
+                          <Avatar
+                            variant="rounded"
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              borderRadius: "10px",
+                              bgcolor: getCourseColor(index),
+                              fontWeight: 700,
+                              flexShrink: 0, // Prevents layout crushing during flex distributions
+                            }}
                           >
-                            {course.title}
-                          </Typography>
+                            {getCourseInitial(course)}
+                          </Avatar>
 
-                          <Stack
-                            direction="row"
-                            spacing={1}
-                            sx={{ mt: 0.5, mb: 0.75, flexWrap: "wrap" }}
-                          >
-                            {course.category ? (
+                          <Box sx={{ width: "100%", minWidth: 0 }}>
+                            <Typography
+                              variant="subtitle2"
+                              sx={{
+                                fontWeight: 600,
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis", // Elegant title protection truncation
+                              }}
+                            >
+                              {course.title}
+                            </Typography>
+
+                            <Stack
+                              direction="row"
+                              spacing={1}
+                              sx={{ mt: 0.5, mb: 0.75, flexWrap: "wrap" }}
+                            >
+                              {course.category ? (
+                                <Chip
+                                  size="small"
+                                  label={course.category}
+                                  sx={{ height: 22 }}
+                                />
+                              ) : null}
                               <Chip
                                 size="small"
-                                label={course.category}
+                                label={
+                                  course.isPublished ? "Published" : "Draft"
+                                }
+                                color={
+                                  course.isPublished ? "success" : "default"
+                                }
+                                variant={
+                                  course.isPublished ? "filled" : "outlined"
+                                }
                                 sx={{ height: 22 }}
                               />
-                            ) : null}
-                            <Chip
-                              size="small"
-                              label={course.isPublished ? "Published" : "Draft"}
-                              color={course.isPublished ? "success" : "default"}
-                              variant={
-                                course.isPublished ? "filled" : "outlined"
-                              }
-                              sx={{ height: 22 }}
-                            />
-                          </Stack>
+                            </Stack>
 
-                          <Typography
-                            variant="caption"
-                            sx={{ display: "block", color: COLORS.textSub }}
-                          >
-                            {course.enrollmentCount || 0} students enrolled
-                          </Typography>
+                            <Typography
+                              variant="caption"
+                              sx={{ display: "block", color: COLORS.textSub }}
+                            >
+                              {course.enrollmentCount || 0} students enrolled
+                            </Typography>
+                          </Box>
                         </Box>
-                      </Box>
 
-                      <Stack spacing={1} sx={{ alignItems: "flex-end" }}>
-                        <Button
-                          size="small"
-                          onClick={() => navigate(`/course/${course._id}`)}
+                        <Stack
+                          spacing={1}
+                          sx={{ alignItems: "flex-end", flexShrink: 0 }}
                         >
-                          View
-                        </Button>
-                        <Button
-                          size="small"
-                          onClick={() => handleTogglePublish(course)}
-                        >
-                          {course.isPublished ? "Unpublish" : "Publish"}
-                        </Button>
-                        <Button
-                          size="small"
-                          color="error"
-                          onClick={() => handleDeleteCourse(course._id)}
-                        >
-                          Delete
-                        </Button>
-                      </Stack>
-                    </Paper>
-                  ))}
+                          <Button
+                            size="small"
+                            onClick={() => navigate(`/course/${course._id}`)}
+                            sx={{ textTransform: "none", fontWeight: 600 }}
+                          >
+                            View
+                          </Button>
+                          <Button
+                            size="small"
+                            onClick={() => handleTogglePublish(course)}
+                            sx={{
+                              textTransform: "none",
+                              fontWeight: 600,
+                              color: COLORS.textSub,
+                            }}
+                          >
+                            {course.isPublished ? "Unpublish" : "Publish"}
+                          </Button>
+                          <Button
+                            size="small"
+                            color="error"
+                            onClick={() => handleDeleteCourse(course._id)}
+                            sx={{ textTransform: "none", fontWeight: 600 }}
+                          >
+                            Delete
+                          </Button>
+                        </Stack>
+                      </Paper>
+                    ))}
+                  </Box>
                 </>
               )}
             </Grid>
