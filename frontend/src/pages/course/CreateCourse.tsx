@@ -177,7 +177,7 @@ export default function CreateCourse() {
         level: form.level,
         price: Number(form.price),
         tags: tagsArray,
-        thumbnail: form.thumbnail,
+        thumbnail: form.thumbnail ?? undefined,
       };
 
       /**
@@ -196,7 +196,7 @@ export default function CreateCourse() {
           "success"
         );
 
-        navigate(`/courses/${courseId}`);
+        navigate(`/course/${courseId}`);
       }
 
       /**
@@ -212,13 +212,20 @@ export default function CreateCourse() {
           "success"
         );
 
-        navigate(`/courses/${course._id}`);
+        navigate(`/course/${course._id}`);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log(error);
 
+      const message =
+        typeof error === "string"
+          ? error
+          : error instanceof Error
+          ? error.message
+          : "Validation failed";
+
       showToast(
-        error || "Validation failed",
+        message,
         "error"
       );
     }

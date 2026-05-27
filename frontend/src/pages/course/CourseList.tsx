@@ -280,6 +280,7 @@ import { useNavigate } from "react-router-dom";
 import CourseCard from "../../components/course/CourseCard";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { fetchAllCourses } from "../../features/course/courseThunks";
+import { clearRecentlyCreatedCourse } from "../../features/course/courseSlice";
 
 const COLORS = {
   bgLight: "#f4f7fd",
@@ -290,13 +291,30 @@ const COLORS = {
 
 export default function CourseList() {
   const dispatch = useAppDispatch();
-  const { courses, loading } = useAppSelector((state) => state.course);
+  const { courses, loading, recentlyCreatedCourseId } = useAppSelector(
+    (state) => state.course,
+  );
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(fetchAllCourses());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (
+      !recentlyCreatedCourseId ||
+      !courses.some((course) => course._id === recentlyCreatedCourseId)
+    ) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      dispatch(clearRecentlyCreatedCourse());
+    }, 3200);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [courses, dispatch, recentlyCreatedCourseId]);
 
   const filteredCourses = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -343,7 +361,10 @@ export default function CourseList() {
           }}
         >
           <Box>
-            <Typography variant="h5" fontWeight={800} color={COLORS.textMain}>
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: 800, color: COLORS.textMain }}
+            >
               Course Explorer
             </Typography>
             <Typography sx={{ color: COLORS.textSub }}>
@@ -421,7 +442,7 @@ export default function CourseList() {
             bgcolor: "#fff",
           }}
         >
-          <Typography variant="h6" fontWeight={800}>
+          <Typography variant="h6" sx={{ fontWeight: 800 }}>
             No courses yet
           </Typography>
 
@@ -449,7 +470,7 @@ export default function CourseList() {
             bgcolor: "#fff",
           }}
         >
-          <Typography variant="h6" fontWeight={800}>
+          <Typography variant="h6" sx={{ fontWeight: 800 }}>
             No matching courses found
           </Typography>
 
@@ -480,7 +501,11 @@ export default function CourseList() {
           }}
         >
           {filteredCourses.map((course) => (
-            <CourseCard key={course._id} {...course} />
+            <CourseCard
+              key={course._id}
+              {...course}
+              isHighlighted={course._id === recentlyCreatedCourseId}
+            />
           ))}
         </Box>
       )}
