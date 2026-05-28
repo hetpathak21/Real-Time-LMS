@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Box, Paper, Typography,Stack } from "@mui/material";
+import { Box, Paper, Typography, Stack } from "@mui/material";
 import AutoStoriesRoundedIcon from "@mui/icons-material/AutoStoriesRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import SchoolRoundedIcon from "@mui/icons-material/SchoolRounded";
@@ -470,7 +470,9 @@ export default function CourseCreatedAnimation({
               </Box>
 
               <Box sx={{ minWidth: 0, flex: 1 }}>
-                <Stack direction="row" alignItems="center" spacing={0.8}>
+                <Stack
+                  sx={{ direction: "row", alignItems: "center", spacing: 0.8 }}
+                >
                   <Typography sx={{ fontWeight: 900, color: "#0f172a" }}>
                     Course created successfully
                   </Typography>
