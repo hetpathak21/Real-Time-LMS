@@ -254,7 +254,6 @@ import LayerIcon from "@mui/icons-material/LayersRounded";
 import GroupIcon from "@mui/icons-material/GroupOutlined";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForwardRounded";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { ICourse } from "../../types/courseTypes";
 
 type CourseCardProps = ICourse & {
@@ -446,6 +445,5 @@ export default function CourseCard(props: CourseCardProps) {
         </Box>
       </CardContent>
       </Card>
-    </motion.div>
   );
 }
