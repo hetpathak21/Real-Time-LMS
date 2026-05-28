@@ -365,9 +365,9 @@
 
 //----v2
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Alert, Box, Button, Chip, Paper, Typography, alpha, Stack, Divider } from "@mui/material";
+import { Alert, Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, LinearProgress, Paper, Typography, alpha, Stack, Divider } from "@mui/material";
 
 // Performance direct path imports to avoid Vite pre-bundling warnings
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
@@ -383,10 +383,13 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { deleteCourseThunk, fetchCourseById } from "../../features/course/courseThunks";
+import { enrollInCourseThunk, fetchMyEnrollments } from "../../features/enrollment/enrollmentThunks";
 import { fetchLessonsByCourse, deleteLessonThunk } from "../../features/lesson/lessonThunks";
 import { useAuth } from "../../hooks/useAuth";
 import { ICourse } from "../../types/courseTypes";
+import { IEnrollment } from "../../types/enrollmentTypes";
 import { showToast } from "../../utils/toast";
+import CourseAssignmentsSection from "../../components/assignment/CourseAssignmentsSection";
 
 const COLORS = {
   primary: "#00a3ff",
@@ -416,13 +419,24 @@ const getCourseTeacherName = (
   return "Instructor";
 };
 
+const getEnrollmentCourseId = (enrollment: IEnrollment) => {
+  if (typeof enrollment.courseId === "object") {
+    return enrollment.courseId._id;
+  }
+
+  return enrollment.courseId;
+};
+
 export default function CourseDetails() {
   const { courseId } = useParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { user, isAuthenticated, isStudent } = useAuth();
+  const [paymentOpen, setPaymentOpen] = useState(false);
+  const [paymentStep, setPaymentStep] = useState<"review" | "processing" | "completed">("review");
   const { selectedCourse, loading } = useAppSelector((s) => s.course);
   const { courseLessons, error: lessonError } = useAppSelector((s) => s.lesson);
+  const { myEnrollments, loading: enrollmentLoading } = useAppSelector((s) => s.enrollment);
 
   useEffect(() => {
     if (courseId) {
@@ -430,6 +444,12 @@ export default function CourseDetails() {
       dispatch(fetchLessonsByCourse(courseId));
     }
   }, [courseId, dispatch]);
+
+  useEffect(() => {
+    if (isAuthenticated && isStudent) {
+      dispatch(fetchMyEnrollments());
+    }
+  }, [dispatch, isAuthenticated, isStudent]);
 
   const lessons = useMemo(
     () => [...courseLessons].sort((a, b) => Number(a.order) - Number(b.order)),
@@ -443,6 +463,17 @@ export default function CourseDetails() {
       (typeof selectedCourse.teacherId === "object"
         ? selectedCourse.teacherId._id
         : selectedCourse.teacherId);
+
+  const isAlreadyEnrolled = useMemo(
+    () =>
+      Boolean(
+        courseId &&
+          myEnrollments.some(
+            (enrollment) => getEnrollmentCourseId(enrollment) === courseId
+          )
+      ),
+    [courseId, myEnrollments]
+  );
 
   const teacherName = getCourseTeacherName(
     selectedCourse?.teacherId,
@@ -461,6 +492,41 @@ export default function CourseDetails() {
     } catch (err: any) {
       showToast(err || "Failed to delete course", "error");
     }
+  };
+
+  const openPaymentDialog = () => {
+    if (isAlreadyEnrolled) {
+      showToast("You are already enrolled in this course", "info");
+      return;
+    }
+
+    setPaymentStep("review");
+    setPaymentOpen(true);
+  };
+
+  const handleDummyPayment = () => {
+    if (!courseId) {
+      return;
+    }
+
+    setPaymentStep("processing");
+
+    window.setTimeout(() => {
+      void (async () => {
+        try {
+          await dispatch(enrollInCourseThunk({ courseId })).unwrap();
+          await dispatch(fetchMyEnrollments()).unwrap();
+          setPaymentStep("completed");
+          showToast("Payment completed and course enrolled", "success");
+        } catch (err) {
+          setPaymentStep("review");
+          showToast(
+            err instanceof Error ? err.message : "Enrollment failed",
+            "error"
+          );
+        }
+      })();
+    }, 700);
   };
 
   if (loading && !selectedCourse) {
@@ -556,7 +622,8 @@ export default function CourseDetails() {
                   <Button
                     variant="contained"
                     disableElevation
-                    onClick={() => console.log("Enroll course:", courseId)}
+                    onClick={openPaymentDialog}
+                    disabled={enrollmentLoading || isAlreadyEnrolled}
                     sx={{
                       borderRadius: "12px",
                       textTransform: "none",
@@ -566,7 +633,7 @@ export default function CourseDetails() {
                       "&:hover": { bgcolor: "#0092e4" },
                     }}
                   >
-                    Enroll Now
+                    {isAlreadyEnrolled ? "Enrolled" : "Enroll Now"}
                   </Button>
                 )}
 
@@ -659,6 +726,7 @@ export default function CourseDetails() {
         }}
       >
         {/* Left Hand: Core Curriculum Chapters Block */}
+        <Box sx={{ display: "grid", gap: 3 }}>
         <Paper elevation={0} sx={{ p: { xs: 2.5, md: 4 }, borderRadius: "20px", border: `1px solid ${COLORS.border}`, bgcolor: COLORS.cardBg }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
             <Typography variant="h6" fontWeight={800} color={COLORS.textMain}>
@@ -747,6 +815,15 @@ export default function CourseDetails() {
           )}
         </Paper>
 
+        {courseId && (
+          <CourseAssignmentsSection
+            courseId={courseId}
+            canManage={Boolean(isTeacherOwner)}
+            canSubmit={Boolean(isAuthenticated && isStudent)}
+          />
+        )}
+        </Box>
+
         {/* Right Hand: Context Control Action Sidebar */}
         <Stack spacing={3}>
           {/* Classification Context Meta Snapshot */}
@@ -801,6 +878,85 @@ export default function CourseDetails() {
           </Paper>
         </Stack>
       </Box>
+
+      <Dialog
+        open={paymentOpen}
+        onClose={() => paymentStep !== "processing" && setPaymentOpen(false)}
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle>
+          {paymentStep === "completed" ? "Payment completed" : "Complete enrollment"}
+        </DialogTitle>
+        <DialogContent>
+          {paymentStep === "processing" && (
+            <Box sx={{ py: 2 }}>
+              <Typography sx={{ color: COLORS.textSub, mb: 2 }}>
+                Processing dummy payment...
+              </Typography>
+              <LinearProgress />
+            </Box>
+          )}
+
+          {paymentStep === "completed" && (
+            <Box sx={{ py: 1 }}>
+              <Typography sx={{ color: COLORS.textMain, fontWeight: 700 }}>
+                You are enrolled in {selectedCourse.title}.
+              </Typography>
+              <Typography variant="body2" sx={{ color: COLORS.textSub, mt: 1 }}>
+                Payment completed successfully. This is a temporary dummy payment flow.
+              </Typography>
+            </Box>
+          )}
+
+          {paymentStep === "review" && (
+            <Box sx={{ display: "grid", gap: 1.5 }}>
+              <Typography sx={{ color: COLORS.textSub }}>
+                Review this temporary payment before enrolling.
+              </Typography>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2,
+                  borderRadius: "14px",
+                  border: `1px solid ${COLORS.border}`,
+                  bgcolor: "#f8fafc",
+                }}
+              >
+                <Typography sx={{ fontWeight: 800, color: COLORS.textMain }}>
+                  {selectedCourse.title}
+                </Typography>
+                <Typography variant="body2" sx={{ color: COLORS.textSub }}>
+                  Amount: {selectedCourse.price ? `Rs. ${selectedCourse.price}` : "Free"}
+                </Typography>
+              </Paper>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3 }}>
+          {paymentStep === "completed" ? (
+            <Button variant="contained" onClick={() => setPaymentOpen(false)}>
+              Continue
+            </Button>
+          ) : (
+            <>
+              <Button
+                onClick={() => setPaymentOpen(false)}
+                disabled={paymentStep === "processing"}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleDummyPayment}
+                disabled={paymentStep === "processing"}
+              >
+                Pay Now
+              </Button>
+            </>
+          )}
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

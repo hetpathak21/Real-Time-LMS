@@ -108,10 +108,10 @@ export const updateSubmissionThunk = createAsyncThunk<
  */
 export const gradeSubmissionThunk = createAsyncThunk<
   ISubmission,
-  { id: string; marks: number; feedback: string }
->("submission/grade", async ({ id, marks, feedback }, thunkAPI) => {
+  { id: string; grade: number; feedback: string }
+>("submission/grade", async ({ id, grade, feedback }, thunkAPI) => {
   try {
-    return await gradeSubmission(id, marks, feedback);
+    return await gradeSubmission(id, grade, feedback);
   } catch (error) {
     return thunkAPI.rejectWithValue(getError(error));
   }

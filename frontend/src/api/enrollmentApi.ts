@@ -5,96 +5,94 @@ import {
   IUpdateEnrollmentPayload,
   IEnrollmentQuery,
   IEnrollmentDetails,
+  IEnrollmentListResponse,
 } from "../types/enrollmentTypes";
 
-/**
- * Enroll student in course
- */
+const emptyEnrollmentMeta = {
+  page: 1,
+  limit: 10,
+  total: 0,
+};
+
+const normalizeEnrollmentListResponse = (
+  payload: unknown
+): IEnrollmentListResponse => {
+  if (Array.isArray(payload)) {
+    return {
+      enrollments: payload as IEnrollment[],
+      meta: {
+        ...emptyEnrollmentMeta,
+        total: payload.length,
+      },
+    };
+  }
+
+  const response = (payload || {}) as Partial<IEnrollmentListResponse>;
+
+  return {
+    enrollments: Array.isArray(response.enrollments)
+      ? response.enrollments
+      : [],
+    meta: response.meta || emptyEnrollmentMeta,
+  };
+};
+
 export const enrollInCourse = async (
   data: IEnrollCoursePayload
 ): Promise<IEnrollment> => {
-  const res = await axiosInstance.post("/enrollments", data);
-  return res.data;
+  const res = await axiosInstance.post(
+    `/enrollment/courses/${data.courseId}/enroll`
+  );
+  return res.data.data;
 };
 
-/**
- * Get all enrollments (Admin/Teacher)
- */
 export const getEnrollments = async (
+  _query?: IEnrollmentQuery
+): Promise<IEnrollment[]> => {
+  return [];
+};
+
+export const getEnrollmentById = async (
+  courseId: string
+): Promise<IEnrollmentDetails> => {
+  const res = await axiosInstance.get(`/enrollment/${courseId}/progress`);
+  return res.data.data;
+};
+
+export const getMyEnrollments = async (
   query?: IEnrollmentQuery
 ): Promise<IEnrollment[]> => {
-  const res = await axiosInstance.get("/enrollments", {
+  const res = await axiosInstance.get("/enrollment/my-enrolled-courses", {
     params: query,
   });
-  return res.data;
+  return normalizeEnrollmentListResponse(res.data.data).enrollments;
 };
 
-/**
- * Get enrollment by ID
- */
-export const getEnrollmentById = async (
-  enrollmentId: string
-): Promise<IEnrollmentDetails> => {
-  const res = await axiosInstance.get(`/enrollments/${enrollmentId}`);
-  return res.data;
-};
-
-/**
- * Get my enrolled courses (Student dashboard)
- */
-export const getMyEnrollments = async (): Promise<IEnrollment[]> => {
-  const res = await axiosInstance.get("/enrollments/me");
-  return res.data;
-};
-
-/**
- * Update enrollment (progress/status)
- */
 export const updateEnrollment = async (
-  enrollmentId: string,
-  data: IUpdateEnrollmentPayload
+  courseId: string,
+  _data: IUpdateEnrollmentPayload
 ): Promise<IEnrollment> => {
-  const res = await axiosInstance.put(
-    `/enrollments/${enrollmentId}`,
-    data
-  );
-  return res.data;
+  const res = await axiosInstance.patch(`/enrollment/${courseId}/last-accessed`);
+  return res.data.data;
 };
 
-/**
- * Update course progress (important for LMS tracking)
- */
 export const updateProgress = async (
-  enrollmentId: string,
-  progress: number
+  courseId: string,
+  _progress: number
 ): Promise<IEnrollment> => {
-  const res = await axiosInstance.patch(
-    `/enrollments/${enrollmentId}/progress`,
-    { progress }
-  );
-  return res.data;
+  const res = await axiosInstance.get(`/enrollment/${courseId}/progress`);
+  return res.data.data;
 };
 
-/**
- * Drop course (Student action)
- */
 export const dropCourse = async (
-  enrollmentId: string
+  _enrollmentId: string
 ): Promise<IEnrollment> => {
-  const res = await axiosInstance.patch(
-    `/enrollments/${enrollmentId}/drop`
-  );
-  return res.data;
+  throw new Error("Drop course endpoint is not available yet");
 };
 
-/**
- * Complete course manually (or system trigger)
- */
 export const completeCourse = async (
-  enrollmentId: string
+  courseId: string
 ): Promise<IEnrollment> => {
-  const res = await axiosInstance.patch(
-    `/enrollments/${enrollmentId}/complete`
-  );
-  return res.data;
+  const res = await axiosInstance.get(`/enrollment/${courseId}/progress`);
+  return res.data.data;
 };

@@ -2,12 +2,15 @@ import mongoose, { Document, Schema } from "mongoose";
 
 export interface IAssignment extends Document {
   courseId: mongoose.Types.ObjectId;
+  teacherId: mongoose.Types.ObjectId;
   title: string;
-  description?: string;
-  attachments?: string[];
-  deadline: Date;
+  description: string;
+  dueDate: Date;
   totalMarks: number;
-  createdBy: mongoose.Types.ObjectId;
+  attachmentUrl?: string;
+  isPublished: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const assignmentSchema = new Schema<IAssignment>(
@@ -18,22 +21,25 @@ const assignmentSchema = new Schema<IAssignment>(
       required: true,
     },
 
+    teacherId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
     title: {
       type: String,
       required: true,
+      trim: true,
     },
 
     description: {
       type: String,
+      required: true,
+      trim: true,
     },
 
-    attachments: [
-      {
-        type: String,
-      },
-    ],
-
-    deadline: {
+    dueDate: {
       type: Date,
       required: true,
     },
@@ -41,18 +47,25 @@ const assignmentSchema = new Schema<IAssignment>(
     totalMarks: {
       type: Number,
       default: 100,
+      min: 1,
     },
 
-    createdBy: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+    attachmentUrl: {
+      type: String,
+    },
+
+    isPublished: {
+      type: Boolean,
+      default: false,
     },
   },
   {
     timestamps: true,
   }
 );
+
+assignmentSchema.index({ courseId: 1, createdAt: -1 });
+assignmentSchema.index({ courseId: 1, isPublished: 1 });
 
 export default mongoose.model<IAssignment>(
   "Assignment",
