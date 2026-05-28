@@ -32,11 +32,11 @@ const getMyCoursesService = async (teacherId, query) => {
         if (query.category) {
             filter.category = query.category;
         }
+        if (query.level) {
+            filter.level = query.level;
+        }
         const [courses, total] = await Promise.all([
-            CourseModel_1.default.find(filter)
-                .sort({ createdAt: -1 })
-                .skip(skip)
-                .limit(limit),
+            CourseModel_1.default.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
             CourseModel_1.default.countDocuments(filter),
         ]);
         return {
@@ -64,6 +64,9 @@ const getPublishedCoursesService = async (query) => {
         if (query.category) {
             filter.category = query.category;
         }
+        if (query.level) {
+            filter.level = query.level;
+        }
         const [courses, total] = await Promise.all([
             CourseModel_1.default.find(filter)
                 .populate("teacherId", "name email avatar")
@@ -85,8 +88,7 @@ const getPublishedCoursesService = async (query) => {
 exports.getPublishedCoursesService = getPublishedCoursesService;
 const getCourseByIdService = async (courseId) => {
     return (0, dbCall_1.dbCall)(async () => {
-        const course = await CourseModel_1.default.findById(courseId)
-            .populate("teacherId", "name email avatar");
+        const course = await CourseModel_1.default.findById(courseId).populate("teacherId", "name email avatar");
         if (!course) {
             throw new appError_1.AppError("Course not found", 404);
         }

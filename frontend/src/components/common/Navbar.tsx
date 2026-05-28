@@ -110,6 +110,7 @@ export default function Navbar() {
 
             <Avatar
               onClick={() => navigate("/profile")}
+              src={user?.avatar || undefined}
               sx={{
                 width: { xs: 32, sm: 36 },
                 height: { xs: 32, sm: 36 },
@@ -119,7 +120,7 @@ export default function Navbar() {
                 fontWeight: 700,
               }}
             >
-              {user?.name?.charAt(0)?.toUpperCase() || "U"}
+              {!user?.avatar && user?.name?.charAt(0)?.toUpperCase()}
             </Avatar>
           </Box>
 

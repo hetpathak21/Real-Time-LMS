@@ -1,29 +1,56 @@
 import { useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { Alert, Box, Button, Chip, Paper, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  Paper,
+  Stack,
+  Typography,
+  alpha,
+} from "@mui/material";
+
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import AutoStoriesRoundedIcon from "@mui/icons-material/AutoStoriesRounded";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+
 import { useTheme } from "@mui/material/styles";
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useAuth } from "../../hooks/useAuth";
 import { ICourse } from "../../types/courseTypes";
 
-import { fetchCourseById } from "../../features/course/courseThunks";
+import {
+  deleteCourseThunk,
+  fetchCourseById,
+} from "../../features/course/courseThunks";
+
 import {
   fetchLessonsByCourse,
   deleteLessonThunk,
 } from "../../features/lesson/lessonThunks";
 
+import { showToast } from "../../utils/toast";
+
+/**
+ * Teacher name helper
+ */
 const getCourseTeacherName = (
   teacherId?: ICourse["teacherId"],
-  instructor?: ICourse["instructor"],
+  instructor?: ICourse["instructor"]
 ) => {
-  if (typeof instructor === "object") return instructor?.name || "Instructor";
-  if (typeof teacherId === "object") return teacherId?.name || "Instructor";
-  if (typeof instructor === "string") return instructor;
+  if (typeof instructor === "object")
+    return instructor?.name || "Instructor";
+
+  if (typeof teacherId === "object")
+    return teacherId?.name || "Instructor";
+
+  if (typeof instructor === "string")
+    return instructor;
+
   return "Instructor";
 };
 
@@ -34,21 +61,35 @@ export default function CourseDetails() {
   const theme = useTheme();
 
   const { user, isAuthenticated, isStudent } = useAuth();
-  const { selectedCourse, loading } = useAppSelector((s) => s.course);
-  const { courseLessons, error: lessonError } = useAppSelector((s) => s.lesson);
 
+  const { selectedCourse, loading } =
+    useAppSelector((s) => s.course);
+
+  const { courseLessons, error: lessonError } =
+    useAppSelector((s) => s.lesson);
+
+  /**
+   * Fetch data
+   */
   useEffect(() => {
-    if (courseId) {
-      dispatch(fetchCourseById(courseId));
-      dispatch(fetchLessonsByCourse(courseId));
-    }
+    if (!courseId) return;
+
+    dispatch(fetchCourseById(courseId));
+    dispatch(fetchLessonsByCourse(courseId));
   }, [courseId, dispatch]);
 
-  const lessons = useMemo(
-    () => [...courseLessons].sort((a, b) => Number(a.order) - Number(b.order)),
-    [courseLessons],
-  );
+  /**
+   * Sorted lessons
+   */
+  const lessons = useMemo(() => {
+    return [...courseLessons].sort(
+      (a, b) => Number(a.order) - Number(b.order)
+    );
+  }, [courseLessons]);
 
+  /**
+   * Ownership check
+   */
   const isTeacherOwner =
     user?.role === "teacher" &&
     selectedCourse?.teacherId &&
@@ -59,16 +100,51 @@ export default function CourseDetails() {
 
   const teacherName = getCourseTeacherName(
     selectedCourse?.teacherId,
-    selectedCourse?.instructor,
+    selectedCourse?.instructor
   );
 
+  /**
+   * Delete lesson
+   */
   const handleDeleteLesson = async (lessonId: string) => {
     await dispatch(deleteLessonThunk(lessonId));
   };
 
+  /**
+   * Delete course
+   */
+  const handleDeleteCourse = async () => {
+    if (!courseId) return;
+
+    try {
+      await dispatch(
+        deleteCourseThunk(courseId)
+      ).unwrap();
+
+      showToast(
+        "Course deleted successfully",
+        "success"
+      );
+
+      navigate("/courses");
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to delete course";
+
+      showToast(message, "error");
+    }
+  };
+
+  /**
+   * Loading state
+   */
   if (loading && !selectedCourse) {
     return (
-      <Typography sx={{ color: theme.palette.text.primary }}>
+      <Typography
+        sx={{ color: "text.primary" }}
+      >
         Loading course...
       </Typography>
     );
@@ -76,7 +152,9 @@ export default function CourseDetails() {
 
   if (!selectedCourse) {
     return (
-      <Typography sx={{ color: theme.palette.text.primary }}>
+      <Typography
+        sx={{ color: "text.primary" }}
+      >
         No course found
       </Typography>
     );
@@ -85,16 +163,17 @@ export default function CourseDetails() {
   return (
     <Box
       sx={{
-        minHeight: "100%",
-        boxSizing: "border-box",
-        bgcolor: theme.palette.background.default,
+        minHeight: "100vh",
+        bgcolor: "background.default",
         p: 3,
+        boxSizing: "border-box",
       }}
     >
       {/* HERO */}
       <Paper
+        elevation={0}
         sx={{
-          borderRadius: 4,
+          borderRadius: "24px",
           overflow: "hidden",
           mb: 3,
           border: `1px solid ${theme.palette.divider}`,
@@ -102,19 +181,23 @@ export default function CourseDetails() {
       >
         <Box
           sx={{
-            minHeight: 320,
+            minHeight: { xs: 400, md: 360 },
             position: "relative",
-            background: selectedCourse.thumbnail
-              ? `url(${selectedCourse.thumbnail}) center/cover`
-              : "linear-gradient(135deg,#0ea5e9,#0369a1,#082f49)",
+            backgroundImage:
+              selectedCourse.thumbnail
+                ? `url(${selectedCourse.thumbnail})`
+                : "linear-gradient(135deg, #770cea, #00a3ff, #0f172a)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
         >
+          {/* Overlay */}
           <Box
             sx={{
               position: "absolute",
               inset: 0,
               background:
-                "linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8))",
+                "linear-gradient(to bottom, rgba(15,23,42,0.4), rgba(15,23,42,0.85))",
             }}
           />
 
@@ -122,14 +205,14 @@ export default function CourseDetails() {
             sx={{
               position: "relative",
               zIndex: 1,
-              p: 4,
+              p: { xs: 3, md: 4 },
+              minHeight: { xs: 400, md: 360 },
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
-              minHeight: 320,
             }}
           >
-            {/* TOP ACTIONS */}
+            {/* TOP BAR */}
             <Box
               sx={{
                 display: "flex",
@@ -138,70 +221,79 @@ export default function CourseDetails() {
                 gap: 2,
               }}
             >
-              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+              <Stack direction="row" spacing={1}>
                 <Chip
-                  label={selectedCourse.isPublished ? "Published" : "Draft"}
+                  label={
+                    selectedCourse.isPublished
+                      ? "Published"
+                      : "Draft"
+                  }
                   sx={{
-                    bgcolor: "rgba(255,255,255,0.15)",
-                    color: theme.palette.text.primary,
+                    bgcolor:
+                      "rgba(255,255,255,0.15)",
+                    color: "#fff",
                   }}
                 />
                 <Chip
                   label={selectedCourse.category}
                   sx={{
-                    color: theme.palette.text.primary,
-                    bgcolor: "rgba(255,255,255,0.15)",
+                    bgcolor:
+                      "rgba(255,255,255,0.15)",
+                    color: "#fff",
                   }}
                 />
                 <Chip
                   label={selectedCourse.level}
                   sx={{
-                    color: theme.palette.text.primary,
-                    bgcolor: "rgba(255,255,255,0.15)",
+                    bgcolor:
+                      "rgba(255,255,255,0.15)",
+                    color: "#fff",
                   }}
-                />{" "}
-              </Box>
+                />
+              </Stack>
 
-              <Box sx={{ display: "flex", gap: 1 }}>
+              <Stack direction="row" spacing={1.5}>
                 <Button
-                  startIcon={<ArrowBackRoundedIcon />}
-                  onClick={() => navigate("/courses")}
-                  sx={{ color: "#fff" }}
+                  startIcon={
+                    <ArrowBackRoundedIcon />
+                  }
+                  onClick={() =>
+                    navigate("/courses")
+                  }
+                  sx={{
+                    color: "#fff",
+                    fontWeight: 600,
+                  }}
                 >
                   Back
                 </Button>
 
-                {isAuthenticated && isStudent && (
-                  <Button
-                    variant="contained"
-                    color="success"
-                    // onClick={() => console.log("Enroll course : ", _id)}
-                    sx={{
-                      borderRadius: 2,
-                      textTransform: "none",
-                      fontWeight: 700,
-                    }}
-                  >
-                    Enroll Now
-                  </Button>
-                )}
+                {isAuthenticated &&
+                  isStudent && (
+                    <Button variant="contained">
+                      Enroll Now
+                    </Button>
+                  )}
 
                 {isTeacherOwner && (
                   <Button
-                    startIcon={<EditRoundedIcon />}
-                    onClick={() => navigate(`/courses/${courseId}/edit`)}
+                    startIcon={
+                      <EditRoundedIcon />
+                    }
+                    onClick={() =>
+                      navigate(
+                        `/courses/${courseId}/edit`
+                      )
+                    }
                     sx={{
-                      bgcolor: theme.palette.background.paper,
-                      color: theme.palette.text.primary,
-                      "&:hover": {
-                        bgcolor: theme.palette.action.hover,
-                      },
+                      bgcolor:
+                        "background.paper",
                     }}
                   >
                     Edit
                   </Button>
                 )}
-              </Box>
+              </Stack>
             </Box>
 
             {/* TITLE */}
@@ -211,23 +303,21 @@ export default function CourseDetails() {
                 sx={{
                   color: "#fff",
                   fontWeight: 800,
-                  fontSize: {
-                    xs: "2rem",
-                    sm: "2.5rem",
-                    md: "3rem",
-                  },
                 }}
               >
-                {" "}
                 {selectedCourse.title}
               </Typography>
 
-              <Typography sx={{ color: "#ddd", mt: 1, maxWidth: 700 }}>
+              <Typography
+                sx={{
+                  color: "rgba(255,255,255,0.8)",
+                }}
+              >
                 {selectedCourse.description}
               </Typography>
             </Box>
 
-            {/* META */}
+            {/* STATS */}
             <Box
               sx={{
                 display: "grid",
@@ -239,187 +329,111 @@ export default function CourseDetails() {
                 gap: 2,
               }}
             >
-              <Paper
-                sx={{
-                  p: 2,
-                  bgcolor:
-                    theme.palette.mode === "dark"
-                      ? "rgba(255,255,255,0.08)"
-                      : "rgba(255,255,255,0.15)",
-                  color: "#fff",
-                }}
-              >
-                Instructor : {teacherName}
+              <Paper sx={{ p: 2, color: "#fff" }}>
+                Instructor: {teacherName}
               </Paper>
-              <Paper
-                sx={{
-                  p: 2,
-                  bgcolor:
-                    theme.palette.mode === "dark"
-                      ? "rgba(255,255,255,0.08)"
-                      : "rgba(255,255,255,0.15)",
-                  color: "#fff",
-                }}
-              >
-                Lessons : {lessons.length}
+              <Paper sx={{ p: 2, color: "#fff" }}>
+                Lessons: {lessons.length}
               </Paper>
-              <Paper
-                sx={{
-                  p: 2,
-                  bgcolor:
-                    theme.palette.mode === "dark"
-                      ? "rgba(255,255,255,0.08)"
-                      : "rgba(255,255,255,0.15)",
-                  color: "#fff",
-                }}
-              >
-                Enrolled : {selectedCourse.enrollmentCount || 0}
+              <Paper sx={{ p: 2, color: "#fff" }}>
+                Enrolled:{" "}
+                {selectedCourse.enrollmentCount ||
+                  0}
               </Paper>
-              <Paper
-                sx={{
-                  p: 2,
-                  bgcolor:
-                    theme.palette.mode === "dark"
-                      ? "rgba(255,255,255,0.08)"
-                      : "rgba(255,255,255,0.15)",
-                  color: "#fff",
-                }}
-              >
+              <Paper sx={{ p: 2, color: "#fff" }}>
                 Price:{" "}
-                {selectedCourse.price ? `Rs.${selectedCourse.price}` : "Free"}
+                {selectedCourse.price
+                  ? `Rs.${selectedCourse.price}`
+                  : "Free"}
               </Paper>
             </Box>
           </Box>
         </Box>
       </Paper>
 
-      {/* MAIN LAYOUT */}
+      {/* CONTENT */}
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: { xs: "1fr", lg: "2fr 1fr" },
+          gridTemplateColumns: {
+            xs: "1fr",
+            lg: "2.2fr 0.8fr",
+          },
           gap: 3,
         }}
       >
-        {/* LESSON LIST */}
-        <Paper sx={{ p: 3, borderRadius: 3 }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-            <Typography sx={{ fontWeight: 800 }}>Course Lessons</Typography>
+        {/* LESSONS */}
+        <Paper sx={{ p: 3 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent:
+                "space-between",
+              mb: 2,
+            }}
+          >
+            <Typography fontWeight={800}>
+              Course Lessons
+            </Typography>
 
             <Chip
-              icon={<AutoStoriesRoundedIcon />}
-              label={`${lessons.length} lessons`}
+              icon={
+                <AutoStoriesRoundedIcon />
+              }
+              label={`${lessons.length} Modules`}
             />
           </Box>
 
-          {lessonError && <Alert severity="error">{lessonError}</Alert>}
-
-          {lessons.length === 0 ? (
-            <Typography sx={{ color: theme.palette.text.secondary }}>
-              No lessons yet!
-            </Typography>
-          ) : (
-            <Box sx={{ display: "grid", gap: 2 }}>
-              {lessons.map((lesson, i) => (
-                <Paper
-                  key={lesson._id}
-                  sx={{
-                    p: 2,
-                    borderRadius: 2,
-                    display: "flex",
-                    flexDirection: { xs: "column", sm: "row" },
-                    justifyContent: "space-between",
-                    alignItems: { xs: "flex-start", sm: "center" },
-                    gap: 2,
-                    border: `1px solid ${theme.palette.divider}`,
-                  }}
-                >
-                  <Box>
-                    <Typography sx={{ fontWeight: 700 }}>
-                      {i + 1}. {lesson.title}
-                    </Typography>
-
-                    <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
-                      <Chip size="small" label={lesson.type} />
-                      {lesson.isPreview && (
-                        <Chip size="small" label="Preview" color="success" />
-                      )}
-                    </Box>
-                  </Box>
-
-                  <Box sx={{ display: "flex", gap: 1 }}>
-                    <Button
-                      onClick={() => navigate(`/lesson/${lesson._id}`)}
-                      variant="contained"
-                      size="small"
-                      sx={{
-                        bgcolor: theme.palette.primary.main,
-                        "&:hover": {
-                          bgcolor: theme.palette.primary.dark,
-                        },
-                      }}
-                    >
-                      Open
-                    </Button>
-
-                    {isTeacherOwner && (
-                      <Button
-                        onClick={() => handleDeleteLesson(lesson._id)}
-                        color="error"
-                        size="small"
-                      >
-                        Delete
-                      </Button>
-                    )}
-                  </Box>
-                </Paper>
-              ))}
-            </Box>
+          {lessonError && (
+            <Alert severity="error">
+              {lessonError}
+            </Alert>
           )}
+
+          {lessons.map((lesson, i) => (
+            <Paper key={lesson._id} sx={{ p: 2, mb: 2 }}>
+              <Typography sx = {{ fontWeight: 700}}>
+                {i + 1}. {lesson.title}
+              </Typography>
+
+              <Stack direction="row" spacing={1}>
+                <Button
+                  onClick={() =>
+                    navigate(
+                      `/lesson/${lesson._id}`
+                    )
+                  }
+                >
+                  Open
+                </Button>
+
+                {isTeacherOwner && (
+                  <Button
+                    color="error"
+                    onClick={() =>
+                      handleDeleteLesson(
+                        lesson._id
+                      )
+                    }
+                  >
+                    Delete
+                  </Button>
+                )}
+              </Stack>
+            </Paper>
+          ))}
         </Paper>
 
         {/* SIDEBAR */}
-        <Box sx={{ display: "grid", gap: 2 }}>
-          <Paper
-            sx={{
-              p: 3,
-              borderRadius: 3,
-              bgcolor: theme.palette.background.paper,
-            }}
-          >
-            <Typography sx={{ fontWeight: 800 }}>Course Snapshot</Typography>
+        <Paper sx={{ p: 3 }}>
+          <Typography fontWeight={800}>
+            Course Info
+          </Typography>
 
-            <Box sx={{ mt: 2 }}>
-              <Typography>Level : {selectedCourse.level}</Typography>
-              <Typography>Category : {selectedCourse.category}</Typography>
-            </Box>
-          </Paper>
-
-          <Paper
-            sx={{
-              p: 3,
-              borderRadius: 3,
-              bgcolor: theme.palette.background.paper,
-            }}
-          >
-            <Typography sx={{ fontWeight: 800 }}>Manage</Typography>
-
-            {isTeacherOwner ? (
-              <Button
-                fullWidth
-                variant="contained"
-                sx={{ mt: 2 }}
-                onClick={() => navigate(`/courses/${courseId}/lessons/create`)}
-              >
-                + Create Lesson
-              </Button>
-            ) : (
-              <Typography sx={{ color: theme.palette.text.secondary, mt: 2 }}>
-                Only instructor can manage lessons
-              </Typography>
-            )}
-          </Paper>
-        </Box>
+          <Typography>
+            Level: {selectedCourse.level}
+          </Typography>
+        </Paper>
       </Box>
     </Box>
   );

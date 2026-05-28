@@ -1,4 +1,6 @@
 "use strict";
+// import { Request, Response, NextFunction } from "express";
+// import { ZodError, ZodSchema } from "zod";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateRequest = void 0;
 const zod_1 = require("zod");
@@ -12,11 +14,19 @@ const validateRequest = (schema) => (req, res, next) => {
         next();
     }
     catch (error) {
-        const errors = error instanceof zod_1.ZodError ? error.issues : [{ message: "Invalid request data" }];
+        if (error instanceof zod_1.ZodError) {
+            console.log("Zod Validation Errors:");
+            console.log(error.flatten());
+            return res.status(400).json({
+                success: false,
+                message: "Validation failed",
+                errors: error.issues,
+            });
+        }
+        console.log(error);
         return res.status(400).json({
             success: false,
-            message: "Validation failed",
-            errors,
+            message: "Invalid request data",
         });
     }
 };

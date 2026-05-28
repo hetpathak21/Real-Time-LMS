@@ -5,61 +5,36 @@ import {
   Card,
   CardContent,
   Chip,
+  Stack,
   Typography,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { alpha, useTheme } from "@mui/material/styles";
 
-import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
 import AutoStoriesRoundedIcon from "@mui/icons-material/AutoStoriesRounded";
 
 import { ICourse } from "../../types/courseTypes";
+import { IUser } from "../../types/userTypes";
 
-type CourseCardProps = ICourse;
+type CourseCardProps = ICourse & {
+  isHighlighted?: boolean;
+};
+
 
 const ACCENTS = ["#0ea5e9", "#14b8a6", "#f59e0b", "#ec4899", "#6366f1"];
 
 const getAccent = (courseId: string) => {
-  const total = courseId
-    .split("")
-    .reduce((sum, char) => sum + char.charCodeAt(0), 0);
-
+  const total = courseId.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
   return ACCENTS[total % ACCENTS.length];
 };
 
-const getTeacherName = (
-  teacherId?: ICourse["teacherId"],
-  instructor?: ICourse["instructor"],
-) => {
-  if (typeof instructor === "object") {
-    return instructor?.name || "Instructor";
-  }
-
-  if (typeof teacherId === "object") {
-    return teacherId?.name || "Instructor";
-  }
-
-  if (typeof instructor === "string" && instructor.trim()) {
-    return instructor;
-  }
-
-  return "Instructor";
+const getTeacherName = (teacherId?: IUser | string, instructor?: IUser | string) => {
+  if (typeof instructor === "object") return instructor?.name || "Instructor";
+  if (typeof teacherId === "object") return teacherId?.name || "Instructor";
+  return typeof instructor === "string" && instructor.trim() ? instructor : "Expert Instructor";
 };
 
-const getThumbnailFallback = (accent: string) =>
-  `linear-gradient(135deg, ${accent} 0%, #082f49 100%)`;
-
-export default function CourseCard({
-  _id,
-  title,
-  description,
-  thumbnail,
-  category,
-  level,
-  teacherId,
-  instructor,
-  isPublished,
-  enrollmentCount,
-}: CourseCardProps) {
+export default function CourseCard(props: CourseCardProps) {
+  const { _id, description, thumbnail, category, level, teacherId, instructor, isPublished, enrollmentCount } = props;
   const navigate = useNavigate();
   const theme = useTheme();
 
@@ -68,11 +43,12 @@ export default function CourseCard({
 
   return (
     <Card
+      onClick={() => navigate(`/course/${_id}`)}
       sx={{
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        borderRadius: 3,
+        borderRadius: "24px",
         overflow: "hidden",
         bgcolor: theme.palette.background.paper,
         border: `1px solid ${theme.palette.divider}`,
@@ -92,36 +68,14 @@ export default function CourseCard({
         },
       }}
     >
-      {/* IMAGE SECTION */}
-      <Box
-        sx={{
-          position: "relative",
-          height: 220,
-          background: thumbnail
-            ? `url(${thumbnail}) center/cover no-repeat`
-            : getThumbnailFallback(accent),
-        }}
-      >
-        <Box
-          sx={{
-            position: "absolute",
-            inset: 0,
-            background: thumbnail
-              ? "linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.65))"
-              : "linear-gradient(135deg, rgba(14,165,233,0.4), rgba(2,132,199,0.9))",
-          }}
-        />
-
-        {/* TOP CHIPS */}
-        <Box
-          sx={{
-            position: "absolute",
-            top: 12,
-            left: 12,
-            display: "flex",
-            gap: 1,
-            flexWrap: "wrap",
-          }}
+      {/* --- Visual Header --- */}
+      <Box sx={{ position: "relative", width: "100%", aspectRatio: "16/10", overflow: "hidden" }}>
+        {/* Floating Badges */}
+        <Stack 
+         sx = {{
+          direction:"row",
+          justifyContent: "space-between",
+          position: "absolute", top: 116, left: 6, right: 6, zIndex: 2 }}
         >
           {category && (
             <Chip
@@ -138,7 +92,6 @@ export default function CourseCard({
               }}
             />
           )}
-
           <Chip
             label={isPublished ? "Published" : "Draft"}
             size="small"
@@ -151,29 +104,33 @@ export default function CourseCard({
 
               color: isPublished ? "#166534" : "#fff",
               fontWeight: 700,
+              fontSize: "0.65rem",
+              px: 0.5,
             }}
           />
-        </Box>
+        </Stack>
 
-        {/* TITLE */}
         <Box
+          className="course-thumbnail-img"
           sx={{
-            position: "absolute",
-            bottom: 12,
-            left: 12,
-            right: 12,
-            color: "#fff",
+            width: "100%",
+            height: "100%",
+            transition: "transform 0.8s ease",
+            backgroundImage: thumbnail ? `url(${thumbnail})` : `linear-gradient(135deg, ${accent} 0%, #0f172a 100%)`,
+            backgroundPosition: "center",
+            backgroundSize: "cover",
           }}
-        >
-          <Typography sx={{ fontWeight: 800, fontSize: 16 }}>
-            {title}
-          </Typography>
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-            <PersonOutlineRoundedIcon sx={{ fontSize: 16 }} />
-            <Typography variant="caption">{teacherName}</Typography>
-          </Box>
-        </Box>
+        />
+        
+        {/* Dark subtle vignette for text readability */}
+        <Box 
+          className="course-overlay"
+          sx={{ 
+            position: "absolute", inset: 0, 
+            background: `linear-gradient(to top, ${alpha("#000", 0.4)}, transparent)`, 
+            opacity: 0, transition: "opacity 0.3s" 
+          }} 
+        />
       </Box>
 
       {/* CONTENT */}
@@ -279,6 +236,6 @@ export default function CourseCard({
           Open
         </Button>
       </CardContent>
-    </Card>
+      </Card>
   );
 }

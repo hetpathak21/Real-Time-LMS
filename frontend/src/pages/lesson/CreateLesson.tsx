@@ -346,7 +346,7 @@ export default function CreateLesson() {
               <input
                 hidden
                 type="file"
-                accept="video/*,.pdf,.doc,.docx,.ppt,.pptx"
+                accept=".jpg,.jpeg,.png,.webp,.mp4,.mov,.avi,.mkv,.pdf,.doc,.docx"
                 onChange={(e) =>
                   setForm({
                     ...form,

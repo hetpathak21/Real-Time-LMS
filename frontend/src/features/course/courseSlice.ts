@@ -18,6 +18,11 @@ interface CourseState {
   selectedCourse: ICourse | null;
   coursesMeta: ICourseListMeta | null;
   myCoursesMeta: ICourseListMeta | null;
+  courseCreationAnimation: {
+    courseId: string;
+    title: string;
+  } | null;
+  recentlyCreatedCourseId: string | null;
   loading: boolean;
   error: string | null;
 }
@@ -28,6 +33,8 @@ const initialState: CourseState = {
   selectedCourse: null,
   coursesMeta: null,
   myCoursesMeta: null,
+  courseCreationAnimation: null,
+  recentlyCreatedCourseId: null,
   loading: false,
   error: null,
 };
@@ -58,6 +65,12 @@ const courseSlice = createSlice({
     },
     clearCourseError: (state) => {
       state.error = null;
+    },
+    dismissCourseCreatedAnimation: (state) => {
+      state.courseCreationAnimation = null;
+    },
+    clearRecentlyCreatedCourse: (state) => {
+      state.recentlyCreatedCourseId = null;
     },
   },
 
@@ -116,6 +129,11 @@ const courseSlice = createSlice({
     builder.addCase(createCourseThunk.fulfilled, (state, action) => {
       // safer: avoid duplicates
       state.myCourses.unshift(action.payload);
+      state.courseCreationAnimation = {
+        courseId: action.payload._id,
+        title: action.payload.title,
+      };
+      state.recentlyCreatedCourseId = action.payload._id;
     });
 
     builder.addCase(createCourseThunk.rejected, (state, action) => {
@@ -167,6 +185,11 @@ const courseSlice = createSlice({
   },
 });
 
-export const { clearSelectedCourse, clearCourseError } = courseSlice.actions;
+export const {
+  clearSelectedCourse,
+  clearCourseError,
+  dismissCourseCreatedAnimation,
+  clearRecentlyCreatedCourse,
+} = courseSlice.actions;
 
 export default courseSlice.reducer;

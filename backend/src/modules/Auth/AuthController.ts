@@ -53,13 +53,36 @@ export const getMeController = asyncHandler(async (req: any, res: Response) => {
 });
 
 /* ---------------- UPDATE PROFILE ---------------- */
-export const updateProfileController = asyncHandler(async (req: any, res: Response) => {
-  const userId = req.user?.userId;
+// export const updateProfileController = asyncHandler(async (req: any, res: Response) => {
+//   const userId = req.user?.userId;
 
-  const result = await updateProfileService(userId, req.body);
+//   const result = await updateProfileService(userId, req.body);
 
-  return sendResponse(res, STATUS_CODES.SUCCESS, true, "Profile updated successfully", result);
-});
+//   return sendResponse(res, STATUS_CODES.SUCCESS, true, "Profile updated successfully", result);
+// });
+
+/* ---------------- UPDATE PROFILE ---------------- */
+export const updateProfileController = asyncHandler(
+  async (req: any, res: Response) => {
+    const userId = req.user?.userId;
+    const avatarUrl = req.file
+      ? `${req.protocol}://${req.get("host")}/uploads/profiles/${req.file.filename}`
+      : undefined;
+    const payload = {
+      ...req.body,
+      ...(avatarUrl ? { avatar: avatarUrl } : {}),
+    };
+    const result = await updateProfileService(userId, payload);
+
+    return sendResponse(
+      res,
+      STATUS_CODES.SUCCESS,
+      true,
+      "Profile updated successfully",
+      result
+    );
+  }
+);
 
 /* ---------------- CHANGE PASSWORD ---------------- */
 export const changePasswordController = asyncHandler(async (req: any, res: Response) => {

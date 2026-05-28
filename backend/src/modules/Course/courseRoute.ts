@@ -40,7 +40,7 @@ router.post(
   "/",
   authMiddleware,
   authorizeRoles("teacher", "admin"),
-  upload.single("thumbnail"),
+  upload.single("file"),
   validateRequest(createCourseValidationSchema),
   createCourse,
 );
@@ -55,7 +55,7 @@ router.put(
   "/:courseId",
   authMiddleware,
   authorizeRoles("teacher"),
-  upload.single("thumbnail"),
+  upload.single("file"),
   validateRequest(updateCourseValidationSchema),
   updateCourse,
 );

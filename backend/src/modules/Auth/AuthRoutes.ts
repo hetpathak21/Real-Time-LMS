@@ -40,16 +40,21 @@ import {
   signupValidationSchema,
   updateProfileValidationSchema,
 } from "./AuthValidation";
+import { profileUpload } from "../../middleware/uploadMiddleware";
 
 const router = express.Router();
 
 /* ---------------- PUBLIC ROUTES ---------------- */
-router.post("/signup", validateRequest(signupValidationSchema), signupController);
+router.post(
+  "/signup",
+  validateRequest(signupValidationSchema),
+  signupController,
+);
 router.post("/login", validateRequest(loginValidationSchema), loginController);
 router.post(
   "/refresh-token",
   validateRequest(refreshTokenValidationSchema),
-  refreshTokenController
+  refreshTokenController,
 );
 
 /* ---------------- PROTECTED ROUTES ---------------- */
@@ -66,15 +71,16 @@ router.get(
 router.put(
   "/profile",
   authMiddleware,
+  profileUpload.single("avatar"),
   validateRequest(updateProfileValidationSchema),
-  updateProfileController
+  updateProfileController,
 );
 
 router.put(
   "/change-password",
   authMiddleware,
   validateRequest(changePasswordValidationSchema),
-  changePasswordController
+  changePasswordController,
 );
 
 export const AuthRoutes = router;
