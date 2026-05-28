@@ -9,13 +9,11 @@ import {
   Paper,
   Stack,
   Typography,
-  alpha,
 } from "@mui/material";
 
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import AutoStoriesRoundedIcon from "@mui/icons-material/AutoStoriesRounded";
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
 import { useTheme } from "@mui/material/styles";
 
@@ -40,16 +38,13 @@ import { showToast } from "../../utils/toast";
  */
 const getCourseTeacherName = (
   teacherId?: ICourse["teacherId"],
-  instructor?: ICourse["instructor"]
+  instructor?: ICourse["instructor"],
 ) => {
-  if (typeof instructor === "object")
-    return instructor?.name || "Instructor";
+  if (typeof instructor === "object") return instructor?.name || "Instructor";
 
-  if (typeof teacherId === "object")
-    return teacherId?.name || "Instructor";
+  if (typeof teacherId === "object") return teacherId?.name || "Instructor";
 
-  if (typeof instructor === "string")
-    return instructor;
+  if (typeof instructor === "string") return instructor;
 
   return "Instructor";
 };
@@ -62,11 +57,9 @@ export default function CourseDetails() {
 
   const { user, isAuthenticated, isStudent } = useAuth();
 
-  const { selectedCourse, loading } =
-    useAppSelector((s) => s.course);
+  const { selectedCourse, loading } = useAppSelector((s) => s.course);
 
-  const { courseLessons, error: lessonError } =
-    useAppSelector((s) => s.lesson);
+  const { courseLessons, error: lessonError } = useAppSelector((s) => s.lesson);
 
   /**
    * Fetch data
@@ -82,9 +75,7 @@ export default function CourseDetails() {
    * Sorted lessons
    */
   const lessons = useMemo(() => {
-    return [...courseLessons].sort(
-      (a, b) => Number(a.order) - Number(b.order)
-    );
+    return [...courseLessons].sort((a, b) => Number(a.order) - Number(b.order));
   }, [courseLessons]);
 
   /**
@@ -100,7 +91,7 @@ export default function CourseDetails() {
 
   const teacherName = getCourseTeacherName(
     selectedCourse?.teacherId,
-    selectedCourse?.instructor
+    selectedCourse?.instructor,
   );
 
   /**
@@ -117,21 +108,14 @@ export default function CourseDetails() {
     if (!courseId) return;
 
     try {
-      await dispatch(
-        deleteCourseThunk(courseId)
-      ).unwrap();
+      await dispatch(deleteCourseThunk(courseId)).unwrap();
 
-      showToast(
-        "Course deleted successfully",
-        "success"
-      );
+      showToast("Course deleted successfully", "success");
 
       navigate("/courses");
     } catch (error: unknown) {
       const message =
-        error instanceof Error
-          ? error.message
-          : "Failed to delete course";
+        error instanceof Error ? error.message : "Failed to delete course";
 
       showToast(message, "error");
     }
@@ -142,21 +126,13 @@ export default function CourseDetails() {
    */
   if (loading && !selectedCourse) {
     return (
-      <Typography
-        sx={{ color: "text.primary" }}
-      >
-        Loading course...
-      </Typography>
+      <Typography sx={{ color: "text.primary" }}>Loading course...</Typography>
     );
   }
 
   if (!selectedCourse) {
     return (
-      <Typography
-        sx={{ color: "text.primary" }}
-      >
-        No course found
-      </Typography>
+      <Typography sx={{ color: "text.primary" }}>No course found</Typography>
     );
   }
 
@@ -183,10 +159,9 @@ export default function CourseDetails() {
           sx={{
             minHeight: { xs: 400, md: 360 },
             position: "relative",
-            backgroundImage:
-              selectedCourse.thumbnail
-                ? `url(${selectedCourse.thumbnail})`
-                : "linear-gradient(135deg, #770cea, #00a3ff, #0f172a)",
+            backgroundImage: selectedCourse.thumbnail
+              ? `url(${selectedCourse.thumbnail})`
+              : "linear-gradient(135deg, #770cea, #00a3ff, #0f172a)",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
@@ -223,30 +198,23 @@ export default function CourseDetails() {
             >
               <Stack direction="row" spacing={1}>
                 <Chip
-                  label={
-                    selectedCourse.isPublished
-                      ? "Published"
-                      : "Draft"
-                  }
+                  label={selectedCourse.isPublished ? "Published" : "Draft"}
                   sx={{
-                    bgcolor:
-                      "rgba(255,255,255,0.15)",
+                    bgcolor: "rgba(255,255,255,0.15)",
                     color: "#fff",
                   }}
                 />
                 <Chip
                   label={selectedCourse.category}
                   sx={{
-                    bgcolor:
-                      "rgba(255,255,255,0.15)",
+                    bgcolor: "rgba(255,255,255,0.15)",
                     color: "#fff",
                   }}
                 />
                 <Chip
                   label={selectedCourse.level}
                   sx={{
-                    bgcolor:
-                      "rgba(255,255,255,0.15)",
+                    bgcolor: "rgba(255,255,255,0.15)",
                     color: "#fff",
                   }}
                 />
@@ -254,12 +222,8 @@ export default function CourseDetails() {
 
               <Stack direction="row" spacing={1.5}>
                 <Button
-                  startIcon={
-                    <ArrowBackRoundedIcon />
-                  }
-                  onClick={() =>
-                    navigate("/courses")
-                  }
+                  startIcon={<ArrowBackRoundedIcon />}
+                  onClick={() => navigate("/courses")}
                   sx={{
                     color: "#fff",
                     fontWeight: 600,
@@ -268,29 +232,29 @@ export default function CourseDetails() {
                   Back
                 </Button>
 
-                {isAuthenticated &&
-                  isStudent && (
-                    <Button variant="contained">
-                      Enroll Now
-                    </Button>
-                  )}
+                {isAuthenticated && isStudent && (
+                  <Button variant="contained">Enroll Now</Button>
+                )}
 
                 {isTeacherOwner && (
                   <Button
-                    startIcon={
-                      <EditRoundedIcon />
-                    }
-                    onClick={() =>
-                      navigate(
-                        `/courses/${courseId}/edit`
-                      )
-                    }
+                    startIcon={<EditRoundedIcon />}
+                    onClick={() => navigate(`/courses/${courseId}/edit`)}
                     sx={{
-                      bgcolor:
-                        "background.paper",
+                      bgcolor: "background.paper",
                     }}
                   >
                     Edit
+                  </Button>
+                )}
+
+                {isTeacherOwner && (
+                  <Button
+                    color="error"
+                    variant="contained"
+                    onClick={handleDeleteCourse}
+                  >
+                    Delete
                   </Button>
                 )}
               </Stack>
@@ -336,15 +300,11 @@ export default function CourseDetails() {
                 Lessons: {lessons.length}
               </Paper>
               <Paper sx={{ p: 2, color: "#fff" }}>
-                Enrolled:{" "}
-                {selectedCourse.enrollmentCount ||
-                  0}
+                Enrolled: {selectedCourse.enrollmentCount || 0}
               </Paper>
               <Paper sx={{ p: 2, color: "#fff" }}>
                 Price:{" "}
-                {selectedCourse.price
-                  ? `Rs.${selectedCourse.price}`
-                  : "Free"}
+                {selectedCourse.price ? `Rs.${selectedCourse.price}` : "Free"}
               </Paper>
             </Box>
           </Box>
@@ -367,54 +327,35 @@ export default function CourseDetails() {
           <Box
             sx={{
               display: "flex",
-              justifyContent:
-                "space-between",
+              justifyContent: "space-between",
               mb: 2,
             }}
           >
-            <Typography fontWeight={800}>
-              Course Lessons
-            </Typography>
+            <Typography sx={{ fontWeight: 800 }}>Course Lessons</Typography>
 
             <Chip
-              icon={
-                <AutoStoriesRoundedIcon />
-              }
+              icon={<AutoStoriesRoundedIcon />}
               label={`${lessons.length} Modules`}
             />
           </Box>
 
-          {lessonError && (
-            <Alert severity="error">
-              {lessonError}
-            </Alert>
-          )}
+          {lessonError && <Alert severity="error">{lessonError}</Alert>}
 
           {lessons.map((lesson, i) => (
             <Paper key={lesson._id} sx={{ p: 2, mb: 2 }}>
-              <Typography sx = {{ fontWeight: 700}}>
+              <Typography sx={{ fontWeight: 700 }}>
                 {i + 1}. {lesson.title}
               </Typography>
 
               <Stack direction="row" spacing={1}>
-                <Button
-                  onClick={() =>
-                    navigate(
-                      `/lesson/${lesson._id}`
-                    )
-                  }
-                >
+                <Button onClick={() => navigate(`/lesson/${lesson._id}`)}>
                   Open
                 </Button>
 
                 {isTeacherOwner && (
                   <Button
                     color="error"
-                    onClick={() =>
-                      handleDeleteLesson(
-                        lesson._id
-                      )
-                    }
+                    onClick={() => handleDeleteLesson(lesson._id)}
                   >
                     Delete
                   </Button>
@@ -426,13 +367,9 @@ export default function CourseDetails() {
 
         {/* SIDEBAR */}
         <Paper sx={{ p: 3 }}>
-          <Typography fontWeight={800}>
-            Course Info
-          </Typography>
+          <Typography sx={{ fontWeight: 800 }}>Course Info</Typography>
 
-          <Typography>
-            Level: {selectedCourse.level}
-          </Typography>
+          <Typography>Level: {selectedCourse.level}</Typography>
         </Paper>
       </Box>
     </Box>
