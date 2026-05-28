@@ -35,4 +35,6 @@ export const selectAssignmentError = (state: RootState) =>
  */
 export const selectAssignmentById =
   (id: string) => (state: RootState) =>
-    state.assignment.assignments.find((a) => a._id === id) || null;
+    state.assignment.courseAssignments.find((a) => a._id === id) ||
+    state.assignment.assignments.find((a) => a._id === id) ||
+    null;

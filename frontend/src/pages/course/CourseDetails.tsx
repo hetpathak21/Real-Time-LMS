@@ -32,6 +32,7 @@ import {
 } from "../../features/lesson/lessonThunks";
 
 import { showToast } from "../../utils/toast";
+import CourseAssignmentsSection from "../../components/assignment/CourseAssignmentsSection";
 
 /**
  * Teacher name helper
@@ -47,6 +48,14 @@ const getCourseTeacherName = (
   if (typeof instructor === "string") return instructor;
 
   return "Instructor";
+};
+
+const getEnrollmentCourseId = (enrollment: IEnrollment) => {
+  if (typeof enrollment.courseId === "object") {
+    return enrollment.courseId._id;
+  }
+
+  return enrollment.courseId;
 };
 
 export default function CourseDetails() {
@@ -88,6 +97,17 @@ export default function CourseDetails() {
       (typeof selectedCourse.teacherId === "object"
         ? selectedCourse.teacherId._id
         : selectedCourse.teacherId);
+
+  const isAlreadyEnrolled = useMemo(
+    () =>
+      Boolean(
+        courseId &&
+          myEnrollments.some(
+            (enrollment) => getEnrollmentCourseId(enrollment) === courseId
+          )
+      ),
+    [courseId, myEnrollments]
+  );
 
   const teacherName = getCourseTeacherName(
     selectedCourse?.teacherId,
@@ -372,6 +392,85 @@ export default function CourseDetails() {
           <Typography>Level: {selectedCourse.level}</Typography>
         </Paper>
       </Box>
+
+      <Dialog
+        open={paymentOpen}
+        onClose={() => paymentStep !== "processing" && setPaymentOpen(false)}
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle>
+          {paymentStep === "completed" ? "Payment completed" : "Complete enrollment"}
+        </DialogTitle>
+        <DialogContent>
+          {paymentStep === "processing" && (
+            <Box sx={{ py: 2 }}>
+              <Typography sx={{ color: COLORS.textSub, mb: 2 }}>
+                Processing dummy payment...
+              </Typography>
+              <LinearProgress />
+            </Box>
+          )}
+
+          {paymentStep === "completed" && (
+            <Box sx={{ py: 1 }}>
+              <Typography sx={{ color: COLORS.textMain, fontWeight: 700 }}>
+                You are enrolled in {selectedCourse.title}.
+              </Typography>
+              <Typography variant="body2" sx={{ color: COLORS.textSub, mt: 1 }}>
+                Payment completed successfully. This is a temporary dummy payment flow.
+              </Typography>
+            </Box>
+          )}
+
+          {paymentStep === "review" && (
+            <Box sx={{ display: "grid", gap: 1.5 }}>
+              <Typography sx={{ color: COLORS.textSub }}>
+                Review this temporary payment before enrolling.
+              </Typography>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2,
+                  borderRadius: "14px",
+                  border: `1px solid ${COLORS.border}`,
+                  bgcolor: "#f8fafc",
+                }}
+              >
+                <Typography sx={{ fontWeight: 800, color: COLORS.textMain }}>
+                  {selectedCourse.title}
+                </Typography>
+                <Typography variant="body2" sx={{ color: COLORS.textSub }}>
+                  Amount: {selectedCourse.price ? `Rs. ${selectedCourse.price}` : "Free"}
+                </Typography>
+              </Paper>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3 }}>
+          {paymentStep === "completed" ? (
+            <Button variant="contained" onClick={() => setPaymentOpen(false)}>
+              Continue
+            </Button>
+          ) : (
+            <>
+              <Button
+                onClick={() => setPaymentOpen(false)}
+                disabled={paymentStep === "processing"}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleDummyPayment}
+                disabled={paymentStep === "processing"}
+              >
+                Pay Now
+              </Button>
+            </>
+          )}
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

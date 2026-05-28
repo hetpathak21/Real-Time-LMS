@@ -6,11 +6,12 @@ import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { fetchAssignmentsByCourse } from "../../features/assignment/assignmentThunks";
 import AssignmentCard from "../../components/assignment/AssignmentCard";
+import { mapAssignmentToUI } from "../../mappers/assignmentMapper";
 
 export default function AssignmentList() {
   const dispatch = useAppDispatch();
 
-  const { assignments, loading, error } = useAppSelector(
+  const { courseAssignments, loading, error } = useAppSelector(
     (state) => state.assignment,
   );
 
@@ -30,7 +31,7 @@ export default function AssignmentList() {
     return <Typography sx={{ mt: 2, color: "error.main" }}>{error}</Typography>;
   }
 
-  const mappedAssignments = assignments;
+  const mappedAssignments = courseAssignments.map(mapAssignmentToUI);
 
   return (
     <Box>

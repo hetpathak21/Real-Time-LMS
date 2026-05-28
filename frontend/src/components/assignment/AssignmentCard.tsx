@@ -14,7 +14,7 @@ interface AssignmentCardProps {
   title: string;
   courseName: string;
   dueDate: string;
-  status: "Pending" | "Submitted" | "Reviewed";
+  status: "Published" | "Draft";
 }
 
 export default function AssignmentCard({
@@ -77,11 +77,7 @@ export default function AssignmentCard({
           <Chip
             label={status}
             color={
-              status === "Pending"
-                ? "warning"
-                : status === "Submitted"
-                  ? "primary"
-                  : "success"
+              status === "Published" ? "success" : "warning"
             }
           />
 

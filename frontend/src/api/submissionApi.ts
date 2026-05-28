@@ -7,90 +7,75 @@ import {
   ISubmissionDetails,
 } from "../types/submissionTypes";
 
-/**
- * Student submits assignment
- */
 export const submitAssignment = async (
   data: ICreateSubmissionPayload
 ): Promise<ISubmission> => {
-  const res = await axiosInstance.post("/submissions", data);
-  return res.data;
+  const res = await axiosInstance.post(
+    `/assignment/${data.assignmentId}/submissions`,
+    {
+      textAnswer: data.textAnswer,
+      fileUrl: data.fileUrl,
+    }
+  );
+  return res.data.data;
 };
 
-/**
- * Get all submissions (Teacher/Admin)
- */
 export const getSubmissions = async (
   query?: ISubmissionQuery
 ): Promise<ISubmission[]> => {
-  const res = await axiosInstance.get("/submissions", {
-    params: query,
-  });
-  return res.data;
+  if (!query?.assignmentId) {
+    return [];
+  }
+
+  const res = await axiosInstance.get(
+    `/assignment/${query.assignmentId}/submissions`
+  );
+  return res.data.data;
 };
 
-/**
- * Get single submission details
- */
 export const getSubmissionById = async (
-  submissionId: string
+  _submissionId: string
 ): Promise<ISubmissionDetails> => {
-  const res = await axiosInstance.get(`/submissions/${submissionId}`);
-  return res.data;
+  throw new Error("Single submission details endpoint is not available yet");
 };
 
-/**
- * Get submissions for a specific assignment
- */
 export const getSubmissionsByAssignment = async (
   assignmentId: string
 ): Promise<ISubmission[]> => {
   const res = await axiosInstance.get(
-    `/assignments/${assignmentId}/submissions`
+    `/assignment/${assignmentId}/submissions`
   );
-  return res.data;
+  return res.data.data;
 };
 
-/**
- * Update submission (Teacher grading / feedback)
- */
 export const updateSubmission = async (
   submissionId: string,
   data: IUpdateSubmissionPayload
 ): Promise<ISubmission> => {
-  const res = await axiosInstance.put(
-    `/submissions/${submissionId}`,
-    data
+  const res = await axiosInstance.patch(
+    `/assignment/submissions/${submissionId}/grade`,
+    {
+      grade: data.grade,
+      feedback: data.feedback,
+    }
   );
-  return res.data;
+  return res.data.data;
 };
 
-/**
- * Grade submission (explicit grading endpoint)
- */
 export const gradeSubmission = async (
   submissionId: string,
-  marksObtained: number,
+  grade: number,
   feedback: string
 ): Promise<ISubmission> => {
   const res = await axiosInstance.patch(
-    `/submissions/${submissionId}/grade`,
-    {
-      marksObtained,
-      feedback,
-    }
+    `/assignment/submissions/${submissionId}/grade`,
+    { grade, feedback }
   );
-  return res.data;
+  return res.data.data;
 };
 
-/**
- * Mark submission as reviewed
- */
 export const markUnderReview = async (
-  submissionId: string
+  _submissionId: string
 ): Promise<ISubmission> => {
-  const res = await axiosInstance.patch(
-    `/submissions/${submissionId}/review`
-  );
-  return res.data;
+  throw new Error("Review-only submission endpoint is not available yet");
 };

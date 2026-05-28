@@ -5,7 +5,7 @@ export interface AssignmentUI {
   title: string;
   courseName: string;
   dueDate: string;
-  status: "Pending" | "Submitted" | "Reviewed";
+  status: "Published" | "Draft";
 }
 
 export const mapAssignmentToUI = (a: IAssignment): AssignmentUI => {
@@ -13,17 +13,12 @@ export const mapAssignmentToUI = (a: IAssignment): AssignmentUI => {
     _id: a._id,
     title: a.title,
     courseName:
-      typeof a.course === "object"
-        ? a.course.title
+      typeof a.courseId === "object"
+        ? a.courseId.title
         : "Unknown Course",
 
     dueDate: new Date(a.dueDate).toLocaleDateString(),
 
-    status:
-      a.status === "published"
-        ? "Pending"
-        : a.status === "closed"
-        ? "Reviewed"
-        : "Pending",
+    status: a.isPublished ? "Published" : "Draft",
   };
 };

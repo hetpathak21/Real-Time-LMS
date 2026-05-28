@@ -7,8 +7,7 @@ import {
   createAssignment,
   updateAssignment,
   deleteAssignment,
-  publishAssignment,
-  closeAssignment,
+  setAssignmentPublishStatus,
 } from "../../api/assignmentApi";
 
 import {
@@ -33,9 +32,6 @@ const getError = (error: unknown): string => {
   return "Something went wrong";
 };
 
-/**
- * Get assignment by ID
- */
 export const fetchAssignmentById = createAsyncThunk<
   IAssignment,
   string
@@ -47,9 +43,6 @@ export const fetchAssignmentById = createAsyncThunk<
   }
 });
 
-/**
- * Get assignments by course
- */
 export const fetchAssignmentsByCourse = createAsyncThunk<
   IAssignment[],
   string
@@ -61,37 +54,28 @@ export const fetchAssignmentsByCourse = createAsyncThunk<
   }
 });
 
-/**
- * Create assignment
- */
 export const createAssignmentThunk = createAsyncThunk<
   IAssignment,
-  ICreateAssignmentPayload
->("assignment/create", async (data, thunkAPI) => {
+  { courseId: string; data: ICreateAssignmentPayload }
+>("assignment/create", async ({ courseId, data }, thunkAPI) => {
   try {
-    return await createAssignment(data);
+    return await createAssignment(courseId, data);
   } catch (error) {
     return thunkAPI.rejectWithValue(getError(error));
   }
 });
 
-/**
- * Update assignment
- */
 export const updateAssignmentThunk = createAsyncThunk<
   IAssignment,
-  { id: string; data: IUpdateAssignmentPayload }
->("assignment/update", async ({ id, data }, thunkAPI) => {
+  { assignmentId: string; data: IUpdateAssignmentPayload }
+>("assignment/update", async ({ assignmentId, data }, thunkAPI) => {
   try {
-    return await updateAssignment(id, data);
+    return await updateAssignment(assignmentId, data);
   } catch (error) {
     return thunkAPI.rejectWithValue(getError(error));
   }
 });
 
-/**
- * Delete assignment
- */
 export const deleteAssignmentThunk = createAsyncThunk<string, string>(
   "assignment/delete",
   async (id, thunkAPI) => {
@@ -104,29 +88,12 @@ export const deleteAssignmentThunk = createAsyncThunk<string, string>(
   }
 );
 
-/**
- * Publish assignment
- */
 export const publishAssignmentThunk = createAsyncThunk<
   IAssignment,
-  string
->("assignment/publish", async (id, thunkAPI) => {
+  { assignmentId: string; isPublished: boolean }
+>("assignment/publish", async ({ assignmentId, isPublished }, thunkAPI) => {
   try {
-    return await publishAssignment(id);
-  } catch (error) {
-    return thunkAPI.rejectWithValue(getError(error));
-  }
-});
-
-/**
- * Close assignment
- */
-export const closeAssignmentThunk = createAsyncThunk<
-  IAssignment,
-  string
->("assignment/close", async (id, thunkAPI) => {
-  try {
-    return await closeAssignment(id);
+    return await setAssignmentPublishStatus(assignmentId, isPublished);
   } catch (error) {
     return thunkAPI.rejectWithValue(getError(error));
   }

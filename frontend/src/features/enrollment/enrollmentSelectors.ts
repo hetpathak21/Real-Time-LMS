@@ -37,7 +37,7 @@ export const selectEnrollmentByCourseId =
   (courseId: string) => (state: RootState) =>
     state.enrollment.myEnrollments.find(
       (e) =>
-        typeof e.course === "string"
-          ? e.course === courseId
-          : e.course._id === courseId
+        typeof e.courseId === "string"
+          ? e.courseId === courseId
+          : e.courseId._id === courseId
     ) || null;

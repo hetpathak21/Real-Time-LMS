@@ -1,9 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-
-import {
-  AssignmentUI,
-  mapAssignmentToUI,
-} from "../../mappers/assignmentMapper";
+import { IAssignment } from "../../types/assignmentTypes";
 
 import {
   fetchAssignmentById,
@@ -12,14 +8,12 @@ import {
   updateAssignmentThunk,
   deleteAssignmentThunk,
   publishAssignmentThunk,
-  closeAssignmentThunk,
 } from "./assignmentThunks";
 
 interface AssignmentState {
-  assignments: AssignmentUI[];
-  courseAssignments: AssignmentUI[];
-  selectedAssignment: AssignmentUI | null;
-
+  assignments: IAssignment[];
+  courseAssignments: IAssignment[];
+  selectedAssignment: IAssignment | null;
   loading: boolean;
   error: string | null;
 }
@@ -28,9 +22,24 @@ const initialState: AssignmentState = {
   assignments: [],
   courseAssignments: [],
   selectedAssignment: null,
-
   loading: false,
   error: null,
+};
+
+const updateAssignmentInState = (
+  state: AssignmentState,
+  assignment: IAssignment
+) => {
+  state.assignments = state.assignments.map((item) =>
+    item._id === assignment._id ? assignment : item
+  );
+  state.courseAssignments = state.courseAssignments.map((item) =>
+    item._id === assignment._id ? assignment : item
+  );
+
+  if (state.selectedAssignment?._id === assignment._id) {
+    state.selectedAssignment = assignment;
+  }
 };
 
 const assignmentSlice = createSlice({
@@ -47,73 +56,44 @@ const assignmentSlice = createSlice({
   },
 
   extraReducers: (builder) => {
+    builder
+      .addCase(fetchAssignmentsByCourse.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAssignmentsByCourse.fulfilled, (state, action) => {
+        state.loading = false;
+        state.courseAssignments = action.payload;
+      })
+      .addCase(fetchAssignmentsByCourse.rejected, (state, action) => {
+        state.loading = false;
+        state.courseAssignments = [];
+        state.error = (action.payload as string) || "Failed to fetch assignments";
+      })
+      .addCase(fetchAssignmentById.fulfilled, (state, action) => {
+        state.selectedAssignment = action.payload;
+      })
+      .addCase(createAssignmentThunk.fulfilled, (state, action) => {
+        state.courseAssignments.unshift(action.payload);
+      })
+      .addCase(updateAssignmentThunk.fulfilled, (state, action) => {
+        updateAssignmentInState(state, action.payload);
+      })
+      .addCase(publishAssignmentThunk.fulfilled, (state, action) => {
+        updateAssignmentInState(state, action.payload);
+      })
+      .addCase(deleteAssignmentThunk.fulfilled, (state, action) => {
+        state.courseAssignments = state.courseAssignments.filter(
+          (item) => item._id !== action.payload
+        );
+        state.assignments = state.assignments.filter(
+          (item) => item._id !== action.payload
+        );
 
-    //  Single assignment
-    builder.addCase(fetchAssignmentById.fulfilled, (state, action) => {
-      state.selectedAssignment = mapAssignmentToUI(action.payload);
-    });
-
-    // Course-specific assignments
-    builder.addCase(fetchAssignmentsByCourse.fulfilled, (state, action) => {
-      state.courseAssignments = action.payload.map(mapAssignmentToUI);
-    });
-
-    //  Create
-    builder.addCase(createAssignmentThunk.fulfilled, (state, action) => {
-      const mapped = mapAssignmentToUI(action.payload);
-
-      state.assignments.push(mapped);
-      state.courseAssignments.push(mapped);
-    });
-
-    //  Update
-    builder.addCase(updateAssignmentThunk.fulfilled, (state, action) => {
-      const updated = mapAssignmentToUI(action.payload);
-
-      state.assignments = state.assignments.map((a) =>
-        a._id === updated._id ? updated : a,
-      );
-
-      state.courseAssignments = state.courseAssignments.map((a) =>
-        a._id === updated._id ? updated : a,
-      );
-
-      if (state.selectedAssignment?._id === updated._id) {
-        state.selectedAssignment = updated;
-      }
-    });
-
-    // Delete
-    builder.addCase(deleteAssignmentThunk.fulfilled, (state, action) => {
-      const id = action.payload;
-
-      state.assignments = state.assignments.filter((a) => a._id !== id);
-      state.courseAssignments = state.courseAssignments.filter(
-        (a) => a._id !== id,
-      );
-
-      if (state.selectedAssignment?._id === id) {
-        state.selectedAssignment = null;
-      }
-    });
-
-    //  Publish
-    builder.addCase(publishAssignmentThunk.fulfilled, (state, action) => {
-      const updated = mapAssignmentToUI(action.payload);
-
-      state.assignments = state.assignments.map((a) =>
-        a._id === updated._id ? updated : a,
-      );
-    });
-
-    //  Close
-    builder.addCase(closeAssignmentThunk.fulfilled, (state, action) => {
-      const updated = mapAssignmentToUI(action.payload);
-
-      state.assignments = state.assignments.map((a) =>
-        a._id === updated._id ? updated : a,
-      );
-    });
+        if (state.selectedAssignment?._id === action.payload) {
+          state.selectedAssignment = null;
+        }
+      });
   },
 });
 
