@@ -38,9 +38,22 @@ exports.getMeController = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     return (0, sendResponse_1.sendResponse)(res, StatusCodes_1.STATUS_CODES.SUCCESS, true, "User fetched successfully", result);
 });
 /* ---------------- UPDATE PROFILE ---------------- */
+// export const updateProfileController = asyncHandler(async (req: any, res: Response) => {
+//   const userId = req.user?.userId;
+//   const result = await updateProfileService(userId, req.body);
+//   return sendResponse(res, STATUS_CODES.SUCCESS, true, "Profile updated successfully", result);
+// });
+/* ---------------- UPDATE PROFILE ---------------- */
 exports.updateProfileController = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     const userId = req.user?.userId;
-    const result = await (0, AuthServices_1.updateProfileService)(userId, req.body);
+    const avatarUrl = req.file
+        ? `${req.protocol}://${req.get("host")}/uploads/profiles/${req.file.filename}`
+        : undefined;
+    const payload = {
+        ...req.body,
+        ...(avatarUrl ? { avatar: avatarUrl } : {}),
+    };
+    const result = await (0, AuthServices_1.updateProfileService)(userId, payload);
     return (0, sendResponse_1.sendResponse)(res, StatusCodes_1.STATUS_CODES.SUCCESS, true, "Profile updated successfully", result);
 });
 /* ---------------- CHANGE PASSWORD ---------------- */

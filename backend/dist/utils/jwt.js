@@ -8,7 +8,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 //Generate Access Token (short-lived)
 const generateAccessToken = (payload) => {
     return jsonwebtoken_1.default.sign(payload, process.env.JWT_ACCESS_SECRET, {
-        expiresIn: "15m",
+        expiresIn: "30m",
     });
 };
 exports.generateAccessToken = generateAccessToken;

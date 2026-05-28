@@ -8,7 +8,7 @@ import {
   IconButton,
   // InputBase,
 } from "@mui/material";
-
+import { useAppSelector } from "../../app/hooks";
 import {
   NotificationsOutlined,
   LogoutOutlined,
@@ -26,7 +26,7 @@ export default function Navbar() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { user } = useAuth();
-
+  // const user = useAppSelector((state) => state.auth.user);
 
   // const [searchOpen, setSearchOpen] = useState(false);
 
@@ -66,7 +66,6 @@ export default function Navbar() {
         </Box>  */}
 
         <Box sx={{ display: "flex", ml: 100, alignItems: "center", gap: 1.5 }}>
-
           <IconButton>
             <NotificationsOutlined sx={{ fontSize: 20, px: 0.6 }} />
           </IconButton>
@@ -77,7 +76,7 @@ export default function Navbar() {
               display: { xs: "none", sm: "flex" },
               alignItems: "center",
               gap: 1,
-              px: 0.7
+              px: 0.7,
             }}
           >
             <Box sx={{ textAlign: "right", lineHeight: 1.1 }}>
@@ -98,6 +97,7 @@ export default function Navbar() {
 
             <Avatar
               onClick={() => navigate("/profile")}
+              src={user?.avatar || undefined}
               sx={{
                 width: 36,
                 height: 36,
@@ -107,7 +107,7 @@ export default function Navbar() {
                 fontWeight: 700,
               }}
             >
-              {user?.name?.charAt(0)?.toUpperCase() || "U"}
+              {!user?.avatar && user?.name?.charAt(0)?.toUpperCase()}
             </Avatar>
           </Box>
 

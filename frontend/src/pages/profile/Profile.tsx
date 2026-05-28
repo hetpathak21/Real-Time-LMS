@@ -338,10 +338,15 @@ export default function Profile() {
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
       name: user?.name || "",
-      avatar: user?.avatar || "",
     },
     mode: "onBlur",
   });
+
+  const avatarFile = profileForm.watch("avatar");
+
+  const previewImage = avatarFile?.[0]
+    ? URL.createObjectURL(avatarFile[0])
+    : user?.avatar;
 
   const passwordForm = useForm<ChangePasswordFormValues>({
     resolver: zodResolver(changePasswordSchema),
@@ -355,7 +360,6 @@ export default function Profile() {
   useEffect(() => {
     profileForm.reset({
       name: user?.name || "",
-      avatar: user?.avatar || "",
     });
   }, [profileForm, user]);
 
@@ -385,12 +389,12 @@ export default function Profile() {
   };
 
   return (
-    <Box sx={{ bgcolor: COLORS.bgLight, minHeight: "100vh", py: { xs: 4, md: 6 } }}>
+    <Box
+      sx={{ bgcolor: COLORS.bgLight, minHeight: "100vh", py: { xs: 4, md: 6 } }}
+    >
       <Container maxWidth="xl">
-        
         {/* Core Layout Grid System with strict explicit column layouts */}
         <Grid container spacing={4} alignItems="flex-start">
-          
           {/* COLUMN 1 (Left Side on Desktop): Dynamic Avatar Identity Card */}
           <Grid size={{ xs: 12, lg: 4 }}>
             <Paper
@@ -405,7 +409,7 @@ export default function Profile() {
             >
               <Stack alignItems="center" spacing={2.5}>
                 <Avatar
-                  src={user?.avatar}
+                  src={previewImage || user?.avatar}
                   sx={{
                     width: 100,
                     height: 100,
@@ -418,10 +422,16 @@ export default function Profile() {
                 </Avatar>
 
                 <Box textAlign="center">
-                  <Typography variant="h5" sx={{ fontWeight: 800, color: COLORS.textMain }}>
+                  <Typography
+                    variant="h5"
+                    sx={{ fontWeight: 800, color: COLORS.textMain }}
+                  >
                     {user?.name}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: COLORS.textSub, mt: 0.5 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: COLORS.textSub, mt: 0.5 }}
+                  >
                     {user?.email}
                   </Typography>
                 </Box>
@@ -449,7 +459,6 @@ export default function Profile() {
           {/* COLUMN 2 (Right Side on Desktop): Form Actions */}
           <Grid size={{ xs: 12, lg: 8 }}>
             <Stack spacing={4}>
-              
               {/* Profile Editor Sheet */}
               <Paper
                 elevation={0}
@@ -461,11 +470,15 @@ export default function Profile() {
                 }}
               >
                 <Box sx={{ mb: 3 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 800, color: COLORS.textMain }}>
+                  <Typography
+                    variant="h6"
+                    sx={{ fontWeight: 800, color: COLORS.textMain }}
+                  >
                     Personal Information
                   </Typography>
                   <Typography variant="body2" sx={{ color: COLORS.textSub }}>
-                    Manage your display identity handles and global avatar metrics.
+                    Manage your display identity handles and global avatar
+                    metrics.
                   </Typography>
                 </Box>
 
@@ -487,24 +500,64 @@ export default function Profile() {
                       sx={inputStyles}
                     />
 
-                    <TextField
-                      fullWidth
-                      label="Avatar Image Location URL"
-                      placeholder="https://example.com/avatar.jpg"
-                      {...profileForm.register("avatar")}
-                      error={!!profileForm.formState.errors.avatar}
-                      helperText={profileForm.formState.errors.avatar?.message || "Optional asset link"}
-                      slotProps={{
-                        formHelperText: {
-                          sx: {
-                            color: profileForm.formState.errors.avatar ? "error.main" : COLORS.textSub,
-                            ml: 0,
-                          },
-                        },
-                      }}
-                      sx={inputStyles}
-                    />
+                    <Box>
+                      <Button
+                        fullWidth
+                        variant="outlined"
+                        component="label"
+                        sx={{
+                          borderRadius: "16px",
+                          py: 2,
+                          borderStyle: "dashed",
+                          borderWidth: "2px",
+                          textTransform: "none",
+                          fontWeight: 700,
+                          color: COLORS.textMain,
+                          borderColor: COLORS.border,
+                          bgcolor: "#f8fafc",
 
+                          "&:hover": {
+                            bgcolor: "#f1f5f9",
+                            borderColor: COLORS.primary,
+                          },
+                        }}
+                      >
+                        <Stack spacing={0.5} alignItems="center">
+                          <Typography fontWeight={700}>
+                            Upload Profile Picture
+                          </Typography>
+
+                          <Typography
+                            variant="caption"
+                            sx={{ color: COLORS.textSub }}
+                          >
+                            JPG, PNG or WEBP • Max 5MB
+                          </Typography>
+
+                          {avatarFile?.[0] && (
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                color: COLORS.primary,
+                                fontWeight: 700,
+                                mt: 1,
+                                wordBreak: "break-word",
+                                textAlign: "center",
+                              }}
+                            >
+                              Selected: {avatarFile[0].name}
+                            </Typography>
+                          )}
+                        </Stack>
+
+                        <input
+                          hidden
+                          type="file"
+                          accept="image/*"
+                          {...profileForm.register("avatar")}
+                        />
+                      </Button>
+                    </Box>
                     <Box sx={{ display: "flex" }}>
                       <Button
                         variant="contained"
@@ -516,11 +569,16 @@ export default function Profile() {
                           fontWeight: 700,
                           borderRadius: "12px",
                           textTransform: "none",
-                          background: "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)",
+                          background:
+                            "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)",
                           boxShadow: "0 10px 20px rgba(14, 165, 233, 0.15)",
                         }}
                       >
-                        {loading ? <CircularProgress size={22} color="inherit" /> : "Save Profiling Data"}
+                        {loading ? (
+                          <CircularProgress size={22} color="inherit" />
+                        ) : (
+                          "Save Profiling Data"
+                        )}
                       </Button>
                     </Box>
                   </Stack>
@@ -538,11 +596,15 @@ export default function Profile() {
                 }}
               >
                 <Box sx={{ mb: 3 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 800, color: COLORS.textMain }}>
+                  <Typography
+                    variant="h6"
+                    sx={{ fontWeight: 800, color: COLORS.textMain }}
+                  >
                     Security Infrastructure
                   </Typography>
                   <Typography variant="body2" sx={{ color: COLORS.textSub }}>
-                    Keep security tight. Use unique symbols, numbers, and capital characters.
+                    Keep security tight. Use unique symbols, numbers, and
+                    capital characters.
                   </Typography>
                 </Box>
 
@@ -558,7 +620,9 @@ export default function Profile() {
                       placeholder="Enter current password"
                       {...passwordForm.register("oldPassword")}
                       error={!!passwordForm.formState.errors.oldPassword}
-                      helperText={passwordForm.formState.errors.oldPassword?.message}
+                      helperText={
+                        passwordForm.formState.errors.oldPassword?.message
+                      }
                       slotProps={{
                         formHelperText: { sx: { color: "error.main", ml: 0 } },
                       }}
@@ -572,7 +636,9 @@ export default function Profile() {
                       placeholder="Enter new password token"
                       {...passwordForm.register("newPassword")}
                       error={!!passwordForm.formState.errors.newPassword}
-                      helperText={passwordForm.formState.errors.newPassword?.message}
+                      helperText={
+                        passwordForm.formState.errors.newPassword?.message
+                      }
                       slotProps={{
                         formHelperText: { sx: { color: "error.main", ml: 0 } },
                       }}
@@ -592,20 +658,23 @@ export default function Profile() {
                           fontWeight: 700,
                           borderRadius: "12px",
                           textTransform: "none",
-                          background: "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)",
+                          background:
+                            "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)",
                           boxShadow: "0 10px 20px rgba(14, 165, 233, 0.15)",
                         }}
                       >
-                        {loading ? <CircularProgress size={22} color="inherit" /> : "Commit Security Updates"}
+                        {loading ? (
+                          <CircularProgress size={22} color="inherit" />
+                        ) : (
+                          "Commit Security Updates"
+                        )}
                       </Button>
                     </Box>
                   </Stack>
                 </form>
               </Paper>
-
             </Stack>
           </Grid>
-
         </Grid>
       </Container>
     </Box>

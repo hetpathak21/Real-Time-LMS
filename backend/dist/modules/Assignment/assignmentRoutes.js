@@ -1,0 +1,16 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const assignmentController_1 = require("./assignmentController");
+const assignmentValidation_1 = require("./assignmentValidation");
+// import { validateZod } from "../../middleware/ValiateMiddleware";
+const ValiateMiddleware_1 = require("../../middleware/ValiateMiddleware");
+const AuthMiddleware_1 = require("../../middleware/AuthMiddleware");
+const RoleMiddleware_1 = require("../../middleware/RoleMiddleware");
+const router = (0, express_1.Router)();
+router.post("/courses/:courseId", AuthMiddleware_1.authMiddleware, (0, RoleMiddleware_1.authorizeRoles)("teacher", "admin"), (0, ValiateMiddleware_1.validateRequest)(assignmentValidation_1.createAssignmentSchema), assignmentController_1.createAssignment);
+router.get("/courses/:courseId", (0, ValiateMiddleware_1.validateRequest)(assignmentValidation_1.courseIdParamSchema), assignmentController_1.getCourseAssignments);
+router.get("/:assignmentId", (0, ValiateMiddleware_1.validateRequest)(assignmentValidation_1.assignmentIdParamSchema), assignmentController_1.getAssignmentById);
+router.put("/:assignmentId", AuthMiddleware_1.authMiddleware, (0, RoleMiddleware_1.authorizeRoles)("teacher", "admin"), (0, ValiateMiddleware_1.validateRequest)(assignmentValidation_1.updateAssignmentSchema), assignmentController_1.updateAssignment);
+router.delete("/:assignmentId", AuthMiddleware_1.authMiddleware, (0, RoleMiddleware_1.authorizeRoles)("teacher", "admin"), (0, ValiateMiddleware_1.validateRequest)(assignmentValidation_1.assignmentIdParamSchema), assignmentController_1.deleteAssignment);
+exports.default = router;
