@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AuthState, AuthResponse } from "./authTypes";
+
 import {
   changePassword,
   loadUser,
@@ -7,7 +8,9 @@ import {
   logoutUser,
   registerUser,
   updateProfile,
+  fetchTeachers,
 } from "./authThunks";
+
 import { IUser } from "../../types/userTypes";
 
 const token = localStorage.getItem("token");
@@ -18,7 +21,10 @@ const initialState: AuthState = {
   loading: false,
   error: null,
   isAuthenticated: !!token,
+  teachers: [],
+  teachersLoading: false,
 };
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -48,7 +54,7 @@ const authSlice = createSlice({
           if (action.payload.refreshToken) {
             localStorage.setItem("refresh-token", action.payload.refreshToken);
           }
-        }
+        },
       )
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
@@ -69,7 +75,7 @@ const authSlice = createSlice({
           if (action.payload.refreshToken) {
             localStorage.setItem("refresh-token", action.payload.refreshToken);
           }
-        }
+        },
       )
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
@@ -95,10 +101,13 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateProfile.fulfilled, (state, action: PayloadAction<IUser>) => {
-        state.loading = false;
-        state.user = action.payload;
-      })
+      .addCase(
+        updateProfile.fulfilled,
+        (state, action: PayloadAction<IUser>) => {
+          state.loading = false;
+          state.user = action.payload;
+        },
+      )
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload ?? "Profile update failed";
@@ -125,6 +134,16 @@ const authSlice = createSlice({
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.error = action.payload ?? "Logout failed";
+      })
+      .addCase(fetchTeachers.pending, (state) => {
+        state.teachersLoading = true;
+      })
+      .addCase(fetchTeachers.fulfilled, (state, action) => {
+        state.teachersLoading = false;
+        state.teachers = action.payload;
+      })
+      .addCase(fetchTeachers.rejected, (state) => {
+        state.teachersLoading = false;
       });
   },
 });

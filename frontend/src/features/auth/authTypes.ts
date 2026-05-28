@@ -6,6 +6,8 @@ export interface AuthState {
   loading: boolean;
   error: string | null;
   isAuthenticated: boolean;
+  teachers: ITeacher[];
+  teachersLoading: boolean;
 }
 
 export interface LoginPayload {
@@ -37,4 +39,12 @@ export interface AuthResponse {
 
 export interface ErrorResponse {
   message: string;
+}
+
+export interface ITeacher {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  avatar?: string;
 }

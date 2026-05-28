@@ -1,6 +1,6 @@
 import { combineReducers } from "@reduxjs/toolkit";
 
-// slices 
+// slices
 import authReducer from "../features/auth/authSlice";
 import userReducer from "../features/user/userSlice";
 import courseReducer from "../features/course/courseSlice";
@@ -9,6 +9,7 @@ import submissionReducer from "../features/submission/submissionSlice";
 import enrollmentReducer from "../features/enrollment/enrollmentSlice";
 import notificationReducer from "../features/notification/notificationSlice";
 import lessonReducer from "../features/lesson/lessonSlice";
+import themeReducer from "../features/theme/themeSlice";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   submission: submissionReducer,
   enrollment: enrollmentReducer,
   notification: notificationReducer,
+  theme: themeReducer,
 });
 
 export default rootReducer;

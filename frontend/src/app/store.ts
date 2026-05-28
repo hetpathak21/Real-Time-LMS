@@ -5,7 +5,7 @@ export const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false, // useful for JWT, dates, etc.
+      serializableCheck: false, 
     }),
 });
 

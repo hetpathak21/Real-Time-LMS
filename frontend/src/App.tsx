@@ -47,7 +47,7 @@ export default function App() {
           minHeight: "100vh",
           width: "100%",
           overflowX: "hidden",
-          bgcolor: "#f5f7fb",
+          bgcolor: "background.default",
         }}
       >
         <AppRoutes />

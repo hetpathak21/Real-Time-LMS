@@ -19,8 +19,8 @@ import {
   submitAssignmentSchema,
   updateAssignmentSchema,
 } from "./assignmentValidation";
-import { validateRequest } from "../../middleware/ValiateMiddleware";
-import { authMiddleware } from "../../middleware/AuthMiddleware";
+import { validateRequest } from "../../middleware/ValiateMiddleware"
+import { authMiddleware } from "../../middleware/AuthMiddleware"; 
 import { authorizeRoles } from "../../middleware/RoleMiddleware";
 
 const router = Router();

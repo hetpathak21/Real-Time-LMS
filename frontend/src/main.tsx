@@ -6,6 +6,7 @@ import { Provider } from "react-redux";
 import { store } from "./app/store";
 
 import { ToastProvider } from "./components/ui/ToastProvider";
+import ThemeWrapper from "./features/theme/ThemeWrapper";
 
 const rootElement = document.getElementById("root");
 
@@ -16,9 +17,11 @@ if (!rootElement) {
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <Provider store={store}>
+      <ThemeWrapper>
         <ToastProvider>
           <App />
         </ToastProvider>
+      </ThemeWrapper>
     </Provider>
-  </React.StrictMode>,
+  </React.StrictMode>
 );

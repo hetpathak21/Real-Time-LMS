@@ -43,12 +43,14 @@ export const signupService = async (data: SignupPayload) => {
     userId: user._id.toString(),
     email: user.email,
     role: user.role,
+    name: user.name,
   });
 
   const refreshToken = generateRefreshToken({
     userId: user._id.toString(),
     email: user.email,
     role: user.role,
+    name: user.name
   });
 
   return { user: safeUser, token: accessToken, refreshToken };
@@ -76,12 +78,14 @@ export const loginService = async (data: LoginPayload) => {
     userId: user._id.toString(),
     email: user.email,
     role: user.role,
+    name: user.name
   });
 
   const refreshToken = generateRefreshToken({
     userId: user._id.toString(),
     email: user.email,
     role: user.role,
+    name: user.name,
   });
 
   const safeUser = await User.findById(user._id).select("-password");
@@ -107,6 +111,7 @@ export const refreshTokenService = async (token: string) => {
     userId: user._id.toString(),
     email: user.email,
     role: user.role,
+    name: user.name,
   });
 
   return { accessToken: newAccessToken };
@@ -176,4 +181,19 @@ export const changePasswordService = async (
   await user.save();
 
   return true;
+};
+
+/* ---------------- GET TEACHERS ---------------- */
+export const getTeachersService = async () => {
+  const teachers = await User.find(
+    { role: "teacher" },
+    {
+      name: 1,
+      email: 1,
+      avatar: 1,
+      role: 1,
+    }
+  );
+
+  return teachers;
 };

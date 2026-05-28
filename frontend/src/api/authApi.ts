@@ -63,3 +63,8 @@ export const changePasswordApi = async (data: ChangePasswordPayload) => {
   const res = await axiosInstance.put("/auth/change-password", data);
   return res.data;
 };
+
+export const getTeachersApi = async () => {
+  const res = await axiosInstance.get("/auth/teachers");
+  return res.data.data;
+};
