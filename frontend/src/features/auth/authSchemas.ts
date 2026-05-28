@@ -29,7 +29,7 @@ export const registerSchema = z.object({
 
 export const updateProfileSchema = z.object({
   name: z.string().trim().min(2, "Name must be at least 2 characters"),
-  avatar: z.string().trim().url("Avatar must be a valid URL").or(z.literal("")),
+  avatar: z.any().optional(),
 });
 
 export const changePasswordSchema = z.object({

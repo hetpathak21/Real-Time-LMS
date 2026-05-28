@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
+import multer from "multer";
 import { AppError } from "../utils/appError";
 import { STATUS_CODES } from "../constants/StatusCodes";
 
@@ -16,6 +17,14 @@ export const globalErrorHandler = (
   if (err instanceof AppError) {
     statusCode = err.statusCode;
     message = err.message;
+  }
+
+  else if (err instanceof multer.MulterError) {
+    statusCode = STATUS_CODES.BAD_REQUEST;
+    message =
+      err.code === "LIMIT_FILE_SIZE"
+        ? "Image must be 5MB or smaller"
+        : err.message;
   }
 
   else if (err instanceof mongoose.Error.ValidationError) {

@@ -1,0 +1,16 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const enrollmentController_1 = require("./enrollmentController");
+const enrollmentValidation_1 = require("./enrollmentValidation");
+// import { validateZod } from "../../middleware/validateZod.middleware";
+const ValiateMiddleware_1 = require("../../middleware/ValiateMiddleware");
+const AuthMiddleware_1 = require("../../middleware/AuthMiddleware");
+const RoleMiddleware_1 = require("../../middleware/RoleMiddleware");
+const router = (0, express_1.Router)();
+router.post("/courses/:courseId/enroll", AuthMiddleware_1.authMiddleware, (0, RoleMiddleware_1.authorizeRoles)("student", "admin"), (0, ValiateMiddleware_1.validateRequest)(enrollmentValidation_1.courseIdParamSchema), enrollmentController_1.enrollCourse);
+router.get("/my-enrolled-courses", AuthMiddleware_1.authMiddleware, (0, RoleMiddleware_1.authorizeRoles)("student", "admin"), (0, ValiateMiddleware_1.validateRequest)(enrollmentValidation_1.enrollmentListQuerySchema), enrollmentController_1.getMyEnrolledCourses);
+router.get("/:courseId/progress", AuthMiddleware_1.authMiddleware, (0, RoleMiddleware_1.authorizeRoles)("student", "admin"), (0, ValiateMiddleware_1.validateRequest)(enrollmentValidation_1.courseIdParamSchema), enrollmentController_1.getEnrollmentProgress);
+router.patch("/:courseId/last-accessed", AuthMiddleware_1.authMiddleware, (0, RoleMiddleware_1.authorizeRoles)("student", "admin"), (0, ValiateMiddleware_1.validateRequest)(enrollmentValidation_1.courseIdParamSchema), enrollmentController_1.updateLastAccessed);
+router.get("/courses/:courseId/students", AuthMiddleware_1.authMiddleware, (0, RoleMiddleware_1.authorizeRoles)("teacher", "admin"), (0, ValiateMiddleware_1.validateRequest)(enrollmentValidation_1.courseIdWithQuerySchema), enrollmentController_1.getCourseStudents);
+exports.default = router;

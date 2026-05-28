@@ -98,7 +98,8 @@ const getMeService = async (userId) => {
 exports.getMeService = getMeService;
 /* ---------------- UPDATE PROFILE ---------------- */
 const updateProfileService = async (userId, data) => {
-    const user = await UserModel_1.default.findByIdAndUpdate(userId, { $set: data }, { new: true }).select("-password");
+    const updateData = Object.fromEntries(Object.entries(data).filter(([, value]) => value !== undefined));
+    const user = await UserModel_1.default.findByIdAndUpdate(userId, { $set: updateData }, { new: true, runValidators: true }).select("-password");
     if (!user) {
         throw new appError_1.AppError(Messages_1.AUTH_MESSAGES.USER_NOT_FOUND, StatusCodes_1.STATUS_CODES.NOT_FOUND);
     }
