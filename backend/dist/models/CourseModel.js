@@ -60,6 +60,17 @@ const courseSchema = new mongoose_1.Schema({
             type: String,
         },
     ],
+    price: {
+        type: Number,
+        required: true,
+        min: 0,
+        default: 0,
+    },
+    level: {
+        type: String,
+        enum: ["beginner", "intermediate", "advanced"],
+        required: true,
+    },
     isPublished: {
         type: Boolean,
         default: false,

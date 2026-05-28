@@ -134,10 +134,14 @@ export const updateProfileService = async (
   userId: string,
   data: UpdateProfilePayload,
 ) => {
+  const updateData = Object.fromEntries(
+    Object.entries(data).filter(([, value]) => value !== undefined),
+  );
+
   const user = await User.findByIdAndUpdate(
     userId,
-    { $set: data },
-    { new: true },
+    { $set: updateData },
+    { new: true, runValidators: true },
   ).select("-password");
 
   if (!user) {

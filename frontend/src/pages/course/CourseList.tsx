@@ -237,7 +237,7 @@ import { useNavigate } from "react-router-dom";
 import CourseCard from "../../components/course/CourseCard";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { fetchAllCourses } from "../../features/course/courseThunks";
-import { clearRecentlyCreatedCourse } from "../../features/course/courseSlice";
+import { useAuth } from "../../hooks/useAuth";
 
 const COLORS = {
   primary: "#00a3ff",
@@ -272,6 +272,7 @@ export default function CourseList() {
   );
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
+  const { isTeacher } = useAuth();
 
   useEffect(() => {
     dispatch(fetchAllCourses());
@@ -492,34 +493,36 @@ export default function CourseList() {
               />
             </Box>
 
-            <Button
-              variant="contained"
-              disableElevation
-              startIcon={<AddRoundedIcon />}
-              onClick={() => navigate("/teacher/create-course")}
-              sx={{
-                borderRadius: "16px",
-                textTransform: "none",
-                fontWeight: 700,
-                fontSize: "0.9rem",
-                px: 3.5,
-                py: 1.4,
-                bgcolor: COLORS.primary,
-                boxShadow: `0 4px 12px ${alpha(COLORS.primary, 0.15)}`,
-                transition: "all 0.25s ease",
-                width: { xs: "100%", sm: "auto" },
-                "&:hover": {
-                  bgcolor: "#0092e4",
-                  boxShadow: `0 6px 20px ${alpha(COLORS.primary, 0.35)}`,
-                  transform: "translateY(-1px)",
-                },
-                "&:active": {
-                  transform: "translateY(0)",
-                },
-              }}
-            >
-              Create Course
-            </Button>
+            {isTeacher && (
+              <Button
+                variant="contained"
+                disableElevation
+                startIcon={<AddRoundedIcon />}
+                onClick={() => navigate("/teacher/create-course")}
+                sx={{
+                  borderRadius: "16px",
+                  textTransform: "none",
+                  fontWeight: 700,
+                  fontSize: "0.9rem",
+                  px: 3.5,
+                  py: 1.4,
+                  bgcolor: COLORS.primary,
+                  boxShadow: `0 4px 12px ${alpha(COLORS.primary, 0.15)}`,
+                  transition: "all 0.25s ease",
+                  width: { xs: "100%", sm: "auto" },
+                  "&:hover": {
+                    bgcolor: "#0092e4",
+                    boxShadow: `0 6px 20px ${alpha(COLORS.primary, 0.35)}`,
+                    transform: "translateY(-1px)",
+                  },
+                  "&:active": {
+                    transform: "translateY(0)",
+                  },
+                }}
+              >
+                Create Course
+              </Button>
+            )}
           </Box>
         </Box>
 

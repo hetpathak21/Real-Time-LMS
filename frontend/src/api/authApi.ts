@@ -39,8 +39,23 @@ export const logoutApi = async () => {
   return res.data;
 };
 
+// export const updateProfileApi = async (data: UpdateProfilePayload) => {
+//   const res = await axiosInstance.put("/auth/profile", data);
+//   return res.data.data;
+// };
 export const updateProfileApi = async (data: UpdateProfilePayload) => {
-  const res = await axiosInstance.put("/auth/profile", data);
+  const formData = new FormData();
+
+  if (typeof data.name === "string") {
+    formData.append("name", data.name);
+  }
+
+  if (data.avatar?.[0]) {
+    formData.append("avatar", data.avatar[0]);
+  }
+
+  const res = await axiosInstance.put("/auth/profile", formData);
+
   return res.data.data;
 };
 

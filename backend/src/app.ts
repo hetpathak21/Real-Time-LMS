@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
+import path from "path";
 import { AuthRoutes } from "./modules/Auth/AuthRoutes";
 import { AdminRoutes } from "./modules/Admin/adminRoute";
 import { CourseRoutes } from "./modules/Course/courseRoute";
@@ -29,6 +30,7 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // Health Route
 app.get("/", (_req, res) => {
