@@ -46,8 +46,7 @@ export default function App() {
         sx={{
           minHeight: "100vh",
           width: "100%",
-          display: "flex",
-          flexDirection: "column",
+          overflowX: "hidden",
           bgcolor: "background.default",
         }}
       >

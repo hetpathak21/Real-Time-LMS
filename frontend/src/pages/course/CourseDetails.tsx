@@ -17,7 +17,6 @@ import {
   deleteLessonThunk,
 } from "../../features/lesson/lessonThunks";
 
-
 const getCourseTeacherName = (
   teacherId?: ICourse["teacherId"],
   instructor?: ICourse["instructor"],
@@ -69,13 +68,17 @@ export default function CourseDetails() {
 
   if (loading && !selectedCourse) {
     return (
-      <Typography sx={{ color: theme.palette.text.primary }}>Loading course...</Typography>
+      <Typography sx={{ color: theme.palette.text.primary }}>
+        Loading course...
+      </Typography>
     );
   }
 
   if (!selectedCourse) {
     return (
-      <Typography sx={{ color: theme.palette.text.primary }}>No course found</Typography>
+      <Typography sx={{ color: theme.palette.text.primary }}>
+        No course found
+      </Typography>
     );
   }
 
@@ -138,19 +141,22 @@ export default function CourseDetails() {
               <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                 <Chip
                   label={selectedCourse.isPublished ? "Published" : "Draft"}
-                  sx={{ bgcolor: "#fff", fontWeight: 700 }}
+                  sx={{
+                    bgcolor: "rgba(255,255,255,0.15)",
+                    color: theme.palette.text.primary,
+                  }}
                 />
                 <Chip
                   label={selectedCourse.category}
                   sx={{
-                    color: "#fff",
+                    color: theme.palette.text.primary,
                     bgcolor: "rgba(255,255,255,0.15)",
                   }}
                 />
                 <Chip
                   label={selectedCourse.level}
                   sx={{
-                    color: "#fff",
+                    color: theme.palette.text.primary,
                     bgcolor: "rgba(255,255,255,0.15)",
                   }}
                 />{" "}
