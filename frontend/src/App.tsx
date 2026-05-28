@@ -46,8 +46,9 @@ export default function App() {
         sx={{
           minHeight: "100vh",
           width: "100%",
-          overflowX: "hidden",
-          bgcolor: "#f5f7fb",
+          display: "flex",
+          flexDirection: "column",
+          bgcolor: "background.default",
         }}
       >
         <AppRoutes />

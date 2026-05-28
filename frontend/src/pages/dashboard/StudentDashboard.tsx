@@ -16,17 +16,6 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks";
 
 import { fetchTeachers } from "../../features/auth/authThunks";
 
-// const COLORS = {
-//   primary: "#00a3ff",
-//   primaryLight: "#e0f2fe",
-//   bgLight: "#f4f7fd",
-//   cardBg: "#ffffff",
-//   textMain: "#1e293b",
-//   textSub: "#64748b",
-//   border: "#e2e8f0",
-//   purple: "#9124f7",
-// };
-
 const activeCourses = [
   {
     title: "Advanced React & TypeScript",

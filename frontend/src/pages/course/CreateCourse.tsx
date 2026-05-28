@@ -1,161 +1,4 @@
-// import { useEffect, useState } from "react";
-// import { Box, Paper, Typography, TextField, Button } from "@mui/material";
-// import { useNavigate, useParams } from "react-router-dom";
-
-// import { useAppDispatch, useAppSelector } from "../../app/hooks";
-// import {
-//   createCourseThunk,
-//   updateCourseThunk,
-//   fetchCourseById,
-// } from "../../features/course/courseThunks";
-
-// import { showToast } from "../../utils/toast";
-
-// export default function CourseFormPage() {
-//   const { courseId } = useParams();
-//   const isEditMode = Boolean(courseId);
-
-//   const dispatch = useAppDispatch();
-//   const navigate = useNavigate();
-
-//   const { selectedCourse, loading } = useAppSelector(
-//     (state) => state.course
-//   );
-
-//   const [form, setForm] = useState({
-//     title: "",
-//     category: "",
-//     description: "",
-//   });
-
-//   /**
-//    * Fetch course only in edit mode
-//    */
-//   useEffect(() => {
-//     if (isEditMode && courseId) {
-//       dispatch(fetchCourseById(courseId));
-//     }
-//   }, [courseId, isEditMode, dispatch]);
-
-//   /**
-//    * Fill form when course is loaded (edit mode)
-//    */
-//   useEffect(() => {
-//     if (isEditMode && selectedCourse) {
-//       setForm({
-//         title: selectedCourse.title || "",
-//         category: selectedCourse.category || "",
-//         description: selectedCourse.description || "",
-//       });
-//     }
-//   }, [selectedCourse, isEditMode]);
-
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-
-//     if (!form.title || !form.category || !form.description) {
-//       showToast("Please fill all fields", "warning");
-//       return;
-//     }
-
-//     try {
-//       if (isEditMode && courseId) {
-//         // UPDATE COURSE
-//         await dispatch(
-//           updateCourseThunk({
-//             courseId,
-//             data: form,
-//           })
-//         ).unwrap();
-
-//         showToast("Course updated successfully", "success");
-//         navigate(`/courses/${courseId}`);
-//       } else {
-//         // CREATE COURSE
-//         const course = await dispatch(
-//           createCourseThunk(form)
-//         ).unwrap();
-
-//         showToast("Course created successfully", "success");
-//         navigate(`/courses/${course._id}`);
-//       }
-
-//       // reset form after create
-//       if (!isEditMode) {
-//         setForm({
-//           title: "",
-//           category: "",
-//           description: "",
-//         });
-//       }
-//     } catch (err: any) {
-//       showToast(err || "Something went wrong", "error");
-//     }
-//   };
-
-//   if (isEditMode && loading && !selectedCourse) {
-//     return <Typography>Loading...</Typography>;
-//   }
-
-//   return (
-//     <Box>
-//       <Paper elevation={3} sx={{ p: 4, borderRadius: 3, maxWidth: 700 }}>
-//         <Typography variant="h4" sx={{ fontWeight: 700, mb: 3 }}>
-//           {isEditMode ? "Edit Course" : "Create Course"}
-//         </Typography>
-
-//         <form onSubmit={handleSubmit}>
-//           <TextField
-//             fullWidth
-//             label="Course Title"
-//             margin="normal"
-//             value={form.title}
-//             onChange={(e) =>
-//               setForm({ ...form, title: e.target.value })
-//             }
-//           />
-
-//           <TextField
-//             fullWidth
-//             label="Category"
-//             margin="normal"
-//             value={form.category}
-//             onChange={(e) =>
-//               setForm({ ...form, category: e.target.value })
-//             }
-//           />
-
-//           <TextField
-//             fullWidth
-//             multiline
-//             rows={5}
-//             label="Description"
-//             margin="normal"
-//             value={form.description}
-//             onChange={(e) =>
-//               setForm({ ...form, description: e.target.value })
-//             }
-//           />
-    
-//           <Button
-//             type="submit"
-//             variant="contained"
-//             sx={{ mt: 2 }}
-//             disabled={loading}
-//           >
-//             {loading
-//               ? "Please wait..."
-//               : isEditMode
-//               ? "Update Course"
-//               : "Create Course"}
-//           </Button>
-//         </form>
-//       </Paper>
-//     </Box>
-//   );
-// }
-
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Box,
   Chip,
@@ -184,11 +27,7 @@ import {
 
 import { showToast } from "../../utils/toast";
 
-const levels = [
-  "beginner",
-  "intermediate",
-  "advanced",
-];
+const levels = ["beginner", "intermediate", "advanced"];
 
 const COLORS = {
   primary: "#00a3ff",
@@ -207,10 +46,12 @@ export default function CreateCourse() {
 
   const navigate = useNavigate();
 
-  const { selectedCourse, loading } =
-    useAppSelector((state) => state.course);
+  const { selectedCourse, loading } = useAppSelector((state) => state.course);
 
-  const [form, setForm] = useState({
+  /**
+   * Initial Form State
+   */
+  const initialForm = {
     title: "",
     description: "",
     category: "",
@@ -218,11 +59,17 @@ export default function CreateCourse() {
     price: "",
     tags: "",
     thumbnail: null as File | null,
-  });
-  const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
+  };
+
+  const [form, setForm] = useState(initialForm);
 
   /**
-   * Fetch course
+   * Prevent multiple form initializations
+   */
+  const initializedRef = useRef(false);
+
+  /**
+   * Fetch Course
    */
   useEffect(() => {
     if (isEditMode && courseId) {
@@ -231,51 +78,68 @@ export default function CreateCourse() {
   }, [dispatch, courseId, isEditMode]);
 
   /**
-   * Fill form
+   * Fill Form (Edit Mode)
    */
   useEffect(() => {
-    if (isEditMode && selectedCourse) {
-      setForm({
-        title: selectedCourse.title || "",
-        description:
-          selectedCourse.description || "",
-        category:
-          selectedCourse.category || "",
-        level:
-          selectedCourse.level || "beginner",
-        price: String(
-          selectedCourse.price || ""
-        ),
-        tags:
-          selectedCourse.tags?.join(", ") || "",
-        thumbnail: null,
-      });
-      setThumbnailPreview(selectedCourse.thumbnail || "");
-    }
-  }, [selectedCourse, isEditMode]);
-
-  useEffect(() => {
-    if (!form.thumbnail) {
-      if (!isEditMode) {
-        setThumbnailPreview("");
-      }
+    if (!isEditMode || !selectedCourse || initializedRef.current) {
       return;
     }
 
-    const objectUrl = URL.createObjectURL(form.thumbnail);
-    setThumbnailPreview(objectUrl);
+    setForm({
+      title: selectedCourse.title || "",
+      description: selectedCourse.description || "",
+      category: selectedCourse.category || "",
+      level: selectedCourse.level || "beginner",
+      price: String(selectedCourse.price || ""),
+      tags: selectedCourse.tags?.join(", ") || "",
+      thumbnail: null,
+    });
 
-    return () => {
-      URL.revokeObjectURL(objectUrl);
-    };
-  }, [form.thumbnail, isEditMode]);
+    initializedRef.current = true;
+  }, [selectedCourse, isEditMode]);
 
   /**
-   * Handle text change
+   * Thumbnail Preview
    */
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const thumbnailPreview = useMemo(() => {
+    /**
+     * New Uploaded File Preview
+     */
+    if (form.thumbnail) {
+      return URL.createObjectURL(form.thumbnail);
+    }
+
+    /**
+     * Existing Thumbnail (Edit Mode)
+     */
+    if (isEditMode && selectedCourse?.thumbnail) {
+      return selectedCourse.thumbnail;
+    }
+
+    return "";
+  }, [form.thumbnail, isEditMode, selectedCourse]);
+
+  /**
+   * Cleanup Object URL
+   */
+  useEffect(() => {
+    let objectUrl: string | null = null;
+
+    if (form.thumbnail) {
+      objectUrl = URL.createObjectURL(form.thumbnail);
+    }
+
+    return () => {
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [form.thumbnail]);
+
+  /**
+   * Handle Text Change
+   */
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
     setForm((prev) => ({
@@ -285,27 +149,23 @@ export default function CreateCourse() {
   };
 
   /**
-   * Handle file
+   * Handle Thumbnail Change
    */
-  const handleThumbnailChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
-    if (file) {
-      setForm((prev) => ({
-        ...prev,
-        thumbnail: file,
-      }));
-    }
+    if (!file) return;
+
+    setForm((prev) => ({
+      ...prev,
+      thumbnail: file,
+    }));
   };
 
   /**
-   * Submit
+   * Submit Form
    */
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (
@@ -314,10 +174,7 @@ export default function CreateCourse() {
       !form.level ||
       !form.price
     ) {
-      showToast(
-        "Please fill all required fields",
-        "warning"
-      );
+      showToast("Please fill all required fields!", "warning");
 
       return;
     }
@@ -327,6 +184,7 @@ export default function CreateCourse() {
         .split(",")
         .map((tag) => tag.trim())
         .filter(Boolean);
+
       const payload = {
         title: form.title.trim(),
         description: form.description.trim(),
@@ -338,59 +196,47 @@ export default function CreateCourse() {
       };
 
       /**
-       * UPDATE
+       * Update Course
        */
       if (isEditMode && courseId) {
         await dispatch(
           updateCourseThunk({
             courseId,
             data: payload,
-          })
+          }),
         ).unwrap();
 
-        showToast(
-          "Course updated successfully",
-          "success"
-        );
+        showToast("Course updated successfully", "success");
 
         navigate(`/courses/${courseId}`);
+
+        return;
       }
 
       /**
-       * CREATE
+       * Create Course
        */
-      else {
-        const course = await dispatch(
-          createCourseThunk(payload)
-        ).unwrap();
+      const course = await dispatch(createCourseThunk(payload)).unwrap();
 
-        showToast(
-          "Course created successfully",
-          "success"
-        );
+      showToast("Course created successfully", "success");
 
-        navigate(`/courses/${course._id}`);
+      navigate(`/courses/${course._id}`);
+    } catch (error) {
+      console.error(error);
+
+      if (error instanceof Error) {
+        showToast(error.message, "error");
+      } else {
+        showToast("Validation failed", "error");
       }
-    } catch (error: any) {
-      console.log(error);
-
-      showToast(
-        error || "Validation failed",
-        "error"
-      );
     }
   };
 
-  if (
-    isEditMode &&
-    loading &&
-    !selectedCourse
-  ) {
-    return (
-      <Typography>
-        Loading...
-      </Typography>
-    );
+  /**
+   * Loading State
+   */
+  if (isEditMode && loading && !selectedCourse) {
+    return <Typography>Loading...</Typography>;
   }
 
   return (
@@ -407,7 +253,8 @@ export default function CreateCourse() {
           mb: 3,
           borderRadius: "22px",
           color: "#ffffff",
-          background: "linear-gradient(135deg, #0ea5e9 0%, #0369a1 58%, #082f49 100%)",
+          background:
+            "linear-gradient(135deg, #0ea5e9 0%, #0369a1 58%, #082f49 100%)",
           boxShadow: "0 24px 50px rgba(14, 165, 233, 0.22)",
         }}
       >
@@ -418,12 +265,17 @@ export default function CreateCourse() {
             mb: 1,
           }}
         >
-          {isEditMode
-            ? "Update Course"
-            : "Create Course"}
+          {isEditMode ? "Update Course" : "Create Course"}
         </Typography>
-        <Typography sx={{ color: "rgba(255,255,255,0.84)", lineHeight: 1.7, maxWidth: 720 }}>
-          Build a polished course page with a strong title, crisp thumbnail, and details that match the dashboard experience.
+        <Typography
+          sx={{
+            color: "rgba(255,255,255,0.84)",
+            lineHeight: 1.7,
+            maxWidth: 720,
+          }}
+        >
+          Build a polished course page with a strong title, crisp thumbnail, and
+          details that match the dashboard experience.
         </Typography>
       </Paper>
 
@@ -439,11 +291,15 @@ export default function CreateCourse() {
               bgcolor: COLORS.cardBg,
             }}
           >
-            <Typography variant="h5" sx={{ fontWeight: 800, color: COLORS.textMain, mb: 0.75 }}>
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: 800, color: COLORS.textMain, mb: 0.75 }}
+            >
               Course Information
             </Typography>
             <Typography sx={{ color: COLORS.textSub, mb: 3 }}>
-              Fill in the content below to publish a premium-looking course card and detail page.
+              Fill in the content below to publish a premium-looking course card
+              and detail page.
             </Typography>
 
             <form onSubmit={handleSubmit}>
@@ -478,7 +334,9 @@ export default function CreateCourse() {
                       value={form.category}
                       onChange={handleChange}
                       fullWidth
-                      sx={{ "& .MuiOutlinedInput-root": { borderRadius: "14px" } }}
+                      sx={{
+                        "& .MuiOutlinedInput-root": { borderRadius: "14px" },
+                      }}
                     />
                   </Grid>
 
@@ -491,13 +349,12 @@ export default function CreateCourse() {
                       onChange={handleChange}
                       fullWidth
                       required
-                      sx={{ "& .MuiOutlinedInput-root": { borderRadius: "14px" } }}
+                      sx={{
+                        "& .MuiOutlinedInput-root": { borderRadius: "14px" },
+                      }}
                     >
                       {levels.map((level) => (
-                        <MenuItem
-                          key={level}
-                          value={level}
-                        >
+                        <MenuItem key={level} value={level}>
                           {level}
                         </MenuItem>
                       ))}
@@ -515,7 +372,9 @@ export default function CreateCourse() {
                       onChange={handleChange}
                       fullWidth
                       required
-                      sx={{ "& .MuiOutlinedInput-root": { borderRadius: "14px" } }}
+                      sx={{
+                        "& .MuiOutlinedInput-root": { borderRadius: "14px" },
+                      }}
                     />
                   </Grid>
 
@@ -527,7 +386,9 @@ export default function CreateCourse() {
                       onChange={handleChange}
                       helperText="Comma separated tags"
                       fullWidth
-                      sx={{ "& .MuiOutlinedInput-root": { borderRadius: "14px" } }}
+                      sx={{
+                        "& .MuiOutlinedInput-root": { borderRadius: "14px" },
+                      }}
                     />
                   </Grid>
                 </Grid>
@@ -545,11 +406,7 @@ export default function CreateCourse() {
                       .map((tag) => tag.trim())
                       .filter(Boolean)
                       .map((tag) => (
-                        <Chip
-                          key={tag}
-                          label={tag}
-                          sx={{ fontWeight: 700 }}
-                        />
+                        <Chip key={tag} label={tag} sx={{ fontWeight: 700 }} />
                       ))}
                   </Box>
                 ) : null}
@@ -567,19 +424,19 @@ export default function CreateCourse() {
                   }}
                 >
                   Upload Thumbnail
-
                   <input
                     hidden
                     type="file"
                     accept="image/*"
-                    onChange={
-                      handleThumbnailChange
-                    }
+                    onChange={handleThumbnailChange}
                   />
                 </Button>
 
                 {form.thumbnail ? (
-                  <Typography variant="body2" sx={{ color: "#0369a1", fontWeight: 700 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "#0369a1", fontWeight: 700 }}
+                  >
                     Selected: {form.thumbnail.name}
                   </Typography>
                 ) : null}
@@ -593,15 +450,16 @@ export default function CreateCourse() {
                     fontWeight: 700,
                     borderRadius: "14px",
                     textTransform: "none",
-                    background: "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)",
+                    background:
+                      "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)",
                     boxShadow: "0 14px 26px rgba(14, 165, 233, 0.24)",
                   }}
                 >
                   {loading
                     ? "Please wait..."
                     : isEditMode
-                    ? "Update Course"
-                    : "Create Course"}
+                      ? "Update Course"
+                      : "Create Course"}
                 </Button>
               </Stack>
             </form>
@@ -619,46 +477,98 @@ export default function CreateCourse() {
                 border: "1px solid #e2e8f0",
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: 800, color: COLORS.textMain, mb: 2 }}>
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: 800, color: COLORS.textMain, mb: 2 }}
+              >
                 Preview Highlights
               </Typography>
               <Stack spacing={1.5}>
-                <Paper elevation={0} sx={{ p: 2, borderRadius: "16px", bgcolor: "#f8fafc", border: "1px solid #e2e8f0" }}>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 2,
+                    borderRadius: "16px",
+                    bgcolor: "#f8fafc",
+                    border: "1px solid #e2e8f0",
+                  }}
+                >
+                  <Box
+                    sx={{ display: "flex", alignItems: "center", gap: 1.25 }}
+                  >
                     <SchoolRoundedIcon sx={{ color: COLORS.primary }} />
                     <Box>
-                      <Typography variant="caption" sx={{ color: COLORS.textSub, fontWeight: 700 }}>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: COLORS.textSub, fontWeight: 700 }}
+                      >
                         Level
                       </Typography>
-                      <Typography sx={{ color: COLORS.textMain, fontWeight: 700, textTransform: "capitalize" }}>
+                      <Typography
+                        sx={{
+                          color: COLORS.textMain,
+                          fontWeight: 700,
+                          textTransform: "capitalize",
+                        }}
+                      >
                         {form.level}
                       </Typography>
                     </Box>
                   </Box>
                 </Paper>
 
-                <Paper elevation={0} sx={{ p: 2, borderRadius: "16px", bgcolor: "#f8fafc", border: "1px solid #e2e8f0" }}>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 2,
+                    borderRadius: "16px",
+                    bgcolor: "#f8fafc",
+                    border: "1px solid #e2e8f0",
+                  }}
+                >
+                  <Box
+                    sx={{ display: "flex", alignItems: "center", gap: 1.25 }}
+                  >
                     <SellRoundedIcon sx={{ color: "#14b8a6" }} />
                     <Box>
-                      <Typography variant="caption" sx={{ color: COLORS.textSub, fontWeight: 700 }}>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: COLORS.textSub, fontWeight: 700 }}
+                      >
                         Price
                       </Typography>
-                      <Typography sx={{ color: COLORS.textMain, fontWeight: 700 }}>
+                      <Typography
+                        sx={{ color: COLORS.textMain, fontWeight: 700 }}
+                      >
                         {form.price ? `Rs. ${form.price}` : "Free"}
                       </Typography>
                     </Box>
                   </Box>
                 </Paper>
 
-                <Paper elevation={0} sx={{ p: 2, borderRadius: "16px", bgcolor: "#f8fafc", border: "1px solid #e2e8f0" }}>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 2,
+                    borderRadius: "16px",
+                    bgcolor: "#f8fafc",
+                    border: "1px solid #e2e8f0",
+                  }}
+                >
+                  <Box
+                    sx={{ display: "flex", alignItems: "center", gap: 1.25 }}
+                  >
                     <AutoStoriesRoundedIcon sx={{ color: "#f59e0b" }} />
                     <Box>
-                      <Typography variant="caption" sx={{ color: COLORS.textSub, fontWeight: 700 }}>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: COLORS.textSub, fontWeight: 700 }}
+                      >
                         Category
                       </Typography>
-                      <Typography sx={{ color: COLORS.textMain, fontWeight: 700 }}>
+                      <Typography
+                        sx={{ color: COLORS.textMain, fontWeight: 700 }}
+                      >
                         {form.category || "General"}
                       </Typography>
                     </Box>
@@ -686,11 +596,15 @@ export default function CreateCourse() {
                 }}
               />
               <Box sx={{ p: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 800, color: COLORS.textMain, mb: 1 }}>
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: 800, color: COLORS.textMain, mb: 1 }}
+                >
                   {form.title || "Course title preview"}
                 </Typography>
                 <Typography sx={{ color: COLORS.textSub, lineHeight: 1.7 }}>
-                  {form.description || "Your course description will appear here to preview how the detail page feels."}
+                  {form.description ||
+                    "Your course description will appear here to preview how the detail page feels."}
                 </Typography>
               </Box>
             </Paper>

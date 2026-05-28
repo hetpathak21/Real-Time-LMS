@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -6,9 +7,11 @@ import {
   Chip,
   Typography,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+
 import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
 import AutoStoriesRoundedIcon from "@mui/icons-material/AutoStoriesRounded";
-import { useNavigate } from "react-router-dom";
+
 import { ICourse } from "../../types/courseTypes";
 
 type CourseCardProps = ICourse;
@@ -58,6 +61,8 @@ export default function CourseCard({
   enrollmentCount,
 }: CourseCardProps) {
   const navigate = useNavigate();
+  const theme = useTheme();
+
   const accent = getAccent(_id);
   const teacherName = getTeacherName(teacherId, instructor);
 
@@ -69,12 +74,20 @@ export default function CourseCard({
         flexDirection: "column",
         borderRadius: 3,
         overflow: "hidden",
-        border: "1px solid #e2e8f0",
-        boxShadow: "0 6px 18px rgba(15, 23, 42, 0.06)",
+        bgcolor: theme.palette.background.paper,
+        border: `1px solid ${theme.palette.divider}`,
+
+        boxShadow:
+          theme.palette.mode === "dark"
+            ? "0 6px 18px rgba(0,0,0,0.4)"
+            : "0 6px 18px rgba(15, 23, 42, 0.06)",
         transition: "all 0.25s ease",
         "&:hover": {
           transform: "translateY(-6px)",
-          boxShadow: "0 18px 40px rgba(14, 165, 233, 0.18)",
+          boxShadow:
+            theme.palette.mode === "dark"
+              ? "0 18px 40px rgba(0,0,0,0.5)"
+              : "0 18px 40px rgba(14, 165, 233, 0.18)",
           cursor: "pointer",
         },
       }}
@@ -115,7 +128,12 @@ export default function CourseCard({
               label={category}
               size="small"
               sx={{
-                bgcolor: "rgba(255,255,255,0.9)",
+                bgcolor:
+                  theme.palette.mode === "dark"
+                    ? "rgba(15,23,42,0.9)"
+                    : "rgba(255,255,255,0.9)",
+
+                color: theme.palette.text.primary,
                 fontWeight: 700,
               }}
             />
@@ -125,7 +143,12 @@ export default function CourseCard({
             label={isPublished ? "Published" : "Draft"}
             size="small"
             sx={{
-              bgcolor: isPublished ? "#dcfce7" : "rgba(0,0,0,0.6)",
+              bgcolor: isPublished
+                ? "#dcfce7"
+                : theme.palette.mode === "dark"
+                  ? "rgba(255,255,255,0.12)"
+                  : "rgba(0,0,0,0.6)",
+
               color: isPublished ? "#166534" : "#fff",
               fontWeight: 700,
             }}
@@ -163,8 +186,25 @@ export default function CourseCard({
         }}
       >
         <Box sx={{ display: "flex", gap: 1 }}>
-          <Box sx={{ flex: 1, p: 1.5, bgcolor: "#f8fafc", borderRadius: 2 }}>
-            <Typography variant="caption">Level</Typography>
+          <Box
+            sx={{
+              flex: 1,
+              p: 1.5,
+              bgcolor:
+                theme.palette.mode === "dark"
+                  ? theme.palette.background.default
+                  : "#f8fafc",
+              borderRadius: 2,
+            }}
+          >
+            <Typography
+              variant="caption"
+              sx={{
+                color: theme.palette.text.secondary,
+              }}
+            >
+              Level
+            </Typography>
             <Typography
               sx={{
                 fontWeight: 700,
@@ -174,8 +214,25 @@ export default function CourseCard({
             </Typography>
           </Box>
 
-          <Box sx={{ flex: 1, p: 1.5, bgcolor: "#f8fafc", borderRadius: 2 }}>
-            <Typography variant="caption">Learners</Typography>
+          <Box
+            sx={{
+              flex: 1,
+              p: 1.5,
+              bgcolor:
+                theme.palette.mode === "dark"
+                  ? theme.palette.background.default
+                  : "#f8fafc",
+              borderRadius: 2,
+            }}
+          >
+            <Typography
+              variant="caption"
+              sx={{
+                color: theme.palette.text.secondary,
+              }}
+            >
+              Learners
+            </Typography>
             <Typography
               sx={{
                 fontWeight: 700,
@@ -187,22 +244,35 @@ export default function CourseCard({
           </Box>
         </Box>
 
-        <Typography variant="body2" sx={{ color: "#64748b" }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: theme.palette.text.secondary,
+          }}
+        >
           {description}
         </Typography>
 
-        <Typography variant="body2">
-          Instructor: <strong>{teacherName}</strong>
+        <Typography
+          variant="body2"
+          sx={{
+            color: theme.palette.text.primary,
+          }}
+        >
+          Instructor : <strong>{teacherName}</strong>
         </Typography>
 
         {/* BUTTON FIXED INSIDE CARD CONTENT */}
         <Button
           variant="outlined"
+          color="primary"
           onClick={() => navigate(`/course/${_id}`)}
           sx={{
             mt: "auto",
             borderRadius: 2,
             alignSelf: "flex-start",
+            borderColor: theme.palette.primary.main,
+            color: theme.palette.primary.main,
           }}
         >
           <AutoStoriesRoundedIcon sx={{ mr: 1 }} />
