@@ -353,7 +353,7 @@ export default function CourseAssignmentsSection({
               variant="contained"
               startIcon={<AddRoundedIcon />}
               onClick={openCreateForm}
-              sx={{ borderRadius: "12px", textTransform: "none", fontWeight: 700 }}
+              sx={{ borderRadius: "12px", textTransform: "none", fontWeight: 700 , bgcolor: COLORS.primary,color:"white"}}
             >
               Create Assignment
             </Button>

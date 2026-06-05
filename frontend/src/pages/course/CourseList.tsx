@@ -208,6 +208,7 @@ export default function CourseList() {
                 px: 3.5,
                 py: 1.4,
                 bgcolor: COLORS.primary,
+                color: "white",
                 boxShadow: `0 4px 12px ${alpha(COLORS.primary, 0.15)}`,
                 width: { xs: "100%", sm: "auto" },
                 "&:hover": {

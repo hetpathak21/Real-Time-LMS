@@ -865,6 +865,7 @@ export default function CourseDetails() {
                   fontWeight: 700,
                   textTransform: "none",
                   bgcolor: COLORS.primary,
+                  color: "white",
                   "&:hover": { bgcolor: "#0092e4" },
                 }}
               >

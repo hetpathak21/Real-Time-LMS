@@ -1,34 +1,42 @@
 import { useNavigate } from "react-router-dom";
-import { AppBar, Typography, Box, Avatar, IconButton } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
+  Avatar,
+  IconButton,
+  // InputBase,
+} from "@mui/material";
+import { useAppSelector } from "../../app/hooks";
+import {
+  NotificationsOutlined,
+  LogoutOutlined,
+  // MenuOutlined,
+  // Search,
+} from "@mui/icons-material";
 
-import { useTheme } from "@mui/material/styles";
-
-import { NotificationsOutlined, LogoutOutlined } from "@mui/icons-material";
-
-import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
-import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
-
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { useAppDispatch } from "../../app/hooks";
+import { logoutUser } from "../../features/auth/authThunks";
 import { useAuth } from "../../hooks/useAuth";
 import { showToast } from "../../utils/toast";
-import { logoutUser } from "../../features/auth/authThunks";
-import { toggleTheme } from "../../features/theme/themeSlice";
+// import { useState } from "react";
 
 export default function Navbar() {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const theme = useTheme();
+  // const user = useAppSelector((state) => state.auth.user);
 
-  const { mode } = useAppSelector((state) => state.theme);
-  const dispatch = useAppDispatch();
+  // const [searchOpen, setSearchOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
       await dispatch(logoutUser()).unwrap();
-      showToast("Logged out successfully!", "info");
+      showToast("Logged out successfully", "info");
       navigate("/login");
     } catch {
-      showToast("Logout failed!", "error");
+      showToast("Logout failed", "error");
     }
   };
 
@@ -37,59 +45,34 @@ export default function Navbar() {
       position="fixed"
       elevation={0}
       sx={{
-        bgcolor: theme.palette.background.paper,
-        color: theme.palette.text.primary,
-        borderBottom: `1px solid ${theme.palette.divider}`,
+        bgcolor: "#fff",
+        color: "#0f172a",
+        borderBottom: "1px solid #e2e8f0",
         width: { md: "calc(100% - 260px)" },
         ml: { md: "260px" },
       }}
     >
-      <Box
+      <Toolbar
         sx={{
           display: "flex",
-          alignItems: "center",
-          gap: { xs: 0.5, sm: 1, md: 1.5 },
-          ml: "auto",
-          flexWrap: "nowrap",
+          justifyContent: "space-between",
+          minHeight: "64px !important",
+          px: { xs: 1.5, sm: 2, md: 3 },
         }}
       >
-        <Box sx={{ display: "flex", ml: 100, alignItems: "center", gap: 1.5 }}>
-          <IconButton
-            sx={{
-              color: theme.palette.text.primary,
-              p: { xs: 0.7, sm: 1 },
-              "&:hover": {
-                bgcolor: theme.palette.action.hover,
-              },
-            }}
-          >
-            <NotificationsOutlined sx={{ fontSize: {xs: 24, sm: 25} }} />
-          </IconButton>
 
-          <IconButton
-            onClick={() => dispatch(toggleTheme())}
-            sx={{
-              color: theme.palette.text.primary,
-              p: { xs: 0.7, sm: 1 },
-              "&:hover": {
-                bgcolor: theme.palette.action.hover,
-              },
-            }}
-          >
-            {mode === "dark" ? (
-              <LightModeOutlinedIcon sx={{ fontSize: 25 }} />
-            ) : (
-              <DarkModeOutlinedIcon sx={{ fontSize: 25 }} />
-            )}
+        <Box sx={{ display: "flex", ml: 100, alignItems: "center", gap: 1.5 }}>
+          <IconButton>
+            <NotificationsOutlined sx={{ fontSize: 32, px: 0.6 }} />
           </IconButton>
 
           {/* USER INFO */}
           <Box
             sx={{
-              display: { xs: "none", md: "flex" },
+              display: { xs: "none", sm: "flex" },
               alignItems: "center",
-              gap: 1.2,
-              px: 1.2,
+              gap: 1,
+              px: 0.7,
             }}
           >
             <Box sx={{ textAlign: "right", lineHeight: 1.1 }}>
@@ -99,7 +82,7 @@ export default function Navbar() {
               <Typography
                 sx={{
                   fontSize: "10px",
-                  color: theme.palette.text.secondary,
+                  color: "#64748b",
                   textTransform: "uppercase",
                   fontWeight: 600,
                 }}
@@ -112,8 +95,8 @@ export default function Navbar() {
               onClick={() => navigate("/profile")}
               src={user?.avatar || undefined}
               sx={{
-                width: { xs: 32, sm: 36 },
-                height: { xs: 32, sm: 36 },
+                width: 36,
+                height: 36,
                 bgcolor: "#00a3ff",
                 cursor: "pointer",
                 fontSize: "14px",
@@ -126,14 +109,10 @@ export default function Navbar() {
 
           {/* LOGOUT */}
           <IconButton color="error" onClick={handleLogout}>
-            <LogoutOutlined
-              sx={{
-                fontSize: { xs: 22, sm: 25 },
-              }}
-            />
+            <LogoutOutlined sx={{ fontSize: 25, px: 0.5 }} />
           </IconButton>
         </Box>
-      </Box>
+      </Toolbar>
     </AppBar>
   );
 }
