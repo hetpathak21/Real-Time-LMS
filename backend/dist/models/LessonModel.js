@@ -46,10 +46,19 @@ const lessonSchema = new mongoose_1.Schema({
     },
     type: {
         type: String,
-        enum: ["video", "pdf", "text", "link"],
+        enum: ["video", "pdf", "text", "document", "link"],
         required: true,
     },
     contentUrl: {
+        type: String,
+    },
+    textContent: {
+        type: String,
+    },
+    fileName: {
+        type: String,
+    },
+    mimeType: {
         type: String,
     },
     order: {

@@ -4,4 +4,8 @@ export interface IUser {
   email: string;
   role: "student" | "teacher" | "admin";
   avatar?: string;
+  isActive?: boolean;
+  isVerified?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }

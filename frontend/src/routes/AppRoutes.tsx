@@ -28,6 +28,7 @@ import { Box, Typography, Button } from "@mui/material";
 import AssignmentList from "../pages/assignment/AssignmentList";
 import AssignmentDetails from "../pages/assignment/AssignmentDetails";
 import Profile from "../pages/profile/Profile";
+import UserManagement from "../pages/admin/UserManagement";
 
 /* -------------------------------------------------------------------------- */
 /*                          UNAUTHORIZED PAGE                                 */
@@ -115,6 +116,7 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoutes allowedRoles={["admin"]} />}>
         <Route element={<DashboardLayout />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<UserManagement />} />
         </Route>
       </Route>
 

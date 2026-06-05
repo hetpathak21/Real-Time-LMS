@@ -810,6 +810,7 @@ export default function Register() {
                     fontWeight: 700,
                     textTransform: "none",
                     bgcolor: COLORS.primary,
+                    color:"white",
                     transition: "all 0.3s",
                     "&:hover": { bgcolor: "#0092e4", transform: "scale(1.02)" },
                   }}

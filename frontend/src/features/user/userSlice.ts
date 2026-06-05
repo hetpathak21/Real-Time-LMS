@@ -4,6 +4,8 @@ import {
   fetchMyProfile,
   fetchAllUsers,
   updateUserProfileThunk,
+  deleteUserThunk,
+  updateUserStatusThunk,
 } from "./userThunks";
 
 interface UserState {
@@ -35,6 +37,7 @@ const userSlice = createSlice({
     // 👤 My Profile
     builder.addCase(fetchMyProfile.pending, (state) => {
       state.loading = true;
+      state.error = null;
     });
     builder.addCase(fetchMyProfile.fulfilled, (state, action) => {
       state.loading = false;
@@ -46,13 +49,61 @@ const userSlice = createSlice({
     });
 
     // 👥 All Users (Admin)
+    builder.addCase(fetchAllUsers.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
     builder.addCase(fetchAllUsers.fulfilled, (state, action) => {
+      state.loading = false;
       state.users = action.payload;
+    });
+    builder.addCase(fetchAllUsers.rejected, (state, action) => {
+      state.loading = false;
+      state.error = (action.payload as string) || "Failed to fetch users";
     });
 
     // ✏️ Update Profile
+    builder.addCase(updateUserProfileThunk.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
     builder.addCase(updateUserProfileThunk.fulfilled, (state, action) => {
+      state.loading = false;
       state.me = action.payload;
+    });
+    builder.addCase(updateUserProfileThunk.rejected, (state, action) => {
+      state.loading = false;
+      state.error = (action.payload as string) || "Failed to update profile";
+    });
+
+    // 🗑️ Delete User
+    builder.addCase(deleteUserThunk.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(deleteUserThunk.fulfilled, (state, action) => {
+      state.loading = false;
+      state.users = state.users.filter((user) => user._id !== action.payload);
+    });
+    builder.addCase(deleteUserThunk.rejected, (state, action) => {
+      state.loading = false;
+      state.error = (action.payload as string) || "Failed to delete user";
+    });
+
+    // 🚦 Update User Status
+    builder.addCase(updateUserStatusThunk.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(updateUserStatusThunk.fulfilled, (state, action) => {
+      state.loading = false;
+      state.users = state.users.map((user) =>
+        user._id === action.payload._id ? action.payload : user
+      );
+    });
+    builder.addCase(updateUserStatusThunk.rejected, (state, action) => {
+      state.loading = false;
+      state.error = (action.payload as string) || "Failed to update user status";
     });
   },
 });

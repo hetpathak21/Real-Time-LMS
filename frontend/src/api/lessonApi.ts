@@ -6,8 +6,12 @@ import {
 } from "../types/lessonTypes";
 
 const buildLessonRequestBody = (
-  data: ICreateLessonPayload | IUpdateLessonPayload
+  data: ICreateLessonPayload | IUpdateLessonPayload | FormData
 ) => {
+  if (data instanceof FormData) {
+    return data;
+  }
+
   if (!data.content) {
     return data;
   }
@@ -34,7 +38,7 @@ const buildLessonRequestBody = (
 
 export const createLesson = async (
   courseId: string,
-  data: ICreateLessonPayload
+  data: ICreateLessonPayload | FormData
 ): Promise<ILesson> => {
   const body = buildLessonRequestBody(data);
   const res = await axiosInstance.post(`/lesson/${courseId}/lessons`, body);
@@ -55,7 +59,7 @@ export const getLessonById = async (lessonId: string): Promise<ILesson> => {
 
 export const updateLesson = async (
   lessonId: string,
-  data: IUpdateLessonPayload
+  data: IUpdateLessonPayload | FormData
 ): Promise<ILesson> => {
   const body = buildLessonRequestBody(data);
   const res = await axiosInstance.put(`/lesson/${lessonId}`, body);

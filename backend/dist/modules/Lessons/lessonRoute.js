@@ -11,6 +11,7 @@ const lessonController_1 = require("./lessonController");
 const router = (0, express_1.Router)();
 router.get("/:courseId/lessons", (0, ValiateMiddleware_1.validateRequest)(LessonValidation_1.courseLessonIdValidationSchema), lessonController_1.getCourseLessons);
 router.post("/:courseId/lessons", AuthMiddleware_1.authMiddleware, (0, RoleMiddleware_1.authorizeRoles)("teacher", "admin"), uploadMiddleware_1.upload.single("content"), (0, ValiateMiddleware_1.validateRequest)(LessonValidation_1.createLessonValidationSchema), lessonController_1.createLesson);
+router.get("/:lessonId/download", (0, ValiateMiddleware_1.validateRequest)(LessonValidation_1.lessonIdValidationSchema), lessonController_1.downloadLessonContent);
 router.get("/:lessonId", (0, ValiateMiddleware_1.validateRequest)(LessonValidation_1.lessonIdValidationSchema), lessonController_1.getLessonById);
 router.put("/:lessonId", AuthMiddleware_1.authMiddleware, (0, RoleMiddleware_1.authorizeRoles)("teacher", "admin"), uploadMiddleware_1.upload.single("content"), (0, ValiateMiddleware_1.validateRequest)(LessonValidation_1.updateLessonValidationSchema), lessonController_1.updateLesson);
 router.delete("/:lessonId", AuthMiddleware_1.authMiddleware, (0, RoleMiddleware_1.authorizeRoles)("teacher", "admin"), (0, ValiateMiddleware_1.validateRequest)(LessonValidation_1.lessonIdValidationSchema), lessonController_1.deleteLesson);

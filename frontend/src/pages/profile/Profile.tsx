@@ -394,7 +394,7 @@ export default function Profile() {
     >
       <Container maxWidth="xl">
         {/* Core Layout Grid System with strict explicit column layouts */}
-        <Grid container spacing={4} alignItems="flex-start">
+        <Grid container spacing={4} sx={{ alignItems: "flex-start" }}>
           {/* COLUMN 1 (Left Side on Desktop): Dynamic Avatar Identity Card */}
           <Grid size={{ xs: 12, lg: 4 }}>
             <Paper
@@ -421,7 +421,7 @@ export default function Profile() {
                   {user?.name?.charAt(0).toUpperCase()}
                 </Avatar>
 
-                <Box textAlign="center">
+                <Box sx={{ textAlign: "center" }}>
                   <Typography
                     variant="h5"
                     sx={{ fontWeight: 800, color: COLORS.textMain }}
@@ -569,6 +569,7 @@ export default function Profile() {
                           fontWeight: 700,
                           borderRadius: "12px",
                           textTransform: "none",
+                          color:"white",
                           background:
                             "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)",
                           boxShadow: "0 10px 20px rgba(14, 165, 233, 0.15)",

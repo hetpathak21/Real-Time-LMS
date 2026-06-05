@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const assignmentController_1 = require("./assignmentController");
 const assignmentValidation_1 = require("./assignmentValidation");
-// import { validateZod } from "../../middleware/ValiateMiddleware";
 const ValiateMiddleware_1 = require("../../middleware/ValiateMiddleware");
 const AuthMiddleware_1 = require("../../middleware/AuthMiddleware");
 const RoleMiddleware_1 = require("../../middleware/RoleMiddleware");

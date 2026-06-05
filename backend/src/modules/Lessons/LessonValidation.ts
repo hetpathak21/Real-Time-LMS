@@ -1,6 +1,11 @@
 import { z } from "zod";
 
-const lessonTypeSchema = z.enum(["video", "pdf", "text", "link"]);
+const lessonTypeSchema = z.enum(["video", "pdf", "text", "document", "link"]);
+const booleanField = z.preprocess((value) => {
+  if (value === "true") return true;
+  if (value === "false") return false;
+  return value;
+}, z.boolean());
 
 /* ---------------- CREATE LESSON ---------------- */
 export const createLessonSchema = z.object({
@@ -8,12 +13,15 @@ export const createLessonSchema = z.object({
   type: lessonTypeSchema,
 
   contentUrl: z.string().optional(),
+  textContent: z.string().optional(),
+  fileName: z.string().optional(),
+  mimeType: z.string().optional(),
 
   order: z.coerce.number().optional(),
 
   duration: z.coerce.number().optional(),
 
-  isPreview: z.boolean().optional(),
+  isPreview: booleanField.optional(),
 });
 
 /* ---------------- UPDATE LESSON ---------------- */
@@ -22,12 +30,15 @@ export const updateLessonSchema = z.object({
   type: lessonTypeSchema.optional(),
 
   contentUrl: z.string().optional(),
+  textContent: z.string().optional(),
+  fileName: z.string().optional(),
+  mimeType: z.string().optional(),
 
   order: z.coerce.number().optional(),
 
   duration: z.coerce.number().optional(),
 
-  isPreview: z.boolean().optional(),
+  isPreview: booleanField.optional(),
 });
 
 /* ---------------- IDS ---------------- */

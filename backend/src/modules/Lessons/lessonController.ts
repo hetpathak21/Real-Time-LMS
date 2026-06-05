@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import path from "path";
+import { Readable } from "stream";
 import { AuthRequest } from "../../middleware/AuthMiddleware";
 import { asyncHandler } from "../../utils/asyncHandler";
 import { sendResponse } from "../../utils/sendResponse";
@@ -18,6 +20,42 @@ const getUploadedFileUrl = (file?: Express.Multer.File) => {
   return file.path;
 };
 
+const safeFileName = (value: string) =>
+  value.replace(/[^a-zA-Z0-9._-]/g, "-").replace(/-+/g, "-").slice(0, 120);
+
+const getExtensionFromMime = (mimeType?: string) => {
+  if (mimeType === "application/pdf") return ".pdf";
+  if (mimeType === "application/msword") return ".doc";
+  if (
+    mimeType ===
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  ) {
+    return ".docx";
+  }
+  if (mimeType?.startsWith("video/mp4")) return ".mp4";
+  return "";
+};
+
+const buildDownloadFileName = (
+  title: string,
+  originalName?: string,
+  mimeType?: string,
+  lessonType?: string
+) => {
+  const baseName = originalName || title || "lesson-file";
+  const safeName = safeFileName(baseName);
+  const extension =
+    path.extname(safeName) ||
+    getExtensionFromMime(mimeType) ||
+    (lessonType === "pdf" ? ".pdf" : "") ||
+    (lessonType === "document" ? ".docx" : "");
+  const nameWithoutExtension = extension
+    ? safeFileName(path.basename(safeName, extension))
+    : safeName;
+
+  return `${nameWithoutExtension || "lesson-file"}${extension}`;
+};
+
 export const createLesson = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const teacherId = req.user?.userId;
@@ -26,6 +64,8 @@ export const createLesson = asyncHandler(
     const lessonPayload = {
       ...req.body,
       contentUrl: getUploadedFileUrl(req.file) || req.body.contentUrl,
+      fileName: req.file?.originalname || req.body.fileName,
+      mimeType: req.file?.mimetype || req.body.mimeType,
     };
 
     const lesson = await createLessonService(
@@ -82,6 +122,8 @@ export const updateLesson = asyncHandler(
     const lessonPayload = {
       ...req.body,
       contentUrl: getUploadedFileUrl(req.file) || req.body.contentUrl,
+      fileName: req.file?.originalname || req.body.fileName,
+      mimeType: req.file?.mimetype || req.body.mimeType,
     };
 
     const lesson = await updateLessonService(
@@ -113,5 +155,50 @@ export const deleteLesson = asyncHandler(
       true,
       "Lesson deleted successfully"
     );
+  }
+);
+
+export const downloadLessonContent = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { lessonId } = req.params as { lessonId: string };
+    const lesson = await getLessonByIdService(lessonId);
+
+    if (!lesson.contentUrl) {
+      return sendResponse(
+        res,
+        STATUS_CODES.NOT_FOUND,
+        false,
+        "Lesson file not found"
+      );
+    }
+
+    const upstream = await fetch(lesson.contentUrl);
+
+    if (!upstream.ok || !upstream.body) {
+      return sendResponse(
+        res,
+        STATUS_CODES.BAD_REQUEST,
+        false,
+        "Unable to download lesson file"
+      );
+    }
+
+    const contentType =
+      lesson.mimeType ||
+      upstream.headers.get("content-type") ||
+      "application/octet-stream";
+    const fileName = buildDownloadFileName(
+      lesson.title,
+      lesson.fileName,
+      contentType,
+      lesson.type
+    );
+
+    res.setHeader("Content-Type", contentType);
+    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+
+    Readable.fromWeb(
+      upstream.body as unknown as Parameters<typeof Readable.fromWeb>[0]
+    ).pipe(res);
   }
 );

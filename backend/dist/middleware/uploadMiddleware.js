@@ -12,31 +12,68 @@ const cloudinary_1 = __importDefault(require("../config/cloudinary"));
 const appError_1 = require("../utils/appError");
 const storage = new multer_storage_cloudinary_1.CloudinaryStorage({
     cloudinary: cloudinary_1.default,
-    params: async () => {
+    params: async (_req, file) => {
+        const isVideo = file.mimetype.startsWith("video/");
+        const isDocument = file.mimetype === "application/pdf" ||
+            file.mimetype ===
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+            file.mimetype === "application/msword";
         return {
             folder: "lms/courses",
-            allowed_formats: ["jpg", "jpeg", "png", "webp"],
-            resource_type: "image",
+            // Allowed file extensions
+            allowed_formats: [
+                // Images
+                "jpg",
+                "jpeg",
+                "png",
+                "webp",
+                // Videos
+                "mp4",
+                "mov",
+                "avi",
+                "mkv",
+                // Documents
+                "pdf",
+                "doc",
+                "docx",
+            ],
+            // Cloudinary resource type
+            resource_type: isVideo
+                ? "video"
+                : isDocument
+                    ? "raw"
+                    : "image",
         };
     },
 });
 const fileFilter = (_req, file, cb) => {
     const allowedMimeTypes = [
+        // Image MIME types
         "image/jpeg",
         "image/jpg",
         "image/png",
         "image/webp",
+        // Video MIME types
+        "video/mp4",
+        "video/quicktime",
+        "video/x-msvideo",
+        "video/x-matroska",
+        // Document MIME types
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
     if (!allowedMimeTypes.includes(file.mimetype)) {
-        return cb(new appError_1.AppError("Only image files are allowed", 400));
+        return cb(new appError_1.AppError("Only image, video, and document files are allowed", 400));
     }
     cb(null, true);
 };
 exports.upload = (0, multer_1.default)({
     storage,
     fileFilter,
+    // 100MB limit for videos/documents
     limits: {
-        fileSize: 5 * 1024 * 1024,
+        fileSize: 100 * 1024 * 1024,
     },
 });
 const profileUploadDirectory = path_1.default.join(process.cwd(), "uploads", "profiles");

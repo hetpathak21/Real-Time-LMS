@@ -405,6 +405,7 @@ export default function Login() {
                     fontWeight: 700,
                     textTransform: "none",
                     bgcolor: COLORS.primary,
+                    color:"white",
                     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                     "&:hover": { 
                       bgcolor: "#0092e4", 
