@@ -12,6 +12,7 @@ import {
 import {
   createLesson,
   deleteLesson,
+  downloadLessonContent,
   getCourseLessons,
   getLessonById,
   updateLesson,
@@ -32,6 +33,12 @@ router.post(
   upload.single("content"),
   validateRequest(createLessonValidationSchema),
   createLesson
+);
+
+router.get(
+  "/:lessonId/download",
+  validateRequest(lessonIdValidationSchema),
+  downloadLessonContent
 );
 
 router.get(

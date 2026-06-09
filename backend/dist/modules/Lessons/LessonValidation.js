@@ -2,24 +2,37 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.lessonIdValidationSchema = exports.courseLessonIdValidationSchema = exports.updateLessonValidationSchema = exports.createLessonValidationSchema = exports.lessonIdSchema = exports.courseIdSchema = exports.updateLessonSchema = exports.createLessonSchema = void 0;
 const zod_1 = require("zod");
-const lessonTypeSchema = zod_1.z.enum(["video", "pdf", "text", "link"]);
+const lessonTypeSchema = zod_1.z.enum(["video", "pdf", "text", "document", "link"]);
+const booleanField = zod_1.z.preprocess((value) => {
+    if (value === "true")
+        return true;
+    if (value === "false")
+        return false;
+    return value;
+}, zod_1.z.boolean());
 /* ---------------- CREATE LESSON ---------------- */
 exports.createLessonSchema = zod_1.z.object({
     title: zod_1.z.string().min(1, "Lesson title is required"),
     type: lessonTypeSchema,
     contentUrl: zod_1.z.string().optional(),
+    textContent: zod_1.z.string().optional(),
+    fileName: zod_1.z.string().optional(),
+    mimeType: zod_1.z.string().optional(),
     order: zod_1.z.coerce.number().optional(),
     duration: zod_1.z.coerce.number().optional(),
-    isPreview: zod_1.z.boolean().optional(),
+    isPreview: booleanField.optional(),
 });
 /* ---------------- UPDATE LESSON ---------------- */
 exports.updateLessonSchema = zod_1.z.object({
     title: zod_1.z.string().min(1, "Lesson title cannot be empty").optional(),
     type: lessonTypeSchema.optional(),
     contentUrl: zod_1.z.string().optional(),
+    textContent: zod_1.z.string().optional(),
+    fileName: zod_1.z.string().optional(),
+    mimeType: zod_1.z.string().optional(),
     order: zod_1.z.coerce.number().optional(),
     duration: zod_1.z.coerce.number().optional(),
-    isPreview: zod_1.z.boolean().optional(),
+    isPreview: booleanField.optional(),
 });
 /* ---------------- IDS ---------------- */
 exports.courseIdSchema = zod_1.z.object({

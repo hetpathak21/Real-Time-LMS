@@ -1,10 +1,7 @@
 import { RootState } from "../../app/store";
 
-/**
- * All lessons
- */
 export const selectLessons = (state: RootState) =>
-  state.lesson.lessons;
+  state.lesson.courseLessons;
 
 /**
  * Course-specific lessons
@@ -35,4 +32,4 @@ export const selectLessonError = (state: RootState) =>
  */
 export const selectLessonById =
   (id: string) => (state: RootState) =>
-    state.lesson.lessons.find((l: { _id: string; }) => l._id === id) || null;
+    state.lesson.courseLessons.find((lesson) => lesson._id === id) || null;

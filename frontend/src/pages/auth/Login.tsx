@@ -304,7 +304,7 @@ export default function Login() {
           
           <Stack spacing={3} sx={{ zIndex: 1, ...slideIn }}>
             <RocketLaunch sx={{ fontSize: 48, mb: 1, color: "#e0f2fe" }} />
-            <Typography variant="h3" fontWeight={800} lineHeight={1.1}>
+            <Typography variant="h3" fontWeight={800} sx={{ lineHeight: 1.1 }}>
               Back to your workspace.
             </Typography>
             <Typography sx={{ opacity: 0.85, fontSize: "1.1rem", maxWidth: "340px" }}>
@@ -405,6 +405,7 @@ export default function Login() {
                     fontWeight: 700,
                     textTransform: "none",
                     bgcolor: COLORS.primary,
+                    color:"white",
                     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                     "&:hover": { 
                       bgcolor: "#0092e4", 

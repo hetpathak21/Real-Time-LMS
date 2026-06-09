@@ -14,6 +14,7 @@ import {
   Container,
   useTheme,
 } from "@mui/material";
+import Grid from "@mui/material/Grid";
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useAuth } from "../../hooks/useAuth";
@@ -26,14 +27,14 @@ import {
   type UpdateProfileFormValues,
 } from "../../features/auth/authSchemas";
 
-// const COLORS = {
-//   primary: "#0ea5e9",
-//   bgLight: "#f4f7fd",
-//   cardBg: "#ffffff",
-//   textMain: "#2c3e50",
-//   textSub: "#8a99ad",
-//   border: "#e2e8f0",
-// };
+const COLORS = {
+  primary: "#0ea5e9",
+  bgLight: "#f4f7fd",
+  cardBg: "#ffffff",
+  textMain: "#2c3e50",
+  textSub: "#8a99ad",
+  border: "#e2e8f0",
+};
 
 const inputStyles = {
   "& .MuiOutlinedInput-root": {
@@ -125,16 +126,10 @@ export default function Profile() {
       }}
     >
       <Container maxWidth="xl">
-        <Box
-          sx={{
-            display: "flex",
-            gap: 4,
-            flexDirection: { xs: "column", lg: "row" },
-            alignItems: "flex-start",
-          }}
-        >
-          {/* ================= LEFT PANEL ================= */}
-          <Box sx={{ flex: { lg: "0 0 33%" }, width: "100%" }}>
+        {/* Core Layout Grid System with strict explicit column layouts */}
+        <Grid container spacing={4} sx={{ alignItems: "flex-start" }}>
+          {/* COLUMN 1 (Left Side on Desktop): Dynamic Avatar Identity Card */}
+          <Grid size={{ xs: 12, lg: 4 }}>
             <Paper
               elevation={0}
               sx={{
@@ -158,7 +153,10 @@ export default function Profile() {
                 </Avatar>
 
                 <Box sx={{ textAlign: "center" }}>
-                  <Typography sx={{ fontWeight: 700 }} variant="h5">
+                  <Typography
+                    variant="h5"
+                    sx={{ fontWeight: 800, color: COLORS.textMain }}
+                  >
                     {user?.name}
                   </Typography>
                   <Typography color="text.secondary">{user?.email}</Typography>
@@ -184,7 +182,7 @@ export default function Profile() {
                 </Box>
               </Stack>
             </Paper>
-          </Box>
+          </Grid>
 
           {/* ================= RIGHT PANEL ================= */}
           <Box sx={{ flex: 1, width: "100%" }}>
@@ -212,30 +210,58 @@ export default function Profile() {
                     >
                       Upload Avatar
                       <input
-                        type="file"
                         hidden
+                        type="file"
                         accept="image/*"
                         {...profileForm.register("avatar")}
                       />
                     </Button>
 
+                    <Typography
+                      variant="caption"
+                      sx={{ color: COLORS.textSub }}
+                    >
+                      JPG, PNG or WEBP • Max 5MB
+                    </Typography>
+
                     {avatarFile?.[0] && (
-                      <Typography variant="caption">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: COLORS.primary,
+                          fontWeight: 700,
+                          mt: 1,
+                          wordBreak: "break-word",
+                        }}
+                      >
                         Selected: {avatarFile[0].name}
                       </Typography>
                     )}
 
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      disabled={loading}
-                    >
-                      {loading ? (
-                        <CircularProgress size={20} />
-                      ) : (
-                        "Save Profile"
-                      )}
-                    </Button>
+                    <Box sx={{ display: "flex" }}>
+                      <Button
+                        variant="contained"
+                        type="submit"
+                        disabled={loading}
+                        sx={{
+                          py: 1.5,
+                          px: 4,
+                          fontWeight: 700,
+                          borderRadius: "12px",
+                          textTransform: "none",
+                          color: "white",
+                          background:
+                            "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)",
+                          boxShadow: "0 10px 20px rgba(14, 165, 233, 0.15)",
+                        }}
+                      >
+                        {loading ? (
+                          <CircularProgress size={22} color="inherit" />
+                        ) : (
+                          "Save Profile Data"
+                        )}
+                      </Button>
+                    </Box>
                   </Stack>
                 </form>
               </Paper>
@@ -286,7 +312,7 @@ export default function Profile() {
               </Paper>
             </Stack>
           </Box>
-        </Box>
+        </Grid>
       </Container>
     </Box>
   );
