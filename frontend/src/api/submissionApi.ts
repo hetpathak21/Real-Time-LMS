@@ -34,8 +34,9 @@ export const getSubmissions = async (
 };
 
 export const getSubmissionById = async (
-  _submissionId: string
+  submissionId: string
 ): Promise<ISubmissionDetails> => {
+  void submissionId;
   throw new Error("Single submission details endpoint is not available yet");
 };
 
@@ -75,7 +76,8 @@ export const gradeSubmission = async (
 };
 
 export const markUnderReview = async (
-  _submissionId: string
+  submissionId: string
 ): Promise<ISubmission> => {
+  void submissionId;
   throw new Error("Review-only submission endpoint is not available yet");
 };

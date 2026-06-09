@@ -72,9 +72,7 @@ export const courseSchema = z.object({
   category: z.string().trim().optional().or(z.literal("")),
 
   level: z.enum(["beginner", "intermediate", "advanced"], {
-    errorMap: () => ({
-      message: "Please select a valid level",
-    }),
+    message: "Please select a valid level",
   }),
 
   tags: z.string().trim().optional().or(z.literal("")),

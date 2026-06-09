@@ -53,7 +53,7 @@ export const fetchLessonById = createAsyncThunk<ILesson, string>(
 
 export const createLessonThunk = createAsyncThunk<
   ILesson,
-  { courseId: string; data: ICreateLessonPayload }
+  { courseId: string; data: ICreateLessonPayload | FormData }
 >("lesson/createLesson", async ({ courseId, data }, thunkAPI) => {
   try {
     return await createLesson(courseId, data);
@@ -64,7 +64,7 @@ export const createLessonThunk = createAsyncThunk<
 
 export const updateLessonThunk = createAsyncThunk<
   ILesson,
-  { lessonId: string; data: IUpdateLessonPayload }
+  { lessonId: string; data: IUpdateLessonPayload | FormData }
 >("lesson/updateLesson", async ({ lessonId, data }, thunkAPI) => {
   try {
     return await updateLesson(lessonId, data);

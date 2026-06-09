@@ -275,14 +275,17 @@ const getAccent = (courseId: string) => {
   return ACCENTS[total % ACCENTS.length];
 };
 
-const getTeacherName = (teacherId?: any, instructor?: any) => {
+const getTeacherName = (
+  teacherId?: ICourse["teacherId"],
+  instructor?: ICourse["instructor"]
+) => {
   if (typeof instructor === "object") return instructor?.name || "Instructor";
   if (typeof teacherId === "object") return teacherId?.name || "Instructor";
   return typeof instructor === "string" && instructor.trim() ? instructor : "Expert Instructor";
 };
 
 export default function CourseCard(props: CourseCardProps) {
-  const { _id, title, description, thumbnail, category, level, teacherId, instructor, isPublished, enrollmentCount } = props;
+  const { _id, title, thumbnail, category, level, teacherId, instructor, isPublished, enrollmentCount } = props;
   const navigate = useNavigate();
   const accent = getAccent(_id);
   const teacherName = getTeacherName(teacherId, instructor);

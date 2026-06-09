@@ -1,9 +1,4 @@
 "use strict";
-// import { Request, Response, NextFunction } from "express";
-// import { verifyAccessToken } from "../utils/jwt";
-// import { AppError } from "../utils/appError";
-// import { STATUS_CODES } from "../constants/StatusCodes";
-// import { AUTH_MESSAGES } from "../constants/Messages";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authMiddleware = void 0;
 const jwt_1 = require("../utils/jwt");

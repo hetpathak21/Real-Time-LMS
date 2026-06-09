@@ -5,6 +5,8 @@ import {
   getMyProfile,
   getAllUsers,
   updateUserProfile,
+  deleteUser,
+  updateUserStatus,
 } from "../../api/userApi";
 
 import { IUser } from "../../types/userTypes";
@@ -76,3 +78,32 @@ export const updateUserProfileThunk = createAsyncThunk<
     }
   }
 );
+
+/**
+ * Delete user (Admin only)
+ */
+export const deleteUserThunk = createAsyncThunk<string, string>(
+  "user/deleteUser",
+  async (userId, thunkAPI) => {
+    try {
+      await deleteUser(userId);
+      return userId;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(extractErrorMessage(error));
+    }
+  }
+);
+
+/**
+ * Update user status (Admin only)
+ */
+export const updateUserStatusThunk = createAsyncThunk<
+  IUser,
+  { userId: string; status: "active" | "blocked" }
+>("user/updateUserStatus", async ({ userId, status }, thunkAPI) => {
+  try {
+    return await updateUserStatus(userId, status);
+  } catch (error) {
+    return thunkAPI.rejectWithValue(extractErrorMessage(error));
+  }
+});

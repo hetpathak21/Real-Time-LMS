@@ -1,4 +1,4 @@
-
+/* eslint-disable react-hooks/set-state-in-effect */
 import Grid from "@mui/material/Grid";
 import { useEffect, useState } from "react";
 import {
@@ -121,7 +121,11 @@ export default function CreateCourse() {
         .map((tag) => tag.trim())
         .filter(Boolean);
 
-      const payload = { ...validatedData, tags: tagsArray };
+      const payload = {
+        ...validatedData,
+        price: Number(validatedData.price),
+        tags: tagsArray,
+      };
 
       if (isEditMode && courseId) {
         await dispatch(updateCourseThunk({ courseId, data: payload })).unwrap();
@@ -148,7 +152,15 @@ export default function CreateCourse() {
 
   if (isEditMode && loading && !selectedCourse) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" bgcolor={COLORS.bgLight}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+          bgcolor: COLORS.bgLight,
+        }}
+      >
         <Typography>Loading...</Typography>
       </Box>
     );
@@ -181,7 +193,7 @@ export default function CreateCourse() {
         {/* CRITICAL FIX: Added `alignItems="flex-start"` to the Grid container. 
           This prevents the right column from automatically stretching or shifting based on the left column's height.
         */}
-        <Grid container spacing={4} alignItems="flex-start">
+        <Grid container spacing={4} sx={{ alignItems: "flex-start" }}>
           
           {/* LEFT SIDE COLUMN: Form Wrapper */}
           <Grid size={{ xs: 12, lg: 7, xl: 8 }}>
@@ -336,6 +348,7 @@ export default function CreateCourse() {
                       textTransform: "none",
                       background: "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)",
                       boxShadow: "0 14px 26px rgba(14, 165, 233, 0.24)",
+                       color: "white"
                     }}
                   >
                     {loading ? "Please wait..." : isEditMode ? "Update Course" : "Create Course"}

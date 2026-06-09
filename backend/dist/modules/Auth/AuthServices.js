@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changePasswordService = exports.updateProfileService = exports.getMeService = exports.logoutService = exports.refreshTokenService = exports.loginService = exports.signupService = void 0;
+exports.getTeachersService = exports.changePasswordService = exports.updateProfileService = exports.getMeService = exports.logoutService = exports.refreshTokenService = exports.loginService = exports.signupService = void 0;
 const UserModel_1 = __importDefault(require("../../models/UserModel"));
 const bcrypt_1 = require("../../utils/bcrypt");
 const jwt_1 = require("../../utils/jwt");
@@ -29,11 +29,13 @@ const signupService = async (data) => {
         userId: user._id.toString(),
         email: user.email,
         role: user.role,
+        name: user.name,
     });
     const refreshToken = (0, jwt_1.generateRefreshToken)({
         userId: user._id.toString(),
         email: user.email,
         role: user.role,
+        name: user.name
     });
     return { user: safeUser, token: accessToken, refreshToken };
 };
@@ -53,11 +55,13 @@ const loginService = async (data) => {
         userId: user._id.toString(),
         email: user.email,
         role: user.role,
+        name: user.name
     });
     const refreshToken = (0, jwt_1.generateRefreshToken)({
         userId: user._id.toString(),
         email: user.email,
         role: user.role,
+        name: user.name,
     });
     const safeUser = await UserModel_1.default.findById(user._id).select("-password");
     return { user: safeUser, token: accessToken, refreshToken };
@@ -77,6 +81,7 @@ const refreshTokenService = async (token) => {
         userId: user._id.toString(),
         email: user.email,
         role: user.role,
+        name: user.name,
     });
     return { accessToken: newAccessToken };
 };
@@ -123,3 +128,14 @@ const changePasswordService = async (userId, data) => {
     return true;
 };
 exports.changePasswordService = changePasswordService;
+/* ---------------- GET TEACHERS ---------------- */
+const getTeachersService = async () => {
+    const teachers = await UserModel_1.default.find({ role: "teacher" }, {
+        name: 1,
+        email: 1,
+        avatar: 1,
+        role: 1,
+    });
+    return teachers;
+};
+exports.getTeachersService = getTeachersService;

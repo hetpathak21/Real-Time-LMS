@@ -47,8 +47,9 @@ export const enrollInCourse = async (
 };
 
 export const getEnrollments = async (
-  _query?: IEnrollmentQuery
+  query?: IEnrollmentQuery
 ): Promise<IEnrollment[]> => {
+  void query;
   return [];
 };
 
@@ -70,23 +71,26 @@ export const getMyEnrollments = async (
 
 export const updateEnrollment = async (
   courseId: string,
-  _data: IUpdateEnrollmentPayload
+  data: IUpdateEnrollmentPayload
 ): Promise<IEnrollment> => {
+  void data;
   const res = await axiosInstance.patch(`/enrollment/${courseId}/last-accessed`);
   return res.data.data;
 };
 
 export const updateProgress = async (
   courseId: string,
-  _progress: number
+  progress: number
 ): Promise<IEnrollment> => {
+  void progress;
   const res = await axiosInstance.get(`/enrollment/${courseId}/progress`);
   return res.data.data;
 };
 
 export const dropCourse = async (
-  _enrollmentId: string
+  enrollmentId: string
 ): Promise<IEnrollment> => {
+  void enrollmentId;
   throw new Error("Drop course endpoint is not available yet");
 };
 

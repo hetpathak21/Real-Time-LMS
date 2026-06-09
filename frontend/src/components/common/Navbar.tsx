@@ -8,7 +8,6 @@ import {
   IconButton,
   // InputBase,
 } from "@mui/material";
-import { useAppSelector } from "../../app/hooks";
 import {
   NotificationsOutlined,
   LogoutOutlined,
@@ -60,10 +59,11 @@ export default function Navbar() {
           px: { xs: 1.5, sm: 2, md: 3 },
         }}
       >
+        {/* <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}></Box> */}
 
-        <Box sx={{ display: "flex", ml: 100, alignItems: "center", gap: 1.5 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, ml: "auto" }}>
           <IconButton>
-            <NotificationsOutlined sx={{ fontSize: 32, px: 0.6 }} />
+            <NotificationsOutlined sx={{ fontSize: 36, px: 0.6 }} />
           </IconButton>
 
           {/* USER INFO */}

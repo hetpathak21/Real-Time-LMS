@@ -40,32 +40,40 @@ const assignmentSchema = new mongoose_1.Schema({
         ref: "Course",
         required: true,
     },
+    teacherId: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
     title: {
         type: String,
         required: true,
+        trim: true,
     },
     description: {
         type: String,
+        required: true,
+        trim: true,
     },
-    attachments: [
-        {
-            type: String,
-        },
-    ],
-    deadline: {
+    dueDate: {
         type: Date,
         required: true,
     },
     totalMarks: {
         type: Number,
         default: 100,
+        min: 1,
     },
-    createdBy: {
-        type: mongoose_1.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
+    attachmentUrl: {
+        type: String,
+    },
+    isPublished: {
+        type: Boolean,
+        default: false,
     },
 }, {
     timestamps: true,
 });
+assignmentSchema.index({ courseId: 1, createdAt: -1 });
+assignmentSchema.index({ courseId: 1, isPublished: 1 });
 exports.default = mongoose_1.default.model("Assignment", assignmentSchema);

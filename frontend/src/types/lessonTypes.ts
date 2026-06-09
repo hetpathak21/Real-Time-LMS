@@ -1,6 +1,6 @@
 import { ICourse } from "./courseTypes";
 
-export type LessonType = "video" | "text" | "pdf" | "link";
+export type LessonType = "video" | "text" | "pdf" | "document" | "link";
 
 export interface ILesson {
   _id: string;
@@ -8,6 +8,9 @@ export interface ILesson {
   title: string;
   type: LessonType;
   contentUrl?: string;
+  textContent?: string;
+  fileName?: string;
+  mimeType?: string;
   order: number;
   duration?: number;
   isPreview: boolean;
@@ -19,6 +22,7 @@ export interface ICreateLessonPayload {
   title: string;
   type: LessonType;
   contentUrl?: string;
+  textContent?: string;
   content?: File | null;
   order?: number;
   duration?: number;
@@ -29,6 +33,7 @@ export interface IUpdateLessonPayload {
   title?: string;
   type?: LessonType;
   contentUrl?: string;
+  textContent?: string;
   content?: File | null;
   order?: number;
   duration?: number;

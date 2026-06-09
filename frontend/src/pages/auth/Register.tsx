@@ -695,7 +695,7 @@ export default function Register() {
           
           <Stack spacing={3} sx={{ zIndex: 1, ...slideIn }}>
             <AutoAwesome sx={{ fontSize: 48, mb: 1 }} />
-            <Typography variant="h3" fontWeight={800} lineHeight={1.1}>
+            <Typography variant="h3" fontWeight={800} sx={{ lineHeight: 1.1 }}>
               Level up your learning.
             </Typography>
             <Typography sx={{ opacity: 0.8, fontSize: "1.1rem" }}>
@@ -810,6 +810,7 @@ export default function Register() {
                     fontWeight: 700,
                     textTransform: "none",
                     bgcolor: COLORS.primary,
+                    color:"white",
                     transition: "all 0.3s",
                     "&:hover": { bgcolor: "#0092e4", transform: "scale(1.02)" },
                   }}

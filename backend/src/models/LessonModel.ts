@@ -3,8 +3,11 @@ import mongoose, { Document, Schema } from "mongoose";
 export interface ILesson extends Document {
   courseId: mongoose.Types.ObjectId;
   title: string;
-  type: "video" | "pdf" | "text" | "link";
+  type: "video" | "pdf" | "text" | "document" | "link";
   contentUrl?: string;
+  textContent?: string;
+  fileName?: string;
+  mimeType?: string;
   order: number;
   duration?: number;
   isPreview: boolean;
@@ -25,11 +28,23 @@ const lessonSchema = new Schema<ILesson>(
 
     type: {
       type: String,
-      enum: ["video", "pdf", "text", "link"],
+      enum: ["video", "pdf", "text", "document", "link"],
       required: true,
     },
 
     contentUrl: {
+      type: String,
+    },
+
+    textContent: {
+      type: String,
+    },
+
+    fileName: {
+      type: String,
+    },
+
+    mimeType: {
       type: String,
     },
 

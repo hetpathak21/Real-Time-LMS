@@ -1,11 +1,6 @@
 "use strict";
-// import { Request, Response } from "express";
-// import { asyncHandler } from "../../utils/asyncHandler";
-// import { sendResponse } from "../../utils/sendResponse";
-// import { STATUS_CODES } from "../../constants/StatusCodes";
-// import { AUTH_MESSAGES } from "../../constants/Messages";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changePasswordController = exports.updateProfileController = exports.getMeController = exports.logoutController = exports.refreshTokenController = exports.loginController = exports.signupController = void 0;
+exports.getTeachersController = exports.changePasswordController = exports.updateProfileController = exports.getMeController = exports.logoutController = exports.refreshTokenController = exports.loginController = exports.signupController = void 0;
 const asyncHandler_1 = require("../../utils/asyncHandler");
 const sendResponse_1 = require("../../utils/sendResponse");
 const StatusCodes_1 = require("../../constants/StatusCodes");
@@ -61,4 +56,9 @@ exports.changePasswordController = (0, asyncHandler_1.asyncHandler)(async (req, 
     const userId = req.user?.userId;
     const result = await (0, AuthServices_1.changePasswordService)(userId, req.body);
     return (0, sendResponse_1.sendResponse)(res, StatusCodes_1.STATUS_CODES.SUCCESS, true, "Password changed successfully", result);
+});
+/* ---------------- GET TEACHERS ---------------- */
+exports.getTeachersController = (0, asyncHandler_1.asyncHandler)(async (_req, res) => {
+    const result = await (0, AuthServices_1.getTeachersService)();
+    return (0, sendResponse_1.sendResponse)(res, StatusCodes_1.STATUS_CODES.SUCCESS, true, "Teachers fetched successfully!", result);
 });
