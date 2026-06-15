@@ -164,7 +164,7 @@ export default function CourseDetails() {
         await dispatch(enrollInCourseThunk({ courseId })).unwrap();
         await dispatch(fetchMyEnrollments()).unwrap();
         setPaymentStep("completed");
-        showToast("Payment completed and course enrolled", "success");
+        showToast("Payment completed and course enrolled!", "success");
       } catch (err) {
         setPaymentStep("review");
         showToast(getErrorMessage(err, "Enrollment failed"), "error");
@@ -279,6 +279,7 @@ export default function CourseDetails() {
                       textTransform: "none",
                       fontWeight: 700,
                       px: 3,
+                      color: COLORS.bgLight,
                       bgcolor: COLORS.primary,
                       "&:hover": { bgcolor: "#0092e4" },
                     }}
@@ -664,7 +665,7 @@ export default function CourseDetails() {
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
           {paymentStep === "completed" ? (
-            <Button variant="contained" onClick={() => setPaymentOpen(false)}>
+            <Button variant="contained" sx={{color: COLORS.bgLight}} onClick={() => setPaymentOpen(false)}>
               Continue
             </Button>
           ) : (

@@ -335,7 +335,7 @@ const COLORS = {
   cardBg: "#ffffff",
   textMain: "#2c3e50",
   textSub: "#8a99ad",
-  bannerGradientStart: "#770cea", // Premium deep purple for student branding spectrum
+  bannerGradientStart: "#770cea",
   bannerGradientEnd: "#8b4df6",
 };
 
@@ -359,26 +359,49 @@ export default function StudentDashboard() {
 
   // Dynamic Redux Selectors mapped identically to system architecture patterns
   const { teachers, teachersLoading } = useAppSelector((state) => state.auth);
-  const { user } = useAppSelector((state) => state.auth); 
-  
+  const { user } = useAppSelector((state) => state.auth);
+
   // Safely extract slice data fields (Assumes your slice maps standard tracking structures)
-  const {  loading, error } = useAppSelector((state) => state.course || {});
+  const { loading, error } = useAppSelector((state) => state.course || {});
 
   const enrolledCourses: StudentCourse[] = [];
 
   // Fallback data mapping to maintain structural layout if store is resolving async data
-  const courses = Array.isArray(enrolledCourses) && enrolledCourses.length > 0 
-    ? enrolledCourses 
-    : [
-        { _id: "1", title: "Advanced React & TypeScript", instructor: "Nil Yeager", progress: 75, category: "Frontend", assignmentCount: 1 },
-        { _id: "2", title: "UI Design Principles", instructor: "James Martin", progress: 40, category: "Design", assignmentCount: 3 },
-        { _id: "3", title: "Node.js Backend Architecture", instructor: "David Frank", progress: 15, category: "Backend", assignmentCount: 2 },
-      ];
+  const courses =
+    Array.isArray(enrolledCourses) && enrolledCourses.length > 0
+      ? enrolledCourses
+      : [
+          {
+            _id: "1",
+            title: "Advanced React & TypeScript",
+            instructor: "Nil Yeager",
+            progress: 75,
+            category: "Frontend",
+            assignmentCount: 1,
+          },
+          {
+            _id: "2",
+            title: "UI Design Principles",
+            instructor: "James Martin",
+            progress: 40,
+            category: "Design",
+            assignmentCount: 3,
+          },
+          {
+            _id: "3",
+            title: "Node.js Backend Architecture",
+            instructor: "David Frank",
+            progress: 15,
+            category: "Backend",
+            assignmentCount: 2,
+          },
+        ];
 
   const completedCourses = courses.filter((c) => c.progress === 100);
   const totalAssignmentsPending = courses.reduce(
-    (sum, c) => sum + (!c.progress || c.progress < 100 ? (c.assignmentCount || 0) : 0),
-    0
+    (sum, c) =>
+      sum + (!c.progress || c.progress < 100 ? c.assignmentCount || 0 : 0),
+    0,
   );
 
   const maxProgress = Math.max(...courses.map((c) => c.progress || 0), 1);
@@ -409,7 +432,6 @@ export default function StudentDashboard() {
       {/* ================= MAIN 12-COLUMN STRUCTURAL GRID ================= */}
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, lg: 9 }}>
-          
           {/* ================= HERO GRADIENT BANNER ================= */}
           <Paper
             elevation={0}
@@ -433,16 +455,27 @@ export default function StudentDashboard() {
                 Welcome Back, {user?.name || "Learner"}!
               </Typography>
               <Typography variant="body2" sx={{ opacity: 0.9, mb: 3 }}>
-                You are actively pursuing {courses.length} course{courses.length > 1 ? "s" : ""} and have {totalAssignmentsPending} assignments pending action blocks.
+                You are actively pursuing {courses.length} course
+                {courses.length > 1 ? "s" : ""} and have{" "}
+                {totalAssignmentsPending} assignments pending.
               </Typography>
-              
+
               <Box sx={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Avatar sx={{ bgcolor: "rgba(255,255,255,0.2)", width: 32, height: 32 }}>
+                  <Avatar
+                    sx={{
+                      bgcolor: "rgba(255,255,255,0.2)",
+                      width: 32,
+                      height: 32,
+                    }}
+                  >
                     <AccessTime sx={{ fontSize: 18 }} />
                   </Avatar>
                   <Box>
-                    <Typography variant="caption" sx={{ display: "block", fontWeight: 600 }}>
+                    <Typography
+                      variant="caption"
+                      sx={{ display: "block", fontWeight: 600 }}
+                    >
                       Hours Tracked
                     </Typography>
                     <Typography variant="caption" sx={{ opacity: 0.8 }}>
@@ -452,11 +485,20 @@ export default function StudentDashboard() {
                 </Box>
 
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Avatar sx={{ bgcolor: "rgba(255,255,255,0.2)", width: 32, height: 32 }}>
+                  <Avatar
+                    sx={{
+                      bgcolor: "rgba(255,255,255,0.2)",
+                      width: 32,
+                      height: 32,
+                    }}
+                  >
                     <AssignmentTurnedIn sx={{ fontSize: 18 }} />
                   </Avatar>
                   <Box>
-                    <Typography variant="caption" sx={{ display: "block", fontWeight: 600 }}>
+                    <Typography
+                      variant="caption"
+                      sx={{ display: "block", fontWeight: 600 }}
+                    >
                       Certificates
                     </Typography>
                     <Typography variant="caption" sx={{ opacity: 0.8 }}>
@@ -479,25 +521,45 @@ export default function StudentDashboard() {
                   mb: 2,
                 }}
               >
-                <Typography variant="subtitle1" sx={{ fontWeight: 700, color: COLORS.textMain }}>
+                <Typography
+                  variant="subtitle1"
+                  sx={{ fontWeight: 700, color: COLORS.textMain }}
+                >
                   My Continuous Learning Programs
                 </Typography>
                 <Button
                   size="small"
                   onClick={() => navigate("/courses")}
-                  sx={{ color: COLORS.textSub, textTransform: "none", fontSize: "12px" }}
+                  sx={{
+                    color: COLORS.textSub,
+                    textTransform: "none",
+                    fontSize: "12px",
+                  }}
                 >
                   Manage All Programs
                 </Button>
               </Box>
 
               {loading ? (
-                <Paper elevation={0} sx={{ p: 3, borderRadius: "16px", display: "flex", alignItems: "center", gap: 2, bgcolor: "#fff" }}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 3,
+                    borderRadius: "16px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                    bgcolor: "#fff",
+                  }}
+                >
                   <CircularProgress size={22} />
                   <Typography>Loading academic profile metrics...</Typography>
                 </Paper>
               ) : error ? (
-                <Paper elevation={0} sx={{ p: 3, borderRadius: "16px", bgcolor: "#fff1f2" }}>
+                <Paper
+                  elevation={0}
+                  sx={{ p: 3, borderRadius: "16px", bgcolor: "#fff1f2" }}
+                >
                   <Typography color="error">{error}</Typography>
                 </Paper>
               ) : (
@@ -525,11 +587,17 @@ export default function StudentDashboard() {
                   >
                     <AutoStories sx={{ fontSize: 34, color: COLORS.primary }} />
                     <Box>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: COLORS.textMain }}>
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ fontWeight: 700, color: COLORS.textMain }}
+                      >
                         Browse Educational Curriculum Marketplace
                       </Typography>
-                      <Typography variant="caption" sx={{ color: COLORS.textSub }}>
-                        Discover full-stack components, architectures, and design programs
+                      <Typography
+                        variant="caption"
+                        sx={{ color: COLORS.textSub }}
+                      >
+                        Discover frontend, backend and full-stack programs.
                       </Typography>
                     </Box>
                   </Paper>
@@ -543,9 +611,16 @@ export default function StudentDashboard() {
                       display: "flex",
                       flexDirection: "column",
                       "&::-webkit-scrollbar": { width: "6px" },
-                      "&::-webkit-scrollbar-track": { background: "transparent" },
-                      "&::-webkit-scrollbar-thumb": { background: alpha(COLORS.textSub, 0.2), borderRadius: "10px" },
-                      "&::-webkit-scrollbar-thumb:hover": { background: alpha(COLORS.textSub, 0.4) },
+                      "&::-webkit-scrollbar-track": {
+                        background: "transparent",
+                      },
+                      "&::-webkit-scrollbar-thumb": {
+                        background: alpha(COLORS.textSub, 0.2),
+                        borderRadius: "10px",
+                      },
+                      "&::-webkit-scrollbar-thumb:hover": {
+                        background: alpha(COLORS.textSub, 0.4),
+                      },
                     }}
                   >
                     {courses.map((course, index) => (
@@ -565,7 +640,14 @@ export default function StudentDashboard() {
                           "&:last-child": { mb: 0 },
                         }}
                       >
-                        <Box sx={{ display: "flex", gap: 1.5, width: "100%", minWidth: 0 }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            gap: 1.5,
+                            width: "100%",
+                            minWidth: 0,
+                          }}
+                        >
                           <Avatar
                             variant="rounded"
                             sx={{
@@ -589,25 +671,39 @@ export default function StudentDashboard() {
                                 whiteSpace: "nowrap",
                                 overflow: "hidden",
                                 textOverflow: "ellipsis",
-                                color: COLORS.textMain
+                                color: COLORS.textMain,
                               }}
                             >
                               {course.title}
                             </Typography>
-                            
-                            <Stack direction="row" spacing={1} sx={{ mt: 0.5, mb: 1, flexWrap: "wrap" }}>
+
+                            <Stack
+                              direction="row"
+                              spacing={1}
+                              sx={{ mt: 0.5, mb: 1, flexWrap: "wrap" }}
+                            >
                               {course.category && (
-                                <Chip size="small" label={course.category} sx={{ height: 22 }} />
+                                <Chip
+                                  size="small"
+                                  label={course.category}
+                                  sx={{ height: 22 }}
+                                />
                               )}
-                              <Chip 
-                                size="small" 
-                                label={`Faculty: ${course.instructor}`} 
-                                variant="outlined" 
-                                sx={{ height: 22 }} 
+                              <Chip
+                                size="small"
+                                label={`Faculty: ${course.instructor}`}
+                                variant="outlined"
+                                sx={{ height: 22 }}
                               />
                             </Stack>
 
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 2,
+                              }}
+                            >
                               <LinearProgress
                                 value={course.progress || 0}
                                 variant="determinate"
@@ -616,10 +712,15 @@ export default function StudentDashboard() {
                                   height: 6,
                                   borderRadius: 5,
                                   bgcolor: "#f1f5f9",
-                                  "& .MuiLinearProgress-bar": { bgcolor: getCourseColor(index) },
+                                  "& .MuiLinearProgress-bar": {
+                                    bgcolor: getCourseColor(index),
+                                  },
                                 }}
                               />
-                              <Typography variant="caption" sx={{ fontWeight: 600, color: COLORS.textMain }}>
+                              <Typography
+                                variant="caption"
+                                sx={{ fontWeight: 600, color: COLORS.textMain }}
+                              >
                                 {course.progress || 0}%
                               </Typography>
                             </Box>
@@ -635,9 +736,10 @@ export default function StudentDashboard() {
                               textTransform: "none",
                               fontWeight: 600,
                               bgcolor: COLORS.primary,
+                              color: COLORS.bgLight,
                               borderRadius: "8px",
                               px: 2,
-                              "&:hover": { bgcolor: "#008ee0" }
+                              "&:hover": { bgcolor: "#008ee0" },
                             }}
                           >
                             Resume
@@ -654,11 +756,30 @@ export default function StudentDashboard() {
           {/* ================= DATA ANALYTICS CHARTS MATRIX ================= */}
           <Grid container spacing={3} sx={{ mb: 3 }}>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Paper elevation={0} sx={{ p: 2.5, borderRadius: "16px", bgcolor: COLORS.cardBg, height: "180px" }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: COLORS.textMain, mb: 1 }}>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2.5,
+                  borderRadius: "16px",
+                  bgcolor: COLORS.cardBg,
+                  height: "180px",
+                }}
+              >
+                <Typography
+                  variant="subtitle2"
+                  sx={{ fontWeight: 600, color: COLORS.textMain, mb: 1 }}
+                >
                   Curriculum Progress Spectrum
                 </Typography>
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", height: 110, pt: 1 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-end",
+                    height: 110,
+                    pt: 1,
+                  }}
+                >
                   {courses.slice(0, 5).map((course, index) => (
                     <Box
                       key={course._id || index}
@@ -675,8 +796,28 @@ export default function StudentDashboard() {
             </Grid>
 
             <Grid size={{ xs: 12, md: 3 }}>
-              <Paper elevation={0} sx={{ p: 2, borderRadius: "16px", bgcolor: COLORS.cardBg, height: "180px", display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "center" }}>
-                <Typography variant="caption" sx={{ fontWeight: 600, color: COLORS.textMain, width: "100%", textAlign: "left" }}>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2,
+                  borderRadius: "16px",
+                  bgcolor: COLORS.cardBg,
+                  height: "180px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 600,
+                    color: COLORS.textMain,
+                    width: "100%",
+                    textAlign: "left",
+                  }}
+                >
                   Syllabus Performance Ratio
                 </Typography>
                 <Box
@@ -693,8 +834,13 @@ export default function StudentDashboard() {
                     justifyContent: "center",
                   }}
                 >
-                  <Typography variant="caption" sx={{ fontWeight: 700, color: COLORS.textMain }}>
-                    {courses.length === 0 ? "0%" : `${Math.round(courses.reduce((acc, c) => acc + (c.progress || 0), 0) / courses.length)}%`}
+                  <Typography
+                    variant="caption"
+                    sx={{ fontWeight: 700, color: COLORS.textMain }}
+                  >
+                    {courses.length === 0
+                      ? "0%"
+                      : `${Math.round(courses.reduce((acc, c) => acc + (c.progress || 0), 0) / courses.length)}%`}
                   </Typography>
                 </Box>
                 <Box />
@@ -702,16 +848,52 @@ export default function StudentDashboard() {
             </Grid>
 
             <Grid size={{ xs: 12, md: 3 }}>
-              <Paper elevation={0} sx={{ p: 2.5, borderRadius: "16px", bgcolor: COLORS.cardBg, height: "180px" }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: COLORS.textMain }}>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2.5,
+                  borderRadius: "16px",
+                  bgcolor: COLORS.cardBg,
+                  height: "180px",
+                }}
+              >
+                <Typography
+                  variant="subtitle2"
+                  sx={{ fontWeight: 600, color: COLORS.textMain }}
+                >
                   Milestone Metrics
                 </Typography>
-                <Typography variant="caption" sx={{ color: "#22c55e", display: "block", mb: 1, fontWeight: 600 }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "#22c55e",
+                    display: "block",
+                    mb: 1,
+                    fontWeight: 600,
+                  }}
+                >
                   {completedCourses.length} Programs Completed
                 </Typography>
-                <Box sx={{ height: 80, display: "flex", alignItems: "center", justifyContent: "center", borderTop: "1px dashed #e2e8f0" }}>
-                  <Typography variant="body2" sx={{ color: COLORS.textSub, textAlign: "center", fontSize: "12px" }}>
-                    {completedCourses.length === 0 ? "Finish structural course trees to unlock secure certificates." : "Keep up the excellent academic speed!"}
+                <Box
+                  sx={{
+                    height: 80,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderTop: "1px dashed #e2e8f0",
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: COLORS.textSub,
+                      textAlign: "center",
+                      fontSize: "12px",
+                    }}
+                  >
+                    {completedCourses.length === 0
+                      ? "Finish structural course trees to unlock secure certificates."
+                      : "Keep up the excellent academic speed!"}
                   </Typography>
                 </Box>
               </Paper>
@@ -721,10 +903,21 @@ export default function StudentDashboard() {
 
         {/* ================= RIGHT ACTION SIDEBAR COMPONENT RAIL ================= */}
         <Grid size={{ xs: 12, lg: 3 }}>
-          
           {/* PROFILE CONTROL PANEL */}
-          <Paper elevation={0} sx={{ p: 3, borderRadius: "16px", mb: 3, bgcolor: COLORS.cardBg, textAlign: "center" }}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: COLORS.textMain, mb: 2 }}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: "16px",
+              mb: 3,
+              bgcolor: COLORS.cardBg,
+              textAlign: "center",
+            }}
+          >
+            <Typography
+              variant="subtitle2"
+              sx={{ fontWeight: 700, color: COLORS.textMain, mb: 2 }}
+            >
               Academic Operations Center
             </Typography>
             <Button
@@ -741,25 +934,51 @@ export default function StudentDashboard() {
                 fontWeight: 600,
                 textTransform: "none",
                 mb: 2.5,
-                "&:hover": { bgcolor: "#008ee0" }
+                "&:hover": { bgcolor: "#008ee0" },
               }}
             >
               Browse Global Catalog
             </Button>
-            <Grid container spacing={1} sx={{ pt: 1.5, borderTop: "1px solid #edf2f9" }}>
+            <Grid
+              container
+              spacing={1}
+              sx={{ pt: 1.5, borderTop: "1px solid #edf2f9" }}
+            >
               <Grid size={{ xs: 6 }} sx={{ borderRight: "1px solid #edf2f9" }}>
-                <Typography variant="caption" sx={{ color: COLORS.textSub, display: "block", fontSize: "10px", fontWeight: 600 }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: COLORS.textSub,
+                    display: "block",
+                    fontSize: "10px",
+                    fontWeight: 600,
+                  }}
+                >
                   Enrolled Tree
                 </Typography>
-                <Typography variant="subtitle1" sx={{ fontWeight: 700, color: COLORS.textMain }}>
+                <Typography
+                  variant="subtitle1"
+                  sx={{ fontWeight: 700, color: COLORS.textMain }}
+                >
                   {courses.length}
                 </Typography>
               </Grid>
               <Grid size={{ xs: 6 }}>
-                <Typography variant="caption" sx={{ color: COLORS.textSub, display: "block", fontSize: "10px", fontWeight: 600 }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: COLORS.textSub,
+                    display: "block",
+                    fontSize: "10px",
+                    fontWeight: 600,
+                  }}
+                >
                   Completed
                 </Typography>
-                <Typography variant="subtitle1" sx={{ fontWeight: 700, color: COLORS.textMain }}>
+                <Typography
+                  variant="subtitle1"
+                  sx={{ fontWeight: 700, color: COLORS.textMain }}
+                >
                   {completedCourses.length}
                 </Typography>
               </Grid>
@@ -767,96 +986,202 @@ export default function StudentDashboard() {
           </Paper>
 
           {/* MANAGED CONTACT INTERFACE (INSTRUCTORS) */}
-          <Paper elevation={0} sx={{ p: 2, borderRadius: "16px", bgcolor: COLORS.cardBg, mb: 3 }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-              <Typography variant="subtitle2" sx={{ fontWeight: 700, color: COLORS.textMain }}>
+          <Paper
+            elevation={0}
+            sx={{ p: 2, borderRadius: "16px", bgcolor: COLORS.cardBg, mb: 3 }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 2,
+              }}
+            >
+              <Typography
+                variant="subtitle2"
+                sx={{ fontWeight: 700, color: COLORS.textMain }}
+              >
                 Assigned Core Faculty
               </Typography>
             </Box>
-            
+
             {teachersLoading && (
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, p: 1, mb: 1 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  p: 1,
+                  mb: 1,
+                }}
+              >
                 <CircularProgress size={14} />
-                <Typography variant="caption" sx={{ color: COLORS.textSub }}>Syncing messenger configurations...</Typography>
+                <Typography variant="caption" sx={{ color: COLORS.textSub }}>
+                  Syncing messenger configurations...
+                </Typography>
               </Box>
             )}
 
             <List disablePadding>
-              {(teachers && teachers.length > 0 ? teachers : []).map((teacher: ITeacher, idx: number) => (
-                <ListItem
-                  key={teacher._id || idx}
-                  disablePadding
-                  sx={{ mb: 1.5, "&:last-child": { mb: 0 } }}
-                  secondaryAction={
-                    <IconButton 
-                      size="small"
-                      onClick={() => navigate(`/chat/${teacher._id || ""}`)}
-                      sx={{ bgcolor: "#edf5ff", color: COLORS.primary, "&:hover": { bgcolor: "#dbeafe" } }}
-                    >
-                      <ChatBubbleOutlined sx={{ fontSize: 16 }} />
-                    </IconButton>
-                  }
-                >
-                  <ListItemAvatar sx={{ minWidth: "38px" }}>
-                    <Avatar
-                      sx={{
-                        bgcolor: getCourseColor(idx + 1),
-                        color: "#fff",
-                        fontSize: "12px",
-                        width: 32,
-                        height: 32,
-                        fontWeight: 700
-                      }}
-                    >
-                      {teacher.name?.charAt(0).toUpperCase() || "T"}
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={
-                      <Typography variant="subtitle2" sx={{ fontWeight: 600, fontSize: "12px", color: COLORS.textMain }}>
-                        {teacher.name}
-                      </Typography>
+              {(teachers && teachers.length > 0 ? teachers : []).map(
+                (teacher: ITeacher, idx: number) => (
+                  <ListItem
+                    key={teacher._id || idx}
+                    disablePadding
+                    sx={{ mb: 1.5, "&:last-child": { mb: 0 } }}
+                    secondaryAction={
+                      <IconButton
+                        size="small"
+                        onClick={() => navigate(`/chat/${teacher._id || ""}`)}
+                        sx={{
+                          bgcolor: "#edf5ff",
+                          color: COLORS.primary,
+                          "&:hover": { bgcolor: "#dbeafe" },
+                        }}
+                      >
+                        <ChatBubbleOutlined sx={{ fontSize: 16 }} />
+                      </IconButton>
                     }
-                    secondary={
-                      <Typography variant="caption" sx={{ color: COLORS.textSub, fontSize: "10px", display: "block" }}>
-                        Faculty Advisor
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-              ))}
+                  >
+                    <ListItemAvatar sx={{ minWidth: "38px" }}>
+                      <Avatar
+                        sx={{
+                          bgcolor: getCourseColor(idx + 1),
+                          color: "#fff",
+                          fontSize: "12px",
+                          width: 32,
+                          height: 32,
+                          fontWeight: 700,
+                        }}
+                      >
+                        {teacher.name?.charAt(0).toUpperCase() || "T"}
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={
+                        <Typography
+                          variant="subtitle2"
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: "12px",
+                            color: COLORS.textMain,
+                          }}
+                        >
+                          {teacher.name}
+                        </Typography>
+                      }
+                      secondary={
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: COLORS.textSub,
+                            fontSize: "10px",
+                            display: "block",
+                          }}
+                        >
+                          Faculty Advisor
+                        </Typography>
+                      }
+                    />
+                  </ListItem>
+                ),
+              )}
             </List>
           </Paper>
 
           {/* CAMPUS BOARD PANEL */}
-          <Paper elevation={0} sx={{ p: 2.5, borderRadius: "16px", bgcolor: COLORS.cardBg }}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: COLORS.textMain, mb: 2 }}>
+          <Paper
+            elevation={0}
+            sx={{ p: 2.5, borderRadius: "16px", bgcolor: COLORS.cardBg }}
+          >
+            <Typography
+              variant="subtitle2"
+              sx={{ fontWeight: 700, color: COLORS.textMain, mb: 2 }}
+            >
               Workspace Notifications
             </Typography>
             <List disablePadding>
               {[
-                { title: "Mid-Term Code Assessment", time: "2 days remaining", desc: "Project evaluations for active full-stack branches start this Friday.", color: "#6366f1" },
-                { title: "Database Architecture Upgrade", time: "30 May", desc: "Workspace environment services scheduled for backend optimization tasks.", color: "#eab308" }
+                {
+                  title: "Mid-Term Code Assessment",
+                  time: "2 days remaining",
+                  desc: "Project evaluations for active full-stack branches start this Friday.",
+                  color: "#6366f1",
+                },
+                {
+                  title: "Database Architecture Upgrade",
+                  time: "30 May",
+                  desc: "Workspace environment services scheduled for backend optimization tasks.",
+                  color: "#eab308",
+                },
               ].map((notice, index) => (
-                <ListItem key={index} disablePadding sx={{ alignItems: "flex-start", mb: 2, "&:last-child": { mb: 0 } }}>
+                <ListItem
+                  key={index}
+                  disablePadding
+                  sx={{
+                    alignItems: "flex-start",
+                    mb: 2,
+                    "&:last-child": { mb: 0 },
+                  }}
+                >
                   <ListItemAvatar sx={{ minWidth: 42 }}>
-                    <Avatar variant="rounded" sx={{ bgcolor: `${notice.color}15`, color: notice.color, width: 32, height: 32, borderRadius: "6px" }}>
+                    <Avatar
+                      variant="rounded"
+                      sx={{
+                        bgcolor: `${notice.color}15`,
+                        color: notice.color,
+                        width: 32,
+                        height: 32,
+                        borderRadius: "6px",
+                      }}
+                    >
                       <Notifications sx={{ fontSize: 16 }} />
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText
                     primary={
-                      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 600, fontSize: "12px", color: COLORS.textMain }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "baseline",
+                        }}
+                      >
+                        <Typography
+                          variant="subtitle2"
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: "12px",
+                            color: COLORS.textMain,
+                          }}
+                        >
                           {notice.title}
                         </Typography>
-                        <Typography variant="caption" sx={{ color: COLORS.textSub, fontSize: "9px", fontWeight: 600 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: COLORS.textSub,
+                            fontSize: "9px",
+                            fontWeight: 600,
+                          }}
+                        >
                           {notice.time}
                         </Typography>
                       </Box>
                     }
                     secondary={
-                      <Typography variant="caption" sx={{ color: COLORS.textSub, display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", fontSize: "11px" }}>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: COLORS.textSub,
+                          display: "-webkit-box",
+                          WebkitLineClamp: 1,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          fontSize: "11px",
+                        }}
+                      >
                         {notice.desc}
                       </Typography>
                     }
@@ -865,7 +1190,6 @@ export default function StudentDashboard() {
               ))}
             </List>
           </Paper>
-
         </Grid>
       </Grid>
     </Box>

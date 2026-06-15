@@ -173,7 +173,7 @@ export default function Profile() {
                         ? theme.palette.action.hover
                         : theme.palette.primary.light,
 
-                    color: theme.palette.text.primary,
+                    color: COLORS.bgLight,
                     fontWeight: 700,
                     textTransform: "uppercase",
                   }}
@@ -300,7 +300,15 @@ export default function Profile() {
 
                     <Divider />
 
-                    <Button type="submit" variant="contained">
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      sx={{
+                        color: COLORS.bgLight,
+                        fontSize: "15px",
+                        fontWeight: "600",
+                      }}
+                    >
                       {loading ? (
                         <CircularProgress size={20} />
                       ) : (
