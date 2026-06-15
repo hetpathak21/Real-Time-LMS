@@ -164,18 +164,44 @@ const normalizeCourseListResponse = (
   };
 };
 
+// const buildCourseFormData = (
+//   data: ICreateCoursePayload | IUpdateCoursePayload
+// ) => {
+//   const formData = new FormData();
+
+//   Object.entries(data).forEach(([key, value]) => {
+//     if (value === undefined || value === null) {
+//       return;
+//     }
+
+//     if (Array.isArray(value)) {
+//       formData.append(key, JSON.stringify(value));
+//       return;
+//     }
+
+//     formData.append(key, value as string | Blob);
+//   });
+
+//   return formData;
+// };
+
+
 const buildCourseFormData = (
   data: ICreateCoursePayload | IUpdateCoursePayload
 ) => {
   const formData = new FormData();
 
   Object.entries(data).forEach(([key, value]) => {
-    if (value === undefined || value === null) {
-      return;
-    }
+    if (value === undefined || value === null) return;
 
     if (Array.isArray(value)) {
       formData.append(key, JSON.stringify(value));
+      return;
+    }
+
+    // IMPORTANT
+    if (key === "thumbnail" && value instanceof File) {
+      formData.append("file", value);
       return;
     }
 

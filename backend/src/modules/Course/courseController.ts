@@ -88,15 +88,44 @@ export const getCourseById = asyncHandler(
   }
 );
 
+// export const updateCourse = asyncHandler(
+//   async (req: AuthRequest, res: Response) => {
+//     const teacherId = req.user?.userId;
+//     const { courseId } = req.params as { courseId: string };
+
+//     const coursePayload = {
+//       ...req.body,
+//       thumbnail: getUploadedFileUrl(req.file) || req.body.thumbnail,
+//     };
+
+//     const course = await updateCourseService(
+//       courseId,
+//       teacherId!,
+//       coursePayload
+//     );
+
+//     return sendResponse(
+//       res,
+//       STATUS_CODES.SUCCESS,
+//       true,
+//       "Course updated successfully!",
+//       course
+//     );
+//   }
+// );
+
 export const updateCourse = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const teacherId = req.user?.userId;
     const { courseId } = req.params as { courseId: string };
 
-    const coursePayload = {
+    const coursePayload: any = {
       ...req.body,
-      thumbnail: getUploadedFileUrl(req.file) || req.body.thumbnail,
     };
+
+    if (req.file) {
+      coursePayload.thumbnail = getUploadedFileUrl(req.file);
+    }
 
     const course = await updateCourseService(
       courseId,
