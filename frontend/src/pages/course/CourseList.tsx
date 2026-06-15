@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Paper,
@@ -206,7 +206,7 @@ export default function CourseList() {
               sx={{
                 display: "flex",
                 alignItems: "center",
-                gap: 1.5,
+                gap: 1,
                 px: 2,
                 py: 1.25,
                 borderRadius: "16px",
@@ -246,16 +246,12 @@ export default function CourseList() {
             {isTeacher && (
               <Button
                 variant="contained"
-                disableElevation
                 startIcon={<AddRoundedIcon />}
                 onClick={() => navigate("/teacher/create-course")}
                 sx={{
-                  borderRadius: "16px",
+                  borderRadius: "12px",
                   textTransform: "none",
                   fontWeight: 700,
-                  fontSize: "0.9rem",
-                  px: 3.5,
-                  py: 1.4,
                   bgcolor: COLORS.primary,
                   color: "white",
                   boxShadow: `0 4px 12px ${alpha(COLORS.primary, 0.15)}`,
@@ -277,6 +273,7 @@ export default function CourseList() {
           </Box>
         </Box>
 
+        {/* Stats */}
         <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 2 }}>
           <Chip
             label={`${filteredCourses.length} results`}
@@ -335,6 +332,7 @@ export default function CourseList() {
               textTransform: "none",
               fontWeight: 700,
               bgcolor: COLORS.primary,
+              mt: 2,
             }}
             onClick={() => navigate("/teacher/create-course")}
           >
@@ -343,9 +341,8 @@ export default function CourseList() {
         </Paper>
       ) : filteredCourses.length === 0 ? (
         <Paper
-          elevation={0}
           sx={{
-            p: 6,
+            p: 5,
             textAlign: "center",
             borderRadius: "24px",
             border: `1px solid ${COLORS.border}`,
@@ -387,17 +384,7 @@ export default function CourseList() {
           }}
         >
           {filteredCourses.map((course) => (
-            <Box
-              key={course._id}
-              sx={{
-                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                "&:hover": {
-                  transform: "translateY(-4px)",
-                },
-              }}
-            >
-              <CourseCard {...course} />
-            </Box>
+            <CourseCard key={course._id} {...course} />
           ))}
         </Box>
       )}

@@ -69,7 +69,7 @@
 
 //   return (
 //     <Box sx={{ p: { xs: 2, md: 4 }, bgcolor: "#f4f7fd", minHeight: "100vh", fontFamily: "'Poppins', sans-serif" }}>
-      
+
 //       {/* HEADER SECTION */}
 //       <Box sx={{ mb: 4, display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 2 }}>
 //         <Box>
@@ -82,10 +82,10 @@
 //         </Box>
 
 //         <Paper elevation={0} sx={{ borderRadius: "12px", bgcolor: "#fff", p: 0.5, border: "1px solid #e2e8f0" }}>
-//           <Tabs 
-//             value={filter} 
-//             onChange={(_, val) => setFilter(val)} 
-//             indicatorColor="primary" 
+//           <Tabs
+//             value={filter}
+//             onChange={(_, val) => setFilter(val)}
+//             indicatorColor="primary"
 //             sx={{ minHeight: 40, '& .MuiTab-root': { minHeight: 40, textTransform: 'none', fontWeight: 600, px: 3 } }}
 //           >
 //             <Tab label="All Users" value="all" />
@@ -144,11 +144,11 @@
 //                   </Box>
 
 //                   <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2.5 }}>
-//                     <Avatar 
-//                       sx={{ 
-//                         width: 52, 
-//                         height: 52, 
-//                         bgcolor: alpha(COLORS.primary, 0.1), 
+//                     <Avatar
+//                       sx={{
+//                         width: 52,
+//                         height: 52,
+//                         bgcolor: alpha(COLORS.primary, 0.1),
 //                         color: COLORS.primary,
 //                         fontWeight: 800,
 //                         fontSize: "1.2rem",
@@ -168,18 +168,18 @@
 //                   </Stack>
 
 //                   <Stack direction="row" spacing={1} sx={{ mb: 3 }}>
-//                     <Chip 
-//                       icon={<Badge sx={{ fontSize: "14px !important" }} />} 
-//                       label={user.role.toUpperCase()} 
-//                       size="small" 
-//                       variant="outlined" 
+//                     <Chip
+//                       icon={<Badge sx={{ fontSize: "14px !important" }} />}
+//                       label={user.role.toUpperCase()}
+//                       size="small"
+//                       variant="outlined"
 //                       sx={{ fontWeight: 600, borderRadius: "6px" }}
 //                     />
 //                     {user.isVerified && (
-//                       <Chip 
-//                         icon={<VerifiedUser sx={{ fontSize: "14px !important" }} />} 
-//                         label="VERIFIED" 
-//                         size="small" 
+//                       <Chip
+//                         icon={<VerifiedUser sx={{ fontSize: "14px !important" }} />}
+//                         label="VERIFIED"
+//                         size="small"
 //                         sx={{ fontWeight: 600, borderRadius: "6px", bgcolor: "#f0fdf4", color: "#166534", border: "none" }}
 //                       />
 //                     )}
@@ -229,7 +229,6 @@
 //   );
 // }
 
-
 import { useEffect, useState } from "react";
 import {
   Box,
@@ -250,14 +249,16 @@ import {
   CircularProgress,
   alpha,
   Tooltip,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
 } from "@mui/material";
 import {
   Search,
-  MoreVert,
   Block,
   CheckCircle,
   DeleteOutlined,
-  FilterList,
   MailOutlined,
   Add,
 } from "@mui/icons-material";
@@ -285,6 +286,13 @@ export default function UserManagement() {
   const { users, loading } = useAppSelector((state) => state.user);
   const authUser = useAppSelector((state) => state.auth.user);
   const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState<"All" | "Student" | "Teacher">(
+    "All",
+  );
+
+  const [statusFilter, setStatusFilter] = useState<
+    "All" | "Active" | "Blocked"
+  >("All");
 
   useEffect(() => {
     dispatch(fetchAllUsers());
@@ -304,19 +312,41 @@ export default function UserManagement() {
     }
   };
 
-  const filteredUsers = users.filter(
-    (u) =>
-      u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesRole =
+      roleFilter === "All" ||
+      user.role.toLowerCase() === roleFilter.toLowerCase();
+
+    const matchesStatus =
+      statusFilter === "All" ||
+      (statusFilter === "Active" && user.isActive === true) ||
+      (statusFilter === "Blocked" && user.isActive === false);
+
+    return matchesSearch && matchesRole && matchesStatus;
+  });
 
   return (
-    <Box sx={{ p: { xs: 2, md: 4 }, bgcolor: COLORS.bgLight, minHeight: "100vh" }}>
-      
+    <Box
+      sx={{ p: { xs: 2, md: 4 }, bgcolor: COLORS.bgLight, minHeight: "100vh" }}
+    >
       {/* PAGE HEADER */}
-      <Box sx={{ mb: 4, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <Box
+        sx={{
+          mb: 4,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <Box>
-          <Typography variant="h5" sx={{ fontWeight: 800, color: COLORS.textMain }}>
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: 800, color: COLORS.textMain }}
+          >
             User Accounts
           </Typography>
           <Typography variant="body2" sx={{ color: COLORS.textSub }}>
@@ -328,6 +358,7 @@ export default function UserManagement() {
           startIcon={<Add />}
           sx={{
             bgcolor: COLORS.primary,
+            color: COLORS.bgLight,
             textTransform: "none",
             borderRadius: "8px",
             fontWeight: 600,
@@ -348,7 +379,16 @@ export default function UserManagement() {
         }}
       >
         {/* TABLE TOOLBAR */}
-        <Box sx={{ p: 2.5, display: "flex", gap: 2, alignItems: "center", borderBottom: "1px solid #f1f5f9" }}>
+        <Box
+          sx={{
+            p: 2.5,
+            display: "flex",
+            gap: 2,
+            alignItems: "center",
+            flexWrap: "wrap",
+            borderBottom: "1px solid #f1f5f9",
+          }}
+        >
           <TextField
             placeholder="Search name or email..."
             size="small"
@@ -364,20 +404,42 @@ export default function UserManagement() {
             slotProps={{
               input: {
                 startAdornment: (
-                <InputAdornment position="start">
-                  <Search sx={{ color: COLORS.textSub, fontSize: 20 }} />
-                </InputAdornment>
+                  <InputAdornment position="start">
+                    <Search sx={{ color: COLORS.textSub, fontSize: 20 }} />
+                  </InputAdornment>
                 ),
               },
             }}
           />
-          <Button
-            variant="outlined"
-            startIcon={<FilterList />}
-            sx={{ textTransform: "none", color: COLORS.textMain, borderColor: "#e2e8f0", borderRadius: "10px" }}
-          >
-            Filters
-          </Button>
+          <FormControl size="small" sx={{ minWidth: 160 }}>
+            <InputLabel>Role</InputLabel>
+            <Select
+              value={roleFilter}
+              label="Role"
+              onChange={(e) =>
+                setRoleFilter(e.target.value as "All" | "Student" | "Teacher")
+              }
+            >
+              <MenuItem value="All">All Users</MenuItem>
+              <MenuItem value="Student">Students</MenuItem>
+              <MenuItem value="Teacher">Teachers</MenuItem>
+            </Select>
+          </FormControl>
+
+          <FormControl size="small" sx={{ minWidth: 160 }}>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={statusFilter}
+              label="Status"
+              onChange={(e) =>
+                setStatusFilter(e.target.value as "All" | "Active" | "Blocked")
+              }
+            >
+              <MenuItem value="All">All Status</MenuItem>
+              <MenuItem value="Active">Active</MenuItem>
+              <MenuItem value="Blocked">Blocked</MenuItem>
+            </Select>
+          </FormControl>
         </Box>
 
         {/* DATA TABLE */}
@@ -385,11 +447,26 @@ export default function UserManagement() {
           <Table sx={{ minWidth: 800 }}>
             <TableHead sx={{ bgcolor: "#f8fafc" }}>
               <TableRow>
-                <TableCell sx={{ fontWeight: 700, color: COLORS.textSub, py: 2 }}>USER</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: COLORS.textSub }}>ROLE</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: COLORS.textSub }}>STATUS</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: COLORS.textSub }}>VERIFICATION</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 700, color: COLORS.textSub, pr: 4 }}>ACTIONS</TableCell>
+                <TableCell
+                  sx={{ fontWeight: 700, color: COLORS.textSub, py: 2 }}
+                >
+                  USER
+                </TableCell>
+                <TableCell sx={{ fontWeight: 700, color: COLORS.textSub }}>
+                  ROLE
+                </TableCell>
+                <TableCell sx={{ fontWeight: 700, color: COLORS.textSub }}>
+                  STATUS
+                </TableCell>
+                <TableCell sx={{ fontWeight: 700, color: COLORS.textSub }}>
+                  VERIFICATION
+                </TableCell>
+                <TableCell
+                  align="right"
+                  sx={{ fontWeight: 700, color: COLORS.textSub, pr: 4 }}
+                >
+                  ACTIONS
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -399,126 +476,238 @@ export default function UserManagement() {
                     <CircularProgress size={32} />
                   </TableCell>
                 </TableRow>
-              ) : filteredUsers.map((user) => {
-                const isActive = user.isActive !== false;
-                const isSelf = authUser?._id === user._id;
+              ) : filteredUsers.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        color: COLORS.textSub,
+                        fontWeight: 600,
+                        fontSize: "18px"
+                      }}
+                    >
+                      No matches found!
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredUsers.map((user) => {
+                  const isActive = user.isActive !== false;
+                  const isSelf = authUser?._id === user._id;
 
-                return (
-                  <TableRow
-                    key={user._id}
-                    hover
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 }, cursor: "pointer", transition: "0.2s" }}
-                  >
-                    <TableCell sx={{ py: 2 }}>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                        <Avatar
-                          sx={{
-                            width: 38,
-                            height: 38,
-                            fontSize: 14,
-                            fontWeight: 700,
-                            bgcolor: alpha(COLORS.primary, 0.1),
-                            color: COLORS.primary,
-                          }}
-                        >
-                          {user.name.charAt(0).toUpperCase()}
-                        </Avatar>
-                        <Box>
-                          <Typography sx={{ fontWeight: 700, fontSize: "0.9rem", color: COLORS.textMain }}>
-                            {user.name} {isSelf && <Typography component="span" variant="caption" sx={{ color: COLORS.primary, ml: 1 }}>(You)</Typography>}
-                          </Typography>
-                          <Typography variant="caption" sx={{ color: COLORS.textSub, display: "flex", alignItems: "center", gap: 0.5 }}>
-                            <MailOutlined sx={{ fontSize: 12 }} /> {user.email}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </TableCell>
-                    
-                    <TableCell>
-                      <Chip
-                        label={user.role}
-                        size="small"
-                        sx={{
-                          fontWeight: 600,
-                          fontSize: 11,
-                          borderRadius: "6px",
-                          textTransform: "uppercase",
-                          bgcolor: user.role === "admin" ? "#fef2f2" : "#eff6ff",
-                          color: user.role === "admin" ? COLORS.error : COLORS.primary,
-                          border: `1px solid ${user.role === "admin" ? "#fee2e2" : "#dbeafe"}`,
-                        }}
-                      />
-                    </TableCell>
-
-                    <TableCell>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  return (
+                    <TableRow
+                      key={user._id}
+                      hover
+                      sx={{
+                        "&:last-child td, &:last-child th": { border: 0 },
+                        cursor: "pointer",
+                        transition: "0.2s",
+                      }}
+                    >
+                      <TableCell sx={{ py: 2 }}>
                         <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 2 }}
+                        >
+                          <Avatar
+                            sx={{
+                              width: 38,
+                              height: 38,
+                              fontSize: 14,
+                              fontWeight: 700,
+                              bgcolor: alpha(COLORS.primary, 0.1),
+                              color: COLORS.primary,
+                            }}
+                          >
+                            {user.name.charAt(0).toUpperCase()}
+                          </Avatar>
+                          <Box>
+                            <Typography
+                              sx={{
+                                fontWeight: 700,
+                                fontSize: "0.9rem",
+                                color: COLORS.textMain,
+                              }}
+                            >
+                              {user.name}{" "}
+                              {isSelf && (
+                                <Typography
+                                  component="span"
+                                  variant="caption"
+                                  sx={{ color: COLORS.primary, ml: 1 }}
+                                >
+                                  (You)
+                                </Typography>
+                              )}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                color: COLORS.textSub,
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 0.5,
+                              }}
+                            >
+                              <MailOutlined sx={{ fontSize: 12 }} />{" "}
+                              {user.email}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </TableCell>
+
+                      <TableCell>
+                        <Chip
+                          label={user.role}
+                          size="small"
                           sx={{
-                            width: 8,
-                            height: 8,
-                            borderRadius: "50%",
-                            bgcolor: isActive ? COLORS.success : COLORS.warning,
+                            fontWeight: 600,
+                            fontSize: 11,
+                            borderRadius: "6px",
+                            textTransform: "uppercase",
+                            bgcolor:
+                              user.role === "admin" ? "#fef2f2" : "#eff6ff",
+                            color:
+                              user.role === "admin"
+                                ? COLORS.error
+                                : COLORS.primary,
+                            border: `1px solid ${user.role === "admin" ? "#fee2e2" : "#dbeafe"}`,
                           }}
                         />
-                        <Typography sx={{ fontSize: "0.85rem", fontWeight: 600, color: COLORS.textMain }}>
-                          {isActive ? "Active" : "Blocked"}
-                        </Typography>
-                      </Box>
-                    </TableCell>
+                      </TableCell>
 
-                    <TableCell>
-                      {user.isVerified ? (
-                        <Tooltip title="Email Verified">
-                          <CheckCircle sx={{ color: COLORS.success, fontSize: 18 }} />
-                        </Tooltip>
-                      ) : (
-                        <Typography sx={{ fontSize: "0.85rem", color: COLORS.textSub }}>Pending</Typography>
-                      )}
-                    </TableCell>
+                      <TableCell>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          <Box
+                            sx={{
+                              width: 8,
+                              height: 8,
+                              borderRadius: "50%",
+                              bgcolor: isActive
+                                ? COLORS.success
+                                : COLORS.warning,
+                            }}
+                          />
+                          <Typography
+                            sx={{
+                              fontSize: "0.85rem",
+                              fontWeight: 600,
+                              color: COLORS.textMain,
+                            }}
+                          >
+                            {isActive ? "Active" : "Blocked"}
+                          </Typography>
+                        </Box>
+                      </TableCell>
 
-                    <TableCell align="right" sx={{ pr: 2 }}>
-                      <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
-                        <Tooltip title={isActive ? "Block Access" : "Grant Access"}>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleToggleStatus(user)}
-                            disabled={isSelf}
-                            sx={{ color: COLORS.textMain, border: "1px solid #e2e8f0" }}
+                      <TableCell>
+                        {user.isVerified ? (
+                          <Tooltip title="Email Verified">
+                            <CheckCircle
+                              sx={{ color: COLORS.success, fontSize: 18 }}
+                            />
+                          </Tooltip>
+                        ) : (
+                          <Typography
+                            sx={{ fontSize: "0.85rem", color: COLORS.textSub }}
                           >
-                            <Block sx={{ fontSize: 18 }} />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Delete Account">
-                          <IconButton
-                            size="small"
-                            onClick={() => handleDelete(user)}
-                            disabled={isSelf}
-                            sx={{ color: COLORS.error, border: "1px solid #fee2e2", "&:hover": { bgcolor: "#fff1f2" } }}
+                            Pending
+                          </Typography>
+                        )}
+                      </TableCell>
+
+                      <TableCell align="right" sx={{ pr: 2 }}>
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          sx={{ justifyContent: "flex-end" }}
+                        >
+                          <Tooltip
+                            title={isActive ? "Block Access" : "Grant Access"}
                           >
-                            <DeleteOutlined sx={{ fontSize: 18 }} />
-                          </IconButton>
-                        </Tooltip>
-                        <IconButton size="small">
-                          <MoreVert sx={{ fontSize: 18 }} />
-                        </IconButton>
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                            <IconButton
+                              size="small"
+                              onClick={() => handleToggleStatus(user)}
+                              disabled={isSelf}
+                              sx={{
+                                color: COLORS.textMain,
+                                border: "1px solid #e2e8f0",
+                              }}
+                            >
+                              <Block sx={{ fontSize: 18 }} />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Delete Account">
+                            <IconButton
+                              size="small"
+                              onClick={() => handleDelete(user)}
+                              disabled={isSelf}
+                              sx={{
+                                color: COLORS.error,
+                                border: "1px solid #fee2e2",
+                                "&:hover": { bgcolor: "#fff1f2" },
+                              }}
+                            >
+                              <DeleteOutlined sx={{ fontSize: 18 }} />
+                            </IconButton>
+                          </Tooltip>
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
             </TableBody>
           </Table>
         </TableContainer>
 
-        {/* PAGINATION (Placeholder for visual completeness) */}
-        <Box sx={{ p: 2, display: "flex", justifyContent: "space-between", alignItems: "center", bgcolor: "#f8fafc" }}>
-          <Typography variant="caption" sx={{ color: COLORS.textSub }}>
+        {/* PAGINATION */}
+        <Box
+          sx={{
+            p: 2,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            bgcolor: "#f8fafc",
+          }}
+        >
+          <Typography
+            variant="caption"
+            sx={{ color: COLORS.textMain, fontSize: "17px" }}
+          >
             Showing {filteredUsers.length} of {users.length} users
           </Typography>
           <Box sx={{ display: "flex", gap: 1 }}>
-            <Button size="small" disabled sx={{ textTransform: "none" }}>Previous</Button>
-            <Button size="small" variant="contained" disableElevation sx={{ textTransform: "none", bgcolor: COLORS.primary, borderRadius: "6px" }}>1</Button>
-            <Button size="small" sx={{ textTransform: "none" }}>Next</Button>
+            <Button
+              size="small"
+              disabled
+              sx={{ color: "black", textTransform: "none", fontSize: "15px" }}
+            >
+              Previous
+            </Button>
+            <Button
+              size="small"
+              variant="contained"
+              disableElevation
+              sx={{
+                textTransform: "none",
+                bgcolor: COLORS.primary,
+                color: COLORS.bgLight,
+                borderRadius: "5px",
+                fontSize: "16px",
+              }}
+            >
+              1
+            </Button>
+            <Button
+              size="small"
+              sx={{ textTransform: "none", fontSize: "16px" }}
+            >
+              Next
+            </Button>
           </Box>
         </Box>
       </Paper>

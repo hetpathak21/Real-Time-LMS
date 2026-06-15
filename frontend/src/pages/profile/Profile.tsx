@@ -1,6 +1,5 @@
-import Grid from "@mui/material/Grid";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useMemo } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Avatar,
@@ -13,7 +12,10 @@ import {
   Typography,
   Stack,
   Container,
+  useTheme,
 } from "@mui/material";
+import Grid from "@mui/material/Grid";
+
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useAuth } from "../../hooks/useAuth";
 import { showToast } from "../../utils/toast";
@@ -39,7 +41,7 @@ const inputStyles = {
     borderRadius: "14px",
   },
   "& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline": {
-    borderColor: "error.main",
+    borderColor: "theme.palette.error.main",
     borderWidth: 2,
   },
 };
@@ -47,22 +49,33 @@ const inputStyles = {
 export default function Profile() {
   const dispatch = useAppDispatch();
   const { user } = useAuth(); 
+  const theme = useTheme();
   const { loading } = useAppSelector((state) => state.auth);
+
+  // ================= PROFILE FORM =================
 
   const profileForm = useForm<UpdateProfileFormValues>({
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
       name: user?.name || "",
+      avatar: undefined,
     },
     mode: "onBlur",
   });
 
-  const avatarFile = profileForm.watch("avatar");
+  const avatarFile = useWatch({
+    control: profileForm.control,
+    name: "avatar",
+  });
 
-  const previewImage = avatarFile?.[0]
-    ? URL.createObjectURL(avatarFile[0])
-    : user?.avatar;
+  const previewImage = useMemo(() => {
+    if (avatarFile?.[0]) {
+      return URL.createObjectURL(avatarFile[0]);
+    }
+    return user?.avatar;
+  }, [avatarFile, user?.avatar]);
 
+  // ================= PASSWORD FORM =================
   const passwordForm = useForm<ChangePasswordFormValues>({
     resolver: zodResolver(changePasswordSchema),
     defaultValues: {
@@ -105,7 +118,11 @@ export default function Profile() {
 
   return (
     <Box
-      sx={{ bgcolor: COLORS.bgLight, minHeight: "100vh", py: { xs: 4, md: 6 } }}
+      sx={{
+        bgcolor: theme.palette.background.default,
+        minHeight: "100vh",
+        py: 5,
+      }}
     >
       <Container maxWidth="xl">
         {/* Core Layout Grid System with strict explicit column layouts */}
@@ -117,23 +134,21 @@ export default function Profile() {
               sx={{
                 p: 4,
                 borderRadius: "22px",
-                border: `1px solid ${COLORS.border}`,
-                bgcolor: COLORS.cardBg,
-                boxShadow: "0 4px 20px rgba(0,0,0,0.01)",
+                bgcolor: theme.palette.background.paper,
+                border: `1px solid ${theme.palette.divider}`,
               }}
             >
-              <Stack alignItems="center" spacing={2.5}>
+              <Stack sx={{ alignItems: "center", spacing: 2.5 }}>
                 <Avatar
-                  src={previewImage || user?.avatar}
+                  src={previewImage}
                   sx={{
-                    width: 100,
-                    height: 100,
-                    fontSize: "2.5rem",
-                    bgcolor: COLORS.primary,
-                    boxShadow: "0 8px 24px rgba(14, 165, 233, 0.2)",
+                    width: 80,
+                    height: 80,
+                    bgcolor: theme.palette.primary.main,
+                    fontSize: "2.4rem",
                   }}
                 >
-                  {user?.name?.charAt(0).toUpperCase()}
+                  {user?.name?.charAt(0)?.toUpperCase()}
                 </Avatar>
 
                 <Box sx={{ textAlign: "center" }}>
@@ -143,26 +158,23 @@ export default function Profile() {
                   >
                     {user?.name}
                   </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{ color: COLORS.textSub, mt: 0.5 }}
-                  >
-                    {user?.email}
-                  </Typography>
+                  <Typography color="text.secondary">{user?.email}</Typography>
                 </Box>
 
                 <Box
                   sx={{
-                    width: "100%",
-                    textAlign: "center",
+                    px: 2,
                     py: 1,
-                    borderRadius: "12px",
-                    bgcolor: "#e0f2fe",
-                    color: "#0369a1",
+                    mt: 2,
+                    borderRadius: 2,
+                    bgcolor:
+                      theme.palette.mode === "dark"
+                        ? theme.palette.action.hover
+                        : theme.palette.primary.light,
+
+                    color: COLORS.bgLight,
                     fontWeight: 700,
                     textTransform: "uppercase",
-                    fontSize: 12,
-                    letterSpacing: "0.5px",
                   }}
                 >
                   {user?.role}
@@ -171,108 +183,60 @@ export default function Profile() {
             </Paper>
           </Grid>
 
-          {/* COLUMN 2 (Right Side on Desktop): Form Actions */}
-          <Grid size={{ xs: 12, lg: 8 }}>
+          {/* ================= RIGHT PANEL ================= */}
+          <Box sx={{ flex: 1, width: "100%" }}>
             <Stack spacing={4}>
-              {/* Profile Editor Sheet */}
-              <Paper
-                elevation={0}
-                sx={{
-                  p: { xs: 3, md: 4 },
-                  borderRadius: "22px",
-                  border: `1px solid ${COLORS.border}`,
-                  bgcolor: COLORS.cardBg,
-                }}
-              >
-                <Box sx={{ mb: 3 }}>
-                  <Typography
-                    variant="h6"
-                    sx={{ fontWeight: 800, color: COLORS.textMain }}
-                  >
-                    Personal Information
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: COLORS.textSub }}>
-                    Manage your display identity handles and global avatar
-                    metrics.
-                  </Typography>
-                </Box>
+              {/* -------- PROFILE FORM -------- */}
+              <Paper sx={{ p: 4, borderRadius: 3 }}>
+                <Typography sx={{ fontWeight: 800, mb: 2.5 }}>
+                  Personal Information
+                </Typography>
 
-                <form
-                  onSubmit={profileForm.handleSubmit(handleProfileSubmit)}
-                  noValidate
-                >
+                <form onSubmit={profileForm.handleSubmit(handleProfileSubmit)}>
                   <Stack spacing={2.5}>
                     <TextField
-                      fullWidth
                       label="Full Name"
-                      placeholder="Your name"
                       {...profileForm.register("name")}
                       error={!!profileForm.formState.errors.name}
                       helperText={profileForm.formState.errors.name?.message}
-                      slotProps={{
-                        formHelperText: { sx: { color: "error.main", ml: 0 } },
-                      }}
                       sx={inputStyles}
                     />
 
-                    <Box>
-                      <Button
-                        fullWidth
-                        variant="outlined"
-                        component="label"
-                        sx={{
-                          borderRadius: "16px",
-                          py: 2,
-                          borderStyle: "dashed",
-                          borderWidth: "2px",
-                          textTransform: "none",
-                          fontWeight: 700,
-                          color: COLORS.textMain,
-                          borderColor: COLORS.border,
-                          bgcolor: "#f8fafc",
+                    <Button
+                      component="label"
+                      variant="outlined"
+                      sx={{ borderRadius: 2, py: 2 }}
+                    >
+                      Upload Avatar
+                      <input
+                        hidden
+                        type="file"
+                        accept="image/*"
+                        {...profileForm.register("avatar")}
+                      />
+                    </Button>
 
-                          "&:hover": {
-                            bgcolor: "#f1f5f9",
-                            borderColor: COLORS.primary,
-                          },
+                    <Typography
+                      variant="caption"
+                      sx={{ color: COLORS.textSub }}
+                    >
+                      JPG, PNG or WEBP • Max 5MB
+                    </Typography>
+
+                    {avatarFile?.[0] && (
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: COLORS.primary,
+                          fontWeight: 700,
+                          mt: 1,
+                          wordBreak: "break-word",
                         }}
                       >
-                        <Stack spacing={0.5} alignItems="center">
-                          <Typography fontWeight={700}>
-                            Upload Profile Picture
-                          </Typography>
+                        Selected: {avatarFile[0].name}
+                      </Typography>
+                    )}
 
-                          <Typography
-                            variant="caption"
-                            sx={{ color: COLORS.textSub }}
-                          >
-                            JPG, PNG or WEBP • Max 5MB
-                          </Typography>
-
-                          {avatarFile?.[0] && (
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                color: COLORS.primary,
-                                fontWeight: 700,
-                                mt: 1,
-                                wordBreak: "break-word",
-                                textAlign: "center",
-                              }}
-                            >
-                              Selected: {avatarFile[0].name}
-                            </Typography>
-                          )}
-                        </Stack>
-
-                        <input
-                          hidden
-                          type="file"
-                          accept="image/*"
-                          {...profileForm.register("avatar")}
-                        />
-                      </Button>
-                    </Box>
                     <Box sx={{ display: "flex" }}>
                       <Button
                         variant="contained"
@@ -284,7 +248,7 @@ export default function Profile() {
                           fontWeight: 700,
                           borderRadius: "12px",
                           textTransform: "none",
-                          color:"white",
+                          color: "white",
                           background:
                             "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)",
                           boxShadow: "0 10px 20px rgba(14, 165, 233, 0.15)",
@@ -293,7 +257,7 @@ export default function Profile() {
                         {loading ? (
                           <CircularProgress size={22} color="inherit" />
                         ) : (
-                          "Save Profiling Data"
+                          "Save Profile Data"
                         )}
                       </Button>
                     </Box>
@@ -301,96 +265,60 @@ export default function Profile() {
                 </form>
               </Paper>
 
-              {/* Password Vector Sheet */}
-              <Paper
-                elevation={0}
-                sx={{
-                  p: { xs: 3, md: 4 },
-                  borderRadius: "22px",
-                  border: `1px solid ${COLORS.border}`,
-                  bgcolor: COLORS.cardBg,
-                }}
-              >
-                <Box sx={{ mb: 3 }}>
-                  <Typography
-                    variant="h6"
-                    sx={{ fontWeight: 800, color: COLORS.textMain }}
-                  >
-                    Security Infrastructure
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: COLORS.textSub }}>
-                    Keep security tight. Use unique symbols, numbers, and
-                    capital characters.
-                  </Typography>
-                </Box>
+              {/* -------- PASSWORD FORM -------- */}
+              <Paper sx={{ p: 4, borderRadius: 3 }}>
+                <Typography sx={{ fontWeight: 800, mb: 2 }}>
+                  Security
+                </Typography>
 
                 <form
                   onSubmit={passwordForm.handleSubmit(handlePasswordSubmit)}
-                  noValidate
                 >
                   <Stack spacing={2.5}>
                     <TextField
-                      fullWidth
-                      type="password"
                       label="Current Password"
-                      placeholder="Enter current password"
+                      type="password"
                       {...passwordForm.register("oldPassword")}
                       error={!!passwordForm.formState.errors.oldPassword}
                       helperText={
                         passwordForm.formState.errors.oldPassword?.message
                       }
-                      slotProps={{
-                        formHelperText: { sx: { color: "error.main", ml: 0 } },
-                      }}
                       sx={inputStyles}
                     />
 
                     <TextField
-                      fullWidth
+                      label="New Password"
                       type="password"
-                      label="New Password Token"
-                      placeholder="Enter new password token"
                       {...passwordForm.register("newPassword")}
                       error={!!passwordForm.formState.errors.newPassword}
                       helperText={
                         passwordForm.formState.errors.newPassword?.message
                       }
-                      slotProps={{
-                        formHelperText: { sx: { color: "error.main", ml: 0 } },
-                      }}
                       sx={inputStyles}
                     />
 
-                    <Divider sx={{ borderColor: COLORS.border, my: 1 }} />
+                    <Divider />
 
-                    <Box sx={{ display: "flex" }}>
-                      <Button
-                        variant="contained"
-                        type="submit"
-                        disabled={loading}
-                        sx={{
-                          py: 1.5,
-                          px: 4,
-                          fontWeight: 700,
-                          borderRadius: "12px",
-                          textTransform: "none",
-                          background:
-                            "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)",
-                          boxShadow: "0 10px 20px rgba(14, 165, 233, 0.15)",
-                        }}
-                      >
-                        {loading ? (
-                          <CircularProgress size={22} color="inherit" />
-                        ) : (
-                          "Commit Security Updates"
-                        )}
-                      </Button>
-                    </Box>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      sx={{
+                        color: COLORS.bgLight,
+                        fontSize: "15px",
+                        fontWeight: "600",
+                      }}
+                    >
+                      {loading ? (
+                        <CircularProgress size={20} />
+                      ) : (
+                        "Update Password"
+                      )}
+                    </Button>
                   </Stack>
                 </form>
               </Paper>
             </Stack>
-          </Grid>
+          </Box>
         </Grid>
       </Container>
     </Box>

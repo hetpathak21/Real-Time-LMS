@@ -353,7 +353,7 @@ export default function CourseAssignmentsSection({
               variant="contained"
               startIcon={<AddRoundedIcon />}
               onClick={openCreateForm}
-              sx={{ borderRadius: "12px", textTransform: "none", fontWeight: 700 }}
+              sx={{ color: "white", borderRadius: "12px", textTransform: "none", fontWeight: 700 }}
             >
               Create Assignment
             </Button>
@@ -477,7 +477,7 @@ export default function CourseAssignmentsSection({
                         startIcon={<SendRoundedIcon />}
                         onClick={() => openSubmissionDialog(assignment)}
                         disabled={!assignment.isPublished}
-                        sx={{ borderRadius: "10px", textTransform: "none", fontWeight: 700 }}
+                        sx={{ color: "white", borderRadius: "10px", textTransform: "none", fontWeight: 700 }}
                       >
                         Submit
                       </Button>
@@ -657,7 +657,7 @@ export default function CourseAssignmentsSection({
           </DialogContent>
           <DialogActions sx={{ px: 3, pb: 3 }}>
             <Button onClick={() => setSubmittingAssignment(null)}>Cancel</Button>
-            <Button type="submit" variant="contained" startIcon={<SendRoundedIcon />}>
+            <Button sx={{color: "white"}} type="submit" variant="contained" startIcon={<SendRoundedIcon />}>
               Submit
             </Button>
           </DialogActions>

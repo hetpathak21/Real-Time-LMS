@@ -193,7 +193,7 @@
 //         </Box>
 
 //         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-          
+
 //           {/* TEACHERS */}
 //           <Paper sx={{ p: 2.5, borderRadius: 3 }}>
 //             <Typography sx={{ fontWeight: 700, mb: 2 }}>
@@ -283,7 +283,7 @@
 // }
 
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Fixed missing import
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -299,12 +299,11 @@ import {
   Chip,
   Stack,
   alpha,
-  Divider,
+  // Divider,
 } from "@mui/material";
 import {
   Add,
   MoreVert,
-  ChevronRight,
   AutoStories,
   AdminPanelSettings,
   Settings,
@@ -326,7 +325,8 @@ const COLORS = {
 };
 
 const COURSE_ACCENTS = ["#eab308", "#ec4899", "#14b8a6", "#3b82f6", "#a855f7"];
-const getAccentColor = (index: number) => COURSE_ACCENTS[index % COURSE_ACCENTS.length];
+const getAccentColor = (index: number) =>
+  COURSE_ACCENTS[index % COURSE_ACCENTS.length];
 
 interface DashboardCourse {
   _id: string;
@@ -363,8 +363,12 @@ export default function CompleteAdminDashboard() {
 
   // Dynamic global state selectors mapping directly to system slices
   const { teachers, teachersLoading } = useAppSelector((state) => state.auth);
-  const { users, loading: usersLoading } = useAppSelector((state) => state.user);
-  const { courses, loading: coursesLoading } = useAppSelector((state) => state.course);
+  const { users, loading: usersLoading } = useAppSelector(
+    (state) => state.user,
+  );
+  const { courses, loading: coursesLoading } = useAppSelector(
+    (state) => state.course,
+  );
 
   useEffect(() => {
     dispatch(fetchTeachers());
@@ -374,7 +378,7 @@ export default function CompleteAdminDashboard() {
 
   // ================= DYNAMIC DATA RESOLVERS =================
   const platformTeachers = Array.isArray(teachers) ? teachers : [];
-  
+
   const platformStudents = Array.isArray(users)
     ? users
         .filter((user) => user.role === "student")
@@ -417,99 +421,268 @@ export default function CompleteAdminDashboard() {
 
   // CRITICAL FIX: Defined strictly before the component execution reaches the JSX return loop
   const systemLogs = [
-    { title: "New Teacher Registry", time: "Just Now", desc: `Instructor registry updated with ${platformTeachers.length} profiles live.`, color: "#0ea5e9" },
-    { title: "Gateway Payout Batch", time: "Today", desc: "Automated billing cycles successfully processed platform transactions.", color: "#ec4899" },
-    { title: "Database Optimization", time: "Yesterday", desc: "Global schema instances tuned for rapid workspace delivery.", color: "#14b8a6" }
+    {
+      title: "New Teacher Registry",
+      time: "Just Now",
+      desc: `Instructor registry updated with ${platformTeachers.length} profiles live.`,
+      color: "#0ea5e9",
+    },
+    {
+      title: "Gateway Payout Batch",
+      time: "Today",
+      desc: "Automated billing cycles successfully processed platform transactions.",
+      color: "#ec4899",
+    },
+    {
+      title: "Database Optimization",
+      time: "Yesterday",
+      desc: "Global schema instances tuned for rapid workspace delivery.",
+      color: "#14b8a6",
+    },
   ];
 
+  const previewCourses = platformCourses.slice(0, 3);
+
   return (
-      <Box sx={{ bgcolor: COLORS.bgLight, minHeight: "100vh", p: { xs: 2, md: 4 }, fontFamily: "'Poppins', sans-serif" }}>
-      
+    <Box
+      sx={{
+        bgcolor: COLORS.bgLight,
+        minHeight: "100vh",
+        p: { xs: 2, md: 4 },
+        fontFamily: "'Poppins', sans-serif",
+      }}
+    >
       {/* ================= HEADER CONTROL BAR ================= */}
-      <Box sx={{ mb: 3, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <Box
+        sx={{
+          mb: 3,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <Box>
-            <Typography variant="h5" sx={{ fontWeight: 700, color: COLORS.textMain }}>Global Control Center</Typography>
-            <Typography variant="caption" sx={{ color: COLORS.textSub }}>System Status: <Box component="span" sx={{ color: "success.main", fontWeight: 700 }}>Optimal</Box></Typography>
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: 700, color: COLORS.textMain }}
+          >
+            Global Control Center
+          </Typography>
+          <Typography variant="caption" sx={{ color: COLORS.textSub }}>
+            System Status:{" "}
+            <Box
+              component="span"
+              sx={{ color: "success.main", fontWeight: 700 }}
+            >
+              Optimal
+            </Box>
+          </Typography>
         </Box>
         <Stack direction="row" spacing={2}>
-            <IconButton sx={{ bgcolor: "#fff", border: "1px solid #e2e8f0" }}><Settings /></IconButton>
-            <Chip icon={<AdminPanelSettings />} label="Super Admin" color="primary" sx={{ fontWeight: 600 }} />
+          <IconButton sx={{ bgcolor: "#fff", border: "1px solid #e2e8f0" }}>
+            <Settings />
+          </IconButton>
+          <Chip
+            icon={<AdminPanelSettings />}
+            label="Super Admin"
+            sx={{
+              fontWeight: 600,
+              color: COLORS.textMain,
+              background: COLORS.cardBg,
+            }}
+          />
         </Stack>
       </Box>
 
       {/* ================= MAIN 12-COLUMN CORE GRID ================= */}
       <Grid container spacing={3}>
-        
         {/* LEFT WORKSPACE AREA */}
         <Grid size={{ xs: 12, lg: 8 }}>
-          
           {/* 1. ANALYTICS HERO */}
-          <Paper elevation={0} sx={{ p: 4, borderRadius: "20px", background: `linear-gradient(135deg, ${COLORS.bannerGreen} 15%, #29a38f 100%)`, color: "#fff", mb: 3, position: "relative", overflow: "hidden" }}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 4,
+              borderRadius: "20px",
+              background: `linear-gradient(135deg, ${COLORS.bannerGreen} 15%, #29a38f 100%)`,
+              color: "#fff",
+              mb: 3,
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
             <Grid container sx={{ alignItems: "center" }}>
-                <Grid size={{ xs: 12, md: 8 }}>
-                    <Typography variant="h4" sx={{ fontWeight: 800, mb: 1 }}>EduNex Ecosystem</Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.8, mb: 3 }}>Platform-wide overview of active learning nodes and pedagogical performance.</Typography>
-                    <Stack direction="row" spacing={4}>
-                        <Box>
-                            <Typography variant="h5" sx={{ fontWeight: 800 }}>{platformStudents.length}</Typography>
-                            <Typography variant="caption">Total Students</Typography>
-                        </Box>
-                        <Box>
-                            <Typography variant="h5" sx={{ fontWeight: 800 }}>{platformTeachers.length}</Typography>
-                            <Typography variant="caption">Total Teachers</Typography>
-                        </Box>
-                        <Box>
-                            <Typography variant="h5" sx={{ fontWeight: 800 }}>{platformCourses.length}</Typography>
-                            <Typography variant="caption">Total Courses</Typography>
-                        </Box>
-                    </Stack>
-                </Grid>
-                <Grid size={{ xs: 0, md: 4 }} sx={{ textAlign: "right" }}>
-                    <AutoStories sx={{ fontSize: 120, opacity: 0.2 }} />
-                </Grid>
+              <Grid size={{ xs: 12, md: 8 }}>
+                <Typography variant="h4" sx={{ fontWeight: 800, mb: 1 }}>
+                  EduNex Ecosystem
+                </Typography>
+                <Typography variant="body2" sx={{ opacity: 0.8, mb: 3 }}>
+                  Platform-wide overview of active learning nodes and
+                  pedagogical performance.
+                </Typography>
+                <Stack direction="row" spacing={4}>
+                  <Box>
+                    <Typography variant="h5" sx={{ fontWeight: 800 }}>
+                      {platformStudents.length}
+                    </Typography>
+                    <Typography variant="caption">Total Students</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="h5" sx={{ fontWeight: 800 }}>
+                      {platformTeachers.length}
+                    </Typography>
+                    <Typography variant="caption">Total Teachers</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="h5" sx={{ fontWeight: 800 }}>
+                      {platformCourses.length}
+                    </Typography>
+                    <Typography variant="caption">Total Courses</Typography>
+                  </Box>
+                </Stack>
+              </Grid>
+              <Grid size={{ xs: 0, md: 4 }} sx={{ textAlign: "right" }}>
+                <AutoStories sx={{ fontSize: 120, opacity: 0.2 }} />
+              </Grid>
             </Grid>
           </Paper>
 
           {/* 2. DYNAMIC COURSE INVENTORY */}
-          <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2, color: COLORS.textMain }}>Global Course Inventory</Typography>
-          <Paper elevation={0} sx={{ borderRadius: "20px", overflow: "hidden", mb: 3, border: "1px solid #e2e8f0" }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 2,
+            }}
+          >
+            <Typography
+              variant="subtitle1"
+              sx={{
+                fontWeight: 700,
+                color: COLORS.textMain,
+              }}
+            >
+              Global Course Inventory
+            </Typography>
+
+            <Chip
+              label={`${platformCourses.length} Courses`}
+              size="small"
+              color="primary"
+              variant="outlined"
+            />
+          </Box>
+          <Paper
+            elevation={0}
+            sx={{
+              borderRadius: "20px",
+              overflow: "hidden",
+              mb: 3,
+              border: "1px solid #e2e8f0",
+            }}
+          >
             <List disablePadding>
-              {platformCourses.map((course, idx) => (
+              {previewCourses.map((course, idx) => (
                 <React.Fragment key={course._id || idx}>
                   <ListItem sx={{ py: 2, px: 3 }}>
                     <ListItemAvatar>
-                      <Avatar variant="rounded" sx={{ bgcolor: alpha(getAccentColor(idx), 0.1), color: getAccentColor(idx), fontWeight: 700 }}>
+                      <Avatar
+                        variant="rounded"
+                        sx={{
+                          bgcolor: alpha(getAccentColor(idx), 0.1),
+                          color: getAccentColor(idx),
+                          fontWeight: 700,
+                        }}
+                      >
                         {course.title.charAt(0)}
                       </Avatar>
                     </ListItemAvatar>
-                    <ListItemText 
-                      primary={<Typography sx={{ fontWeight: 700, fontSize: "14px", color: COLORS.textMain }}>{course.title}</Typography>}
+                    <ListItemText
+                      primary={
+                        <Typography
+                          sx={{
+                            fontWeight: 700,
+                            fontSize: "14px",
+                            color: COLORS.textMain,
+                          }}
+                        >
+                          {course.title}
+                        </Typography>
+                      }
                       secondary={`Instructor: ${course.instructor}`}
                     />
                     <Stack direction="row" spacing={3} alignItems="center">
-                        <Box sx={{ textAlign: "center" }}>
-                            <Typography sx={{ fontWeight: 700, fontSize: "14px" }}>{course.students}</Typography>
-                            <Typography variant="caption" sx={{ color: COLORS.textSub }}>Enrolled</Typography>
-                        </Box>
-                        <Chip label={course.status} size="small" color={course.status === "Active" ? "success" : "default"} variant="filled" />
-                        <IconButton size="small"><ChevronRight /></IconButton>
+                      <Box sx={{ textAlign: "center" }}>
+                        <Typography sx={{ fontWeight: 700, fontSize: "14px" }}>
+                          {course.students}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{ color: COLORS.textSub }}
+                        >
+                          Enrolled
+                        </Typography>
+                      </Box>
+                      <Chip
+                        label={course.status}
+                        size="small"
+                        color={
+                          course.status === "Active" ? "success" : "default"
+                        }
+                        variant="filled"
+                      />
                     </Stack>
                   </ListItem>
-                  {idx < platformCourses.length - 1 && <Divider variant="inset" component="li" />}
                 </React.Fragment>
               ))}
             </List>
+
+            <Box
+              sx={{
+                m: 1,
+                p: 1,
+              }}
+            >
+              <Button
+                fullWidth
+                variant="contained"
+                disableElevation
+                onClick={() => navigate("/courses")}
+                sx={{
+                  bgcolor: COLORS.primary,
+                  color: COLORS.bgLight,
+                  textTransform: "none",
+                  fontWeight: 600,
+                  borderRadius: "10px",
+                  py: 1.2,
+                  "&:hover": {
+                    bgcolor: COLORS.primary,
+                  },
+                }}
+              >
+                View All Courses
+              </Button>
+            </Box>
           </Paper>
 
           {/* 3. STUDENT ACTIVITY FEED */}
-          <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2, color: COLORS.textMain }}>Recent Student Registrations</Typography>
+          <Typography
+            variant="subtitle1"
+            sx={{ fontWeight: 700, mb: 2, color: COLORS.textMain }}
+          >
+            Recent Student Registrations
+          </Typography>
           {(usersLoading || coursesLoading) && (
             <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
               <CircularProgress size={24} />
             </Box>
           )}
           {!usersLoading && platformStudents.length === 0 && (
-            <Paper elevation={0} sx={{ p: 2, borderRadius: "12px", border: "1px solid #e2e8f0" }}>
+            <Paper
+              elevation={0}
+              sx={{ p: 2, borderRadius: "12px", border: "1px solid #e2e8f0" }}
+            >
               <Typography variant="body2" sx={{ color: COLORS.textSub }}>
                 No students found yet.
               </Typography>
@@ -517,92 +690,268 @@ export default function CompleteAdminDashboard() {
           )}
           <Grid container spacing={2}>
             {platformStudents.slice(0, 3).map((student) => (
-               <Grid size={{ xs: 12, md: 4 }} key={student._id}>
-                  <Paper elevation={0} sx={{ p: 2, borderRadius: "15px", border: "1px solid #e2e8f0", textAlign: "center", bgcolor: COLORS.cardBg }}>
-                    <Avatar sx={{ mx: "auto", mb: 1, bgcolor: COLORS.primary, fontWeight: 600 }}>{student.name.charAt(0)}</Avatar>
-                    <Typography sx={{ fontWeight: 700, fontSize: "13px", color: COLORS.textMain }}>{student.name}</Typography>
-                    <Typography variant="caption" sx={{ color: COLORS.textSub, display: "block", mb: 1 }}>{student.email}</Typography>
-                    <Chip
-                      label={`Joined ${student.createdAt ? new Date(student.createdAt).toLocaleDateString() : "recently"}`}
-                      size="small"
-                      sx={{ fontSize: "10px" }}
-                    />
-                  </Paper>
-               </Grid>
+              <Grid size={{ xs: 12, md: 4 }} key={student._id}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 2,
+                    borderRadius: "15px",
+                    border: "1px solid #e2e8f0",
+                    textAlign: "center",
+                    bgcolor: COLORS.cardBg,
+                  }}
+                >
+                  <Avatar
+                    sx={{
+                      mx: "auto",
+                      mb: 1,
+                      bgcolor: COLORS.primary,
+                      fontWeight: 600,
+                    }}
+                  >
+                    {student.name.charAt(0)}
+                  </Avatar>
+                  <Typography
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: "13px",
+                      color: COLORS.textMain,
+                    }}
+                  >
+                    {student.name}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: COLORS.textSub, display: "block", mb: 1 }}
+                  >
+                    {student.email}
+                  </Typography>
+                  <Chip
+                    label={`Joined ${student.createdAt ? new Date(student.createdAt).toLocaleDateString() : "recently"}`}
+                    size="small"
+                    sx={{ fontSize: "10px" }}
+                  />
+                </Paper>
+              </Grid>
             ))}
           </Grid>
         </Grid>
 
-        {/* ================= RIGHT RAIL AREA ================= */}
+        {/* ================= RIGHT AREA ================= */}
         <Grid size={{ xs: 12, lg: 4 }}>
-          
           {/* TEACHER PROFILES REGISTRY */}
-          <Paper elevation={0} sx={{ p: 3, borderRadius: "20px", bgcolor: COLORS.cardBg, mb: 3, border: "1px solid #e2e8f0" }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2, alignItems: "center" }}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 700, color: COLORS.textMain }}>Teacher Registry</Typography>
-                <Button size="small" variant="outlined" startIcon={<Add />} sx={{ textTransform: "none", borderRadius: "6px" }}>Invite</Button>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: "20px",
+              bgcolor: COLORS.cardBg,
+              mb: 3,
+              border: "1px solid #e2e8f0",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                mb: 2,
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                variant="subtitle1"
+                sx={{ fontWeight: 700, color: COLORS.textMain }}
+              >
+                Teacher Registry
+              </Typography>
+              <Button
+                size="small"
+                variant="outlined"
+                startIcon={<Add />}
+                sx={{ textTransform: "none", borderRadius: "6px" }}
+              >
+                Invite
+              </Button>
             </Box>
-            
+
             {teachersLoading ? (
-                <Box sx={{ textAlign: "center", py: 4 }}><CircularProgress size={30} /></Box>
+              <Box sx={{ textAlign: "center", py: 4 }}>
+                <CircularProgress size={30} />
+              </Box>
             ) : (
-                <List disablePadding>
-                    {platformTeachers.slice(0, 5).map((teacher, i) => (
-                        <ListItem key={teacher._id || i} disablePadding sx={{ mb: 2, "&:last-child": { mb: 0 } }}>
-                            <ListItemAvatar>
-                                <Avatar sx={{ bgcolor: alpha(getAccentColor(i + 2), 0.1), color: getAccentColor(i + 2), fontWeight: 700 }}>
-                                  {teacher.name?.charAt(0).toUpperCase()}
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText 
-                                primary={<Typography sx={{ fontWeight: 600, fontSize: "13px", color: COLORS.textMain }}>{teacher.name}</Typography>}
-                                secondary={<Typography variant="caption" sx={{ color: COLORS.textSub }}>{teacher.email}</Typography>}
-                            />
-                            <IconButton size="small"><MoreVert /></IconButton>
-                        </ListItem>
-                    ))}
-                </List>
+              <List disablePadding>
+                {platformTeachers.slice(0, 5).map((teacher, i) => (
+                  <ListItem
+                    key={teacher._id || i}
+                    disablePadding
+                    sx={{ mb: 2, "&:last-child": { mb: 0 } }}
+                  >
+                    <ListItemAvatar>
+                      <Avatar
+                        sx={{
+                          bgcolor: alpha(getAccentColor(i + 2), 0.1),
+                          color: getAccentColor(i + 2),
+                          fontWeight: 700,
+                        }}
+                      >
+                        {teacher.name?.charAt(0).toUpperCase()}
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={
+                        <Typography
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: "13px",
+                            color: COLORS.textMain,
+                          }}
+                        >
+                          {teacher.name}
+                        </Typography>
+                      }
+                      secondary={
+                        <Typography
+                          variant="caption"
+                          sx={{ color: COLORS.textSub }}
+                        >
+                          {teacher.email}
+                        </Typography>
+                      }
+                    />
+                    <IconButton size="small">
+                      <MoreVert />
+                    </IconButton>
+                  </ListItem>
+                ))}
+              </List>
             )}
-            <Button fullWidth variant="contained" disableElevation sx={{ mt: 2, borderRadius: "10px", bgcolor: COLORS.primary, textTransform: "none", fontWeight: 600 }}>
+            <Button
+              fullWidth
+              variant="contained"
+              disableElevation
+              sx={{
+                color: COLORS.bgLight,
+                mt: 2,
+                borderRadius: "10px",
+                bgcolor: COLORS.primary,
+                textTransform: "none",
+                fontWeight: 600,
+              }}
+              onClick={() => navigate("/admin/users")}
+            >
               View All Faculty
             </Button>
           </Paper>
 
           {/* INFRASTRUCTURE LOGS */}
-          <Paper elevation={0} sx={{ p: 3, borderRadius: "20px", bgcolor: "#fff", border: "1px solid #e2e8f0" }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2, color: COLORS.textMain }}>Infrastructure Logs</Typography>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: "20px",
+              bgcolor: "#fff",
+              border: "1px solid #e2e8f0",
+            }}
+          >
+            <Typography
+              variant="subtitle1"
+              sx={{ fontWeight: 700, mb: 2, color: COLORS.textMain }}
+            >
+              Infrastructure Logs
+            </Typography>
             <Stack spacing={2.5}>
-                {systemLogs.map((log, i) => (
-                    <Box key={i} sx={{ display: "flex", gap: 2 }}>
-                        <Box sx={{ mt: 0.5 }}>
-                            <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: log.color }} />
-                        </Box>
-                        <Box>
-                            <Typography sx={{ fontWeight: 700, fontSize: "12px", color: COLORS.textMain }}>{log.title}</Typography>
-                            <Typography variant="caption" sx={{ color: COLORS.textSub, display: "block", lineHeight: 1.3, mt: 0.25 }}>{log.desc}</Typography>
-                            <Typography sx={{ fontSize: "10px", color: COLORS.primary, fontWeight: 700, mt: 0.5, display: "block" }}>{log.time}</Typography>
-                        </Box>
-                    </Box>
-                ))}
+              {systemLogs.map((log, i) => (
+                <Box key={i} sx={{ display: "flex", gap: 2 }}>
+                  <Box sx={{ mt: 0.5 }}>
+                    <Box
+                      sx={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: "50%",
+                        bgcolor: log.color,
+                      }}
+                    />
+                  </Box>
+                  <Box>
+                    <Typography
+                      sx={{
+                        fontWeight: 700,
+                        fontSize: "12px",
+                        color: COLORS.textMain,
+                      }}
+                    >
+                      {log.title}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: COLORS.textSub,
+                        display: "block",
+                        lineHeight: 1.3,
+                        mt: 0.25,
+                      }}
+                    >
+                      {log.desc}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: "10px",
+                        color: COLORS.primary,
+                        fontWeight: 700,
+                        mt: 0.5,
+                        display: "block",
+                      }}
+                    >
+                      {log.time}
+                    </Typography>
+                  </Box>
+                </Box>
+              ))}
             </Stack>
           </Paper>
 
-          <Paper elevation={0} sx={{ p: 3, borderRadius: "20px", bgcolor: "#fff", border: "1px solid #e2e8f0", mt: 3 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 700, color: COLORS.textMain, mb: 1.5 }}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: "20px",
+              bgcolor: "#fff",
+              border: "1px solid #e2e8f0",
+              mt: 3,
+            }}
+          >
+            <Typography
+              variant="subtitle1"
+              sx={{ fontWeight: 700, color: COLORS.textMain, mb: 1.5 }}
+            >
               User Management
             </Typography>
-            <Typography variant="caption" sx={{ color: COLORS.textSub, display: "block", mb: 2 }}>
-              Manage student, teacher, and admin accounts from a dedicated control panel.
+            <Typography
+              variant="caption"
+              sx={{ color: COLORS.textSub, display: "block", mb: 2 }}
+            >
+              Manage student, teacher, and admin accounts from a dedicated
+              control panel.
             </Typography>
             <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
-              <Chip label={`Students: ${users.filter((u) => u.role === "student").length}`} size="small" />
-              <Chip label={`Teachers: ${users.filter((u) => u.role === "teacher").length}`} size="small" />
+              <Chip
+                label={`Students: ${users.filter((u) => u.role === "student").length}`}
+                size="small"
+              />
+              <Chip
+                label={`Teachers: ${users.filter((u) => u.role === "teacher").length}`}
+                size="small"
+              />
             </Stack>
             <Button
               fullWidth
               variant="outlined"
               onClick={() => navigate("/admin/users")}
-              sx={{ textTransform: "none", borderRadius: "10px", fontWeight: 600 }}
+              sx={{
+                textTransform: "none",
+                borderRadius: "10px",
+                fontWeight: 600,
+              }}
             >
               Open User Management
             </Button>

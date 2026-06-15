@@ -16,12 +16,10 @@ import {
 import {
   DashboardOutlined,
   MenuBookOutlined,
-  AssignmentOutlined,
   PersonOutlined,
   GroupOutlined,
   Menu,
 } from "@mui/icons-material";
-
 import { useAuth } from "../../hooks/useAuth";
 
 const drawerWidth = 260;
@@ -36,7 +34,6 @@ export default function Sidebar() {
   const handleDrawerToggle = () => {
     setMobileOpen((prev) => !prev);
   };
-
   const menuItems = [
     {
       label: "Dashboard",
@@ -47,11 +44,6 @@ export default function Sidebar() {
       label: "Courses",
       icon: <MenuBookOutlined />,
       path: `/courses`,
-    },
-    {
-      label: "Assignments",
-      icon: <AssignmentOutlined />,
-      path: `/${user?.role || "admin"}/assignments`,
     },
     ...(user?.role === "admin"
       ? [
@@ -87,7 +79,6 @@ export default function Sidebar() {
           EduLearn
         </Typography>
       </Toolbar>
-
       <List sx={{ px: 1.5, mt: 2 }}>
         {menuItems.map((item) => {
           const isSelected = location.pathname === item.path;
@@ -188,4 +179,4 @@ export default function Sidebar() {
       )}
     </>
   );
-}
+};
